@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  lum-frontend:
+    container_name: lum-frontend
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "6002:6002"
+    networks:
+      - lum_network
+
+networks:
+  lum_network:
