@@ -5,9 +5,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        padelink: {
+        argenpesos: {
           yellow: "#FCD34D",
           black: "#111827",
+          textos: "#575757",
+          skyBlue: "#4DCCFF",
+          white: "#FFF",
+          gray: '#AAA'
         },
       },
       fontFamily: {
