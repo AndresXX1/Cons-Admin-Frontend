@@ -1,5 +1,9 @@
 const Setting = () => {
-  return <div>Setting</div>;
+  return (
+    <div className="flex">
+      <p>Setting</p>
+    </div>
+  );
 };
 
 export default Setting;

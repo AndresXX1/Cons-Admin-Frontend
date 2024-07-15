@@ -1,5 +1,9 @@
 const Notifications = () => {
-  return <div>Notifications</div>;
+  return (
+    <div className="flex">
+      <p>Notifications</p>
+    </div>
+  );
 };
 
 export default Notifications;

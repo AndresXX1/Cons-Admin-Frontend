@@ -1,5 +1,9 @@
 const Products = () => {
-  return <div>Products</div>;
+  return (
+    <div className="flex">
+      <p>Products</p>
+    </div>
+  );
 };
 
 export default Products;
