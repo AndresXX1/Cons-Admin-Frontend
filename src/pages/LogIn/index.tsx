@@ -43,7 +43,7 @@ const LogIn = () => {
   return (
     <div className="flex flex-row">
       <img className="w-[50%] h-[100vh]" src="login/image_login.png"></img>
-      <div className="px-[85px] py-[80px]">
+      <div className="py-[80px] mx-auto max-w-[600px]">
         <img
           className="w-[235px] h-[49px] mb-[27.67px]"
           src="login/logo_argenpesos.png"

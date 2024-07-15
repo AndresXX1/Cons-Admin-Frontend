@@ -11,7 +11,8 @@ module.exports = {
           textos: "#575757",
           skyBlue: "#4DCCFF",
           white: "#FFF",
-          gray: '#AAA'
+          gray: "#AAA",
+          gray2: "#C4C4C4",
         },
       },
       fontFamily: {

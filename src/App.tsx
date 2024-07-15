@@ -6,18 +6,22 @@ import Notifications from "@pages/Notifications";
 import EditContent from "@pages/EditContent";
 import Products from "@pages/Products";
 import Users from "@pages/Users";
+import Sidebar from "@pages/Home/Sidebar";
 
 const App = (): JSX.Element => {
   return (
-    <Routes>
-      <Route index element={<LogIn />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/users" element={<Users />} />
-      <Route path="/products" element={<Products />} />
-      <Route path="/edit-content" element={<EditContent />} />
-      <Route path="/notifications" element={<Notifications />} />
-      <Route path="/setting" element={<Setting />} />
-    </Routes>
+    <div className="flex h-full">
+      <Sidebar />
+      <Routes>
+        <Route index element={<LogIn />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/edit-content" element={<EditContent />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/setting" element={<Setting />} />
+      </Routes>
+    </div>
   );
 };
 export default App;

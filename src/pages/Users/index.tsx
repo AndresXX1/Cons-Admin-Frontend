@@ -1,5 +1,9 @@
 const Users = () => {
-  return <div>Users</div>;
+  return (
+    <div className="flex">
+      <p>Users</p>
+    </div>
+  );
 };
 
 export default Users;
