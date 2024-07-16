@@ -7,11 +7,16 @@ import EditContent from "@pages/EditContent";
 import Products from "@pages/Products";
 import Users from "@pages/Users";
 import Sidebar from "@pages/Home/Sidebar";
+import { useLocation } from "react-router-dom";
 
 const App = (): JSX.Element => {
+  const location = useLocation();
+
+  const showSidebar = location.pathname !== "/";
+
   return (
     <div className="flex h-full">
-      <Sidebar />
+      {showSidebar && <Sidebar />}
       <Routes>
         <Route index element={<LogIn />} />
         <Route path="/home" element={<Home />} />
