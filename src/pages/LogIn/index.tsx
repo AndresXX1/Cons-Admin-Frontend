@@ -41,7 +41,7 @@ const LogIn = () => {
   console.log(data);
   console.log(active);
   return (
-    <div className="flex flex-row">
+    <div className="flex w-full flex-row">
       <img className="w-[50%] h-[100vh]" src="login/image_login.png"></img>
       <div className="py-[80px] mx-auto max-w-[600px]">
         <img
