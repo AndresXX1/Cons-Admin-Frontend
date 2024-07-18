@@ -17,11 +17,11 @@ module.exports = {
         },
       },
       fontFamily: {
-        light: ["Helvetica Light", "sans-serif"],
-        regular: ["Helvetica Regular", "sans-serif"],
-        medium: ["Helvetica Medium", "sans-serif"],
-        bold: ["Helvetica Bold", "sans-serif"],
-        normal: ["Helvetica Regular", "sans-serif"],
+        light: ["Gotham Light", "sans-serif"],
+        regular: ["Gotham Medium", "sans-serif"],
+        medium: ["Gotham Medium", "sans-serif"],
+        bold: ["Gotham Bold", "sans-serif"],
+        normal: ["Gotham Medium", "sans-serif"],
       },
       keyframes: {
         "rotate-clockwise": {
