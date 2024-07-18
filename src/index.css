@@ -13,24 +13,24 @@
 html,
 body {
   height: 100vh;
-  font-family: "Helvetica Regular", "Montserrat";
+  font-family: "Gotham Medium", "Montserrat";
 }
 @font-face {
-  font-family: "Helvetica Bold";
-  src: url("/fonts/HelveticaNeueLTStd-BdEx.otf");
-}
-
-@font-face {
-  font-family: "Helvetica Medium";
-  src: url("/fonts/HelveticaNeueLTStd63MediumExtended.otf");
+  font-family: "Gotham Light";
+  src: url("/fonts/GothamLight.ttf");
 }
 
 @font-face {
-  font-family: "Helvetica Regular";
-  src: url("/fonts/Extended53.otf");
+  font-family: "Gotham Medium";
+  src: url("/fonts/GothamMedium.ttf");
 }
 
 @font-face {
-  font-family: "Helvetica Light";
-  src: url("/fonts/Helvetica Neue LT Std 43 Light Extended.otf");
+  font-family: "Gotham Bold";
+  src: url("/fonts/GothamBold.ttf");
+}
+
+@font-face {
+  font-family: "Gotham Thin";
+  src: url("/fonts/GothamThin.ttf");
 }

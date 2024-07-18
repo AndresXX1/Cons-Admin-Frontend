@@ -1,7 +1,7 @@
 version: "3.8"
 services:
-  lum-frontend:
-    container_name: lum-frontend
+  argenpesos-frontend:
+    container_name: argenpesos-frontend
     build:
       dockerfile: Dockerfile
       context: .
@@ -9,9 +9,9 @@ services:
     env_file:
       - .env
     ports:
-      - "6002:6002"
+      - "8000:8000"
     networks:
-      - lum_network
+      - argenpesos_network
 
 networks:
-  lum_network:
+  argenpesos_network:
