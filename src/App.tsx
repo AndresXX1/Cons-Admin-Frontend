@@ -6,7 +6,7 @@ import Notifications from "@pages/Notifications";
 import EditContent from "@pages/EditContent";
 import Products from "@pages/Products";
 import Users from "@pages/Users";
-import Sidebar from "@pages/Home/Sidebar";
+import Sidebar from "@components/Sidebar";
 import { useLocation } from "react-router-dom";
 
 const App = (): JSX.Element => {
