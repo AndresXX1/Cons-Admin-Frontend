@@ -2,6 +2,7 @@ import { links } from "@utils/format";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { IconUser } from "@utils/svg";
+
 const Sidebar = () => {
   const location = useLocation();
 

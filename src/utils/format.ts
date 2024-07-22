@@ -9,39 +9,39 @@ import {
 
 export const links = [
   {
-    to: "/home",
+    to: "/dashboard/home",
     text: "Home",
-    active: ["/home"],
+    active: ["/dashboard/home", "/dashboard"],
     Icon: IconHome,
   },
   {
-    to: "/users",
+    to: "/dashboard/users",
     text: "Usuarios",
-    active: ["/users"],
+    active: ["/dashboard/users"],
     Icon: IconUser,
   },
   {
-    to: "/products",
+    to: "/dashboard/products",
     text: "Productos",
-    active: ["/products"],
+    active: ["/dashboard/products"],
     Icon: IconProducts,
   },
   {
-    to: "/edit-content",
+    to: "/dashboard/edit-content",
     text: "Editar contenido",
-    active: ["/edit-content"],
+    active: ["/dashboard/edit-content"],
     Icon: IconEdits,
   },
   {
-    to: "/notifications",
+    to: "/dashboard/notifications",
     text: "Notificaciones",
-    active: ["/notifications"],
+    active: ["/dashboard/notifications"],
     Icon: IconNotifications,
   },
   {
-    to: "/setting",
+    to: "/dashboard/setting",
     text: "Configuración",
-    active: ["/setting"],
+    active: ["/dashboard/setting"],
     Icon: IconConfig,
   },
 ];
