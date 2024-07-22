@@ -2,14 +2,12 @@ export const baseUrl = import.meta.env.VITE_PUBLIC_BACKEND_URL;
 
 export const apiUrls = {
   // auth
-  refreshToken: () => `${baseUrl}/api/auth/refresh-token`,
-  logOut: () => `${baseUrl}/api/auth/log-out`,
-  logIn: () => `${baseUrl}/api/auth/log-in`,
-  logInWithGoogle: () => `${baseUrl}/api/auth/log-in-with-google`,
-  getSessions: () => `/api/auth/session`,
-  deleteSession: (id: number) => `/api/auth/session/${id}`,
-  signUp: () => `${baseUrl}/api/auth/sign-up`,
-  resendCode: () => `${baseUrl}/api/auth/resend-code`,
+  logIn: () => `${baseUrl}/api/admin/log-in`,
+  refreshToken: () => `${baseUrl}/api/admin/refresh-token`,
+  logOut: () => `${baseUrl}/api/admin/log-out`,
+  getSessions: () => `/api/admin/session`,
+  deleteSession: (id: number) => `/api/admin/session/${id}`,
+  resendCode: () => `${baseUrl}/api/admin/resend-code`,
   //user
   getUserById: (id: number) => `/api/user/${id}/search`,
   getSuggestions: () => `/api/user/allsuggestions`,
@@ -81,7 +79,3 @@ export const tokenAccess = {
   refreshTokenName:
     import.meta.env.VITE_PUBLIC_TOKEN_REFRESH_NAME || "refreshToken",
 };
-
-export const googleIdClient = import.meta.env.VITE_PUBLIC_GOOGLE_CLIENT_ID;
-
-export const googleMapKey = import.meta.env.VITE_PUBLIC_MAP_API_KEY;
