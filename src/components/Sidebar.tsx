@@ -9,8 +9,8 @@ const Sidebar = () => {
 
   console.log(links);
   return (
-    <div className="flex">
-      <div className="bg-argenpesos-white w-[335px]">
+    <div className="flex w-[335px]">
+      <div className="bg-argenpesos-white w-[335px] fixed">
         <div className="flex gap-2 mt-9 mb-7 xl:mt-12 xl:mb-12">
           <img
             className="select-none w-[235px] h-[50px] mx-auto"
@@ -24,14 +24,14 @@ const Sidebar = () => {
             return (
               <li
                 key={`${link.text}-${index}`}
-                className={`flex h-14 px-3 gap-3 ${
+                className={`flex h-14 pl-3 gap-3 ${
                   currentPath === link.to || link.active.includes(currentPath)
                     ? " text-argenpesos-skyBlue"
                     : " text-argenpesos-textos"
                 }`}
               >
                 <div className="flex items-center justify-center gap-5">
-                  <Icon />
+                  <Icon className="" />
                   <Link to={link.to} className="font-normal text-[23px]">
                     {link.text}
                   </Link>
@@ -48,7 +48,7 @@ const Sidebar = () => {
         </p>
       </div>
 
-      <div className="bg-argenpesos-gray2 w-[1px] h-full"></div>
+      <div className="fixed ml-[320px] z-[1] bg-argenpesos-gray2 w-[1px] h-full"></div>
     </div>
   );
 };

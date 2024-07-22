@@ -28,18 +28,18 @@ const Notifications = () => {
     },
   ];
   return (
-    <div className="flex flex-col pl-16 pt-12 px-10 h-[100%] w-full">
+    <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
       <p className="text-[3rem] text-argenpesos-textos font-bold pb-14">
         Notificaciones
       </p>
 
       <div className="flex gap-6">
         <input
-          className="w-[65%] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10"
+          className="w-[735px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10"
           type="search"
           placeholder="Buscar estadísticas o datos"
         />
-        <button className="w-[20%] h-[54px] bg-argenpesos-skyBlue rounded-[13px] flex items-center justify-center text-argenpesos-white gap-1">
+        <button className="w-[219px] h-[54px] bg-argenpesos-skyBlue rounded-[13px] flex items-center justify-center text-argenpesos-white gap-1">
           <IconNotification />
           Nueva notificación
         </button>
