@@ -162,43 +162,6 @@ const setupAxiosInterceptors = (
   );
 };
 
-export const logInWithGoogleAsync = createAsyncThunk(
-  "auth/logInWithGoogleAsync",
-  async (
-    data: {
-      token: string;
-      dispatch: ReturnType<typeof useAppDispatch>;
-      setError: (error: string) => void;
-    },
-    { rejectWithValue }
-  ) => {
-    const { token, dispatch, setError } = data;
-    try {
-      const response = await axios.post(apiUrls.logInWithGoogle(), { token });
-      if (response.data.ok) {
-        localStorage.setItem(tokenAccess.tokenName, response.data.token);
-        localStorage.setItem(
-          tokenAccess.refreshTokenName,
-          response.data.refreshToken
-        );
-        setupAxiosInterceptors(dispatch);
-        alertConfirm("Sesión iniciada correctamente");
-        dispatch(getUserAsync());
-        return {};
-      } else {
-        setError(response.data.message);
-        return rejectWithValue("error");
-      }
-    } catch (error) {
-      const message =
-        (error as IErrorResponse).response.data.message ||
-        "Error al iniciar sesión";
-      setError(message);
-      return rejectWithValue("error");
-    }
-  }
-);
-
 export const verifyCode = createAsyncThunk(
   "auth/verifyCode",
   async (
@@ -283,52 +246,6 @@ export const getUserAsync = createAsyncThunk(
   }
 );
 
-export const signUpAsync = createAsyncThunk(
-  "auth/signUpAsync",
-  async (
-    {
-      data,
-      setActive,
-      setError,
-      dispatch,
-    }: {
-      data: {
-        email: string;
-        password: string;
-      };
-      setActive: (boolean: boolean) => void;
-      setError: (error: string) => void;
-      dispatch: ReturnType<typeof useAppDispatch>;
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await axios.post(apiUrls.signUp(), data);
-      if (response.data.ok) {
-        localStorage.setItem(tokenAccess.tokenName, response.data.token);
-        localStorage.setItem(
-          tokenAccess.refreshTokenName,
-          response.data.refreshToken
-        );
-        setupAxiosInterceptors(dispatch);
-        dispatch(getUserAsync());
-        return {};
-      } else {
-        setError(response.data.message);
-        return rejectWithValue("error");
-      }
-    } catch (error) {
-      const message =
-        (error as IErrorResponse).response.data.message ||
-        "Error al iniciar sesión";
-      setError(message);
-      return rejectWithValue("error");
-    } finally {
-      setActive(false);
-    }
-  }
-);
-
 export const forgetPasswordNewPassword = async ({
   data,
   setActive,
@@ -400,8 +317,7 @@ export const logInAsync = createAsyncThunk(
         setupAxiosInterceptors(dispatch);
         setActive(false);
         alertConfirm("Sesión iniciada correctamente");
-        dispatch(getUserAsync());
-        dispatch(myEventsAsync());
+        // dispatch(getUserAsync());
         return {};
       } else {
         setError(response.data.message);
@@ -561,8 +477,7 @@ export const verifySessionAsync = createAsyncThunk(
     }
     try {
       setupAxiosInterceptors(dispatch);
-      await dispatch(getUserAsync());
-      await dispatch(myEventsAsync());
+      // await dispatch(getUserAsync());
       return {};
     } catch (error) {
       await deleteAccess();
