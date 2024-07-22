@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@store/index";
 import { logInAsync } from "@store/actions/auth";
+import { Navigate } from "react-router-dom";
 
 const LogIn = () => {
   const [data, setData] = useState({
@@ -10,6 +11,9 @@ const LogIn = () => {
   });
 
   const dispatch = useDispatch<AppDispatch>();
+  const { authenticated, loading } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   const [error, setError] = useState<string | null>(null);
   const [active, setActive] = useState<boolean>(false);
@@ -38,8 +42,10 @@ const LogIn = () => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  console.log(data);
-  console.log(active);
+  if (authenticated && !loading) {
+    return <Navigate to="/dashboard" />;
+  }
+
   return (
     <div className="flex w-full flex-row">
       <img className="w-[50%] h-[100vh]" src="login/image_login.png"></img>
@@ -96,7 +102,11 @@ const LogIn = () => {
               ¿Olvidaste tu contraseña?
             </p>
           </div>
-          <button className="w-[560px] bg-argenpesos-skyBlue h-[52px] text-white text-[19px] font-norma leading-[19px]">
+          <button
+            className="w-[560px] bg-argenpesos-skyBlue h-[52px] text-white text-[19px] font-norma leading-[19px] disabled:bg-argenpesos-gray"
+            type="submit"
+            disabled={active}
+          >
             Iniciar sesion
           </button>
         </form>
