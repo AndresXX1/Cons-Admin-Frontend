@@ -14,7 +14,7 @@ const Setting = () => {
     },
   ];
   return (
-    <div className="flex flex-col pl-16 pt-12 px-10 h-[100%] w-full">
+    <div className="flex flex-col pl-16 pt-12 px-10 h-[100%] w-[1100px]">
       <p className="text-[3rem] text-argenpesos-textos font-bold pb-14">
         Configuración
       </p>

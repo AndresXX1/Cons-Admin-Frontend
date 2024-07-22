@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ArrowBlue,
   ArrowLeft,
@@ -7,7 +8,16 @@ import {
 } from "@utils/svg";
 
 const Users = () => {
-  const info = [
+  const [visibleIndex, setVisibleIndex] = useState<number | null>(null);
+
+  const toggleVisibility = (index: number) => {
+    if (visibleIndex === index) {
+      setVisibleIndex(null);
+    } else {
+      setVisibleIndex(index);
+    }
+  };
+  const info2 = [
     {
       img: "/image_user.png",
       name: "Maria Becerra",
@@ -123,7 +133,7 @@ const Users = () => {
           type="search"
           placeholder="Buscar estadísticas o datos"
         />
-        <div className="flex w-[120px] h-[54px] ml-4 border-[1px] border-argenpesos-textos flex- items-center justify-center gap-2 rounded-[13px]">
+        <div className="flex w-[120px] h-[54px] ml-4 border-[1px] border-argenpesos-textos items-center justify-center gap-2 rounded-[13px]">
           <IconFilter />
           <p>Filtros</p>
         </div>
@@ -151,12 +161,12 @@ const Users = () => {
         </div>
       </div>
       <div>
-        {info.map((inf, key) => (
+        {info2.map((inf, index) => (
           <div
             className="grid grid-cols-6 gap-5 relative items-center"
-            key={key}
+            key={index}
           >
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 z-[-1]">
               <img className="w-[50px] h-[50px]" src={inf.img} alt={inf.name} />
               <p className="text-[1rem] text-argenpesos-textos font-normal">
                 {inf.name}
@@ -174,11 +184,25 @@ const Users = () => {
             <p className="text-[1rem] text-argenpesos-textos font-normal">
               {inf.points}
             </p>
-            <p className="text-[1rem] text-argenpesos-textos font-normal">
+            <p className="text-[1rem] text-argenpesos-textos font-normal z-[-1]">
               {inf.date}
             </p>
-            <div className="absolute right-0 top-3">
-              <ThreePoints />
+            <div
+              onClick={() => toggleVisibility(index)}
+              className="absolute right-0 top-3 w-[0px]"
+            >
+              <button onClick={() => toggleVisibility(index)}>
+                {visibleIndex === index ? <ThreePoints /> : <ThreePoints />}
+              </button>
+              <div
+                className={`transition-all duration-2000 ease-in-out ${
+                  visibleIndex === index
+                    ? "opacity-100 h-[132px]"
+                    : "opacity-0 max-h-0"
+                } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px] relative right-[7rem] z-[100]`}
+              >
+                This is a toggled div!
+              </div>
             </div>
             <div className="w-[100%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
           </div>
