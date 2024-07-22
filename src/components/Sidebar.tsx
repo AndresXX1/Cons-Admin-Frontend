@@ -1,6 +1,7 @@
 import { links } from "@utils/format";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { IconLogout, IconUser } from "@utils/svg";
 import { IconUser } from "@utils/svg";
 
 const Sidebar = () => {
@@ -19,7 +20,7 @@ const Sidebar = () => {
             alt="Logo"
           />
         </div>
-        <ul className="flex flex-col px-10">
+        <ul className="flex flex-col gap-2 px-10">
           {links.map((link, index) => {
             const { Icon } = link;
             return (
@@ -33,7 +34,7 @@ const Sidebar = () => {
               >
                 <div className="flex items-center justify-center gap-5">
                   <Icon className="" />
-                  <Link to={link.to} className="font-normal text-[23px]">
+                  <Link to={link.to} className="font-book text-[23px]">
                     {link.text}
                   </Link>
                 </div>
@@ -41,11 +42,16 @@ const Sidebar = () => {
             );
           })}
         </ul>
-        <div className="mt-28 flex items-center justify-center border-[2px] border-argenpesos-textos w-[66px] h-[66px] mx-auto rounded-[15px]">
+        <div className="mt-20 flex items-center justify-center border-[2px] border-argenpesos-textos w-[66px] h-[66px] mx-auto rounded-[15px]">
           <IconUser />
         </div>
-        <p className="text-center mt-6 text-argenpesos-textos text-[23px] font-normal">
+        <p className="text-center mt-6 text-argenpesos-textos text-[23px] font-book">
           Félix Bilbao
+        </p>
+
+        <p className="flex items-center justify-center gap-1 text-[15.21px] text-argenpesos-red mt-2 cursor-pointer">
+          <IconLogout />
+          Cerrar Sesión
         </p>
       </div>
 

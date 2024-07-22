@@ -67,23 +67,23 @@ const Notifications = () => {
             key={key}
           >
             <div className="flex items-center gap-1">
-              <p className="text-[1rem] text-argenpesos-textos font-normal">
+              <p className="text-[1rem] text-argenpesos-textos font-book">
                 {inf.name}
               </p>
             </div>
-            <p className="text-[1rem] text-argenpesos-textos font-normal">
+            <p className="text-[1rem] text-argenpesos-textos font-book">
               {inf.date}
             </p>
-            <p className="text-[1rem] text-argenpesos-textos font-normal">
+            <p className="text-[1rem] text-argenpesos-textos font-book">
               {inf.age}
             </p>
-            <p className="text-[1rem] text-argenpesos-textos font-normal">
+            <p className="text-[1rem] text-argenpesos-textos font-book">
               {inf.imagen}
             </p>
-            <p className="text-[1rem] text-argenpesos-textos font-normal">
+            <p className="text-[1rem] text-argenpesos-textos font-book">
               {inf.app}
             </p>
-            <p className="text-[1rem] text-argenpesos-textos font-normal">
+            <p className="text-[1rem] text-argenpesos-textos font-book">
               {inf.push}
             </p>
             <div className="absolute right-5 top-3">
@@ -103,23 +103,23 @@ const Notifications = () => {
               key={key}
             >
               <div className="flex items-center gap-1">
-                <p className="text-[1rem] text-argenpesos-textos font-normal">
+                <p className="text-[1rem] text-argenpesos-textos font-book">
                   {inf.name}
                 </p>
               </div>
-              <p className="text-[1rem] text-argenpesos-textos font-normal">
+              <p className="text-[1rem] text-argenpesos-textos font-book">
                 {inf.date}
               </p>
-              <p className="text-[1rem] text-argenpesos-textos font-normal">
+              <p className="text-[1rem] text-argenpesos-textos font-book">
                 {inf.age}
               </p>
-              <p className="text-[1rem] text-argenpesos-textos font-normal">
+              <p className="text-[1rem] text-argenpesos-textos font-book">
                 {inf.imagen}
               </p>
-              <p className="text-[1rem] text-argenpesos-textos font-normal">
+              <p className="text-[1rem] text-argenpesos-textos font-book">
                 {inf.app}
               </p>
-              <p className="text-[1rem] text-argenpesos-textos font-normal">
+              <p className="text-[1rem] text-argenpesos-textos font-book">
                 {inf.push}
               </p>
               <div className="absolute right-5 top-3">

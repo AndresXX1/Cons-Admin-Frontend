@@ -34,16 +34,16 @@ const Setting = () => {
           <div className="flex justify-between pr-20 items-center" key={key}>
             <div className="flex items-center gap-1">
               <img className="w-[50px] h-[50px]" src={inf.img} alt={inf.name} />
-              <p className="text-[1rem] text-argenpesos-textos font-normal">
+              <p className="text-[1rem] text-argenpesos-textos font-book">
                 {inf.name}
               </p>
             </div>
-            <p className="text-[1rem] text-argenpesos-textos font-normal">
+            <p className="text-[1rem] text-argenpesos-textos font-book">
               {inf.email}
             </p>
             <div className="flex justify-center items-center gap-1">
               <IconDelete />
-              <p className="text-[1rem] font-normal text-argenpesos-red">
+              <p className="text-[1rem] font-book text-argenpesos-red">
                 Eliminar
               </p>
             </div>
@@ -80,10 +80,10 @@ const Setting = () => {
         />
 
         <div className="flex gap-5 mt-10 mb-14">
-          <button className="flex w-[147px] h-[38px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-normal rounded-[5px]">
+          <button className="flex w-[147px] h-[38px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-book rounded-[5px]">
             Editar cuenta
           </button>
-          <button className="flex w-[147px] border-[1px] border-argenpesos-red h-[38px] items-center justify-center text-[1rem] text-argenpesos-red font-normal rounded-[5px]">
+          <button className="flex w-[147px] border-[1px] border-argenpesos-red h-[38px] items-center justify-center text-[1rem] text-argenpesos-red font-book rounded-[5px]">
             Eliminar cuenta
           </button>
         </div>
