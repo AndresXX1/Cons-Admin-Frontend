@@ -21,7 +21,7 @@ const Modal = ({
             className="absolute inset-0 bg-gray-900 opacity-50"
             onClick={() => closeModal && closeModal(false)}
           ></div>
-          <div className="relative bg-white overflow-y-auto max-h-[80%] journal-scroll">
+          <div className="relative bg-white overflow-y-auto max-h-[100%] journal-scroll rounded-[13px]">
             {element}
           </div>
         </div>,

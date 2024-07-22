@@ -52,13 +52,13 @@ const LogIn = () => {
         <h2 className="text-argenpesos-textos text-[44px] font-bold leading-[48px] tracking-[-0.96px] mb-[13px] mx-auto">
           ¡Bienvenido de vuelta!
         </h2>
-        <p className="text-argenpesos-textos text-[23px] font-normal mb-[42px]">
+        <p className="text-argenpesos-textos text-[23px] font-book mb-[42px]">
           Iniciá sesión para poder acceder al panel de administración.
         </p>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col">
             <input
-              className="w-[560px] rounded-[8px] mb-[24px] h-[60px] px-[22px] border-1 border-argenpesos-gray text-argenpesos-textos text-[19px] font-normal leading-[19px]"
+              className="w-[560px] rounded-[8px] mb-[24px] h-[60px] px-[22px] border-1 border-argenpesos-gray text-argenpesos-textos text-[19px] font-book leading-[19px]"
               type="text"
               placeholder="Email o alias"
               onChange={handleChange}
@@ -88,11 +88,11 @@ const LogIn = () => {
                 className="rounded-[3px] focus:border-0 selection:border-0 text-argenpesos-skyBlue"
                 type="checkbox"
               />
-              <p className="text-argenpesos-textos text-[16px] font-normal leading-[125%]">
+              <p className="text-argenpesos-textos text-[16px] font-book leading-[125%]">
                 Recordarme
               </p>
             </div>
-            <p className="text-argenpesos-skyBlue text-[16px] font-normal leading-[125%]">
+            <p className="text-argenpesos-skyBlue text-[16px] font-book leading-[125%]">
               ¿Olvidaste tu contraseña?
             </p>
           </div>
@@ -100,9 +100,9 @@ const LogIn = () => {
             Iniciar sesion
           </button>
         </form>
-        <p className="text-argenpesos-textos text-[19px] font-normal leading-[19px] mt-10 text-center w-[560px]">
+        <p className="text-argenpesos-textos text-[19px] font-book leading-[19px] mt-10 text-center w-[560px]">
           ¿Sos nuevo en la plataforma?{" "}
-          <span className="text-argenpesos-skyBlue text-[19px] font-normal leading-[100%] ">
+          <span className="text-argenpesos-skyBlue text-[19px] font-book leading-[100%] ">
             Solicitá tu demo
           </span>
         </p>

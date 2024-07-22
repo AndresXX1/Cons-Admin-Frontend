@@ -34,3 +34,13 @@ body {
   font-family: "Gotham Thin";
   src: url("/fonts/GothamThin.ttf");
 }
+
+@font-face {
+  font-family: "Gotham Book";
+  src: url("/fonts/GothamBook.otf");
+}
+
+@font-face {
+  font-family: "Gotham Regular";
+  src: url("/fonts/GothamRegular.otf");
+}
