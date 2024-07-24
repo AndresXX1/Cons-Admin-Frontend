@@ -10,8 +10,8 @@ const Sidebar = () => {
 
   console.log(links);
   return (
-    <div className="flex w-[335px]">
-      <div className="bg-argenpesos-white w-[335px] fixed">
+    <div className="flex w-[285px]">
+      <div className="bg-argenpesos-white w-[285px] fixed">
         <div className="flex gap-2 mt-9 mb-7 xl:mt-12 xl:mb-12">
           <img
             className="select-none w-[235px] h-[50px] mx-auto"
@@ -19,7 +19,7 @@ const Sidebar = () => {
             alt="Logo"
           />
         </div>
-        <ul className="flex flex-col gap-2 px-10">
+        <ul className="flex flex-col gap-2 px-6">
           {links.map((link, index) => {
             const { Icon } = link;
             return (
@@ -33,7 +33,7 @@ const Sidebar = () => {
               >
                 <div className="flex items-center justify-center gap-5">
                   <Icon className="" />
-                  <Link to={link.to} className="font-book text-[23px]">
+                  <Link to={link.to} className="font-book text-[20px]">
                     {link.text}
                   </Link>
                 </div>
@@ -41,7 +41,7 @@ const Sidebar = () => {
             );
           })}
         </ul>
-        <div className="mt-20 flex items-center justify-center border-[2px] border-argenpesos-textos w-[66px] h-[66px] mx-auto rounded-[15px]">
+        <div className="mt-16 flex items-center justify-center border-[2px] border-argenpesos-textos w-[66px] h-[66px] mx-auto rounded-[15px]">
           <IconUser />
         </div>
         <p className="text-center mt-6 text-argenpesos-textos text-[23px] font-book">
@@ -54,7 +54,7 @@ const Sidebar = () => {
         </p>
       </div>
 
-      <div className="fixed ml-[320px] z-[1] bg-argenpesos-gray2 w-[1px] h-full"></div>
+      <div className="fixed ml-[280px] z-[1] bg-argenpesos-gray2 w-[1px] h-full"></div>
     </div>
   );
 };
