@@ -15,12 +15,12 @@ const Home = () => {
           placeholder="Buscar estadísticas o datos"
         />
         <div className="flex w-[133px] h-[54px] ml-4 border-[1px] border-argenpesos-textos flex- items-center justify-center gap-2 rounded-[13px]">
-          <p className="text-[1rem] font-normal text-argenpesos-textos">
+          <p className="text-[1rem] font-book text-argenpesos-textos">
             Semanal
           </p>
           <ArrowLeft className="w-[7px] h-[20px] rotate-[270deg]" />
         </div>
-        <button className="flex gap-2 w-[304px] h-[54px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-normal rounded-[13px]">
+        <button className="flex gap-2 w-[304px] h-[54px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-book rounded-[13px]">
           <IconDownload />
           Descargar planillla
         </button>
