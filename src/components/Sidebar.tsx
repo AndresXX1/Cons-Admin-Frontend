@@ -2,13 +2,15 @@ import { links } from "@utils/format";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { IconLogout, IconUser } from "@utils/svg";
+import { logOutAsync } from "@store/actions/auth";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@store/index";
 
 const Sidebar = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
-
   const currentPath = location.pathname;
 
-  console.log(links);
   return (
     <div className="flex w-[285px]">
       <div className="bg-argenpesos-white w-[285px] fixed">
@@ -47,13 +49,14 @@ const Sidebar = () => {
         <p className="text-center mt-6 text-argenpesos-textos text-[23px] font-book">
           Félix Bilbao
         </p>
-
-        <p className="flex items-center justify-center gap-1 text-[15.21px] text-argenpesos-red mt-2 cursor-pointer">
+        <p
+          className="flex items-center justify-center gap-1 text-[15.21px] text-argenpesos-red mt-2 cursor-pointer"
+          onClick={() => dispatch(logOutAsync())}
+        >
           <IconLogout />
           Cerrar Sesión
         </p>
       </div>
-
       <div className="fixed ml-[280px] z-[1] bg-argenpesos-gray2 w-[1px] h-full"></div>
     </div>
   );
