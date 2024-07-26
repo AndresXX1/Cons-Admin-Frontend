@@ -3,24 +3,26 @@ import { ArrowLeft, IconDownload } from "@utils/svg";
 const Home = () => {
   return (
     <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
-      <p className="text-[3rem] text-argenpesos-textos font-bold">
+      <p className="text-[46.08px] text-argenpesos-textos font-bold">
         Hola <span className="text-argenpesos-skyBlue">Félix</span>
       </p>
-      <p>¡Bienvenido de vuelta!</p>
+      <p className="text-[19.2px] text-argenpesos-gray font-book">
+        ¡Bienvenido de vuelta!
+      </p>
 
       <div className="flex gap-5 pt-5">
         <input
-          className="w-[477px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10"
+          className="w-[457px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10 placeholder:text-argenpesos-textos font-book"
           type="search"
           placeholder="Buscar estadísticas o datos"
         />
-        <div className="flex w-[133px] h-[54px] ml-4 border-[1px] border-argenpesos-textos flex- items-center justify-center gap-2 rounded-[13px]">
-          <p className="text-[1rem] font-book text-argenpesos-textos">
+        <div className="flex w-[127px] h-[54px] ml-4 border-[1px] border-argenpesos-textos flex- items-center justify-center gap-2 rounded-[13px]">
+          <p className="text-[15.36px] font-book text-argenpesos-textos">
             Semanal
           </p>
           <ArrowLeft className="w-[7px] h-[20px] rotate-[270deg]" />
         </div>
-        <button className="flex gap-2 w-[304px] h-[54px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-book rounded-[13px]">
+        <button className="flex gap-2 w-[291px] h-[54px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-book rounded-[13px]">
           <IconDownload />
           Descargar planillla
         </button>

@@ -103,19 +103,13 @@ const LogIn = () => {
             </p>
           </div>
           <button
-            className="w-[560px] bg-argenpesos-skyBlue h-[52px] text-white text-[19px] font-norma leading-[19px] disabled:bg-argenpesos-gray"
+            className="w-[560px] bg-argenpesos-skyBlue h-[52px] text-white text-[19px] font-norma leading-[19px] disabled:bg-argenpesos-gray rounded-[8px]"
             type="submit"
             disabled={active}
           >
             Iniciar sesion
           </button>
         </form>
-        <p className="text-argenpesos-textos text-[19px] font-book leading-[19px] mt-10 text-center w-[560px]">
-          ¿Sos nuevo en la plataforma?{" "}
-          <span className="text-argenpesos-skyBlue text-[19px] font-book leading-[100%] ">
-            Solicitá tu demo
-          </span>
-        </p>
       </div>
     </div>
   );
