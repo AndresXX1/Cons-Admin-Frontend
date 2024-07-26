@@ -60,7 +60,7 @@ const LogIn = () => {
       ></img>
       <div className="py-[80px] mx-auto max-w-[600px]">
         <img
-          className="w-[235px] h-[49px] mb-[27.67px]"
+          className="w-[235px] h-[49px] mb-[27.67px] object-cover"
           src="login/logo_argenpesos.png"
           alt=""
         />
@@ -90,7 +90,7 @@ const LogIn = () => {
                 name="password"
               />
               <div
-                className="absolute right-16 top-6"
+                className="absolute right-16 top-6 cursor-pointer"
                 onClick={togglePasswordVisibility}
               >
                 {showPassword ? <IconEyesOff /> : <IconEyes />}
