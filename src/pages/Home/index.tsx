@@ -144,12 +144,127 @@ const Home = () => {
           </div>
         </div>
         <div className="border-[1px] border-argenpesos-gray row-span-2 h-[435px] rounded-[13px] p-5">
-          <div className="flex gap-3 items-center pb-5">
+          <div className="flex gap-3 items-center pb-3">
             <Iconstatistics />
 
             <p className="text-[22px] font-bold text-argenpesos-textos">
               Estadísticas
             </p>
+          </div>
+          <p className="text-[20px] text-argenpesos-textos font-book">Edad</p>
+          <div className="flex gap-[22px] items-center">
+            <p className="text-[15.36px] font-book text-argenpesos-gray2">
+              18-30
+            </p>
+            <div className="w-[20%] bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"></div>
+            <p className="text-argenpesos-textos text-[15.36px] font-book">
+              10%
+            </p>
+          </div>
+          <div className="flex gap-[18px] items-center">
+            <p className="text-[15.36px] font-book text-argenpesos-gray2">
+              30-45
+            </p>
+            <div className="w-[25%] bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"></div>
+            <p className="text-argenpesos-textos text-[15.36px] font-book">
+              16%
+            </p>
+          </div>
+          <div className="flex gap-4 items-center">
+            <p className="text-[15.36px] font-book text-argenpesos-gray2">
+              45-60
+            </p>
+            <div className="w-[50%] bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"></div>
+            <p className="text-argenpesos-textos text-[15.36px] font-book">
+              53%
+            </p>
+          </div>
+          <div className="flex gap-8 items-center">
+            <p className="text-[15.36px] font-book text-argenpesos-gray2">{`>60     `}</p>
+            <div className="w-[31%] bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"></div>
+            <p className="text-argenpesos-textos text-[15.36px] font-book">
+              21%
+            </p>
+          </div>
+          <p className="text-[20px] text-argenpesos-textos font-book pt-3">
+            Género
+          </p>
+          <div className="flex flex-row mt-3">
+            <div className="flex w-[60%] gap-2">
+              <p className="text-argenpesos-textos text-[15.36px] font-book">
+                H
+              </p>
+              <div className="bg-argenpesos-blue w-[80%] h-[25px] text-[11.52px] flex items-center px-2 font-book text-argenpesos-white rounded-s-lg">
+                44%
+              </div>
+            </div>
+            <div className="flex w-[60%] gap-2">
+              <div className="bg-argenpesos-skyBlue w-[100%] h-[25px] text-[11.52px] flex items-center px-2 font-book text-argenpesos-white rounded-e-lg">
+                56%
+              </div>
+              <p className="text-argenpesos-textos text-[15.36px] font-book">
+                M
+              </p>
+            </div>
+          </div>
+          <p className="text-[20px] text-argenpesos-textos font-book pt-3 pb-3">
+            Ubicación
+          </p>
+          <div className="flex gap-5 justify-center relative">
+            <svg
+            className="absolute top-8"
+              xmlns="http://www.w3.org/2000/svg"
+              width="238"
+              height="18"
+              viewBox="0 0 238 18"
+              fill="none"
+            >
+              <path
+                d="M229.989 17.909C229.895 17.9096 229.801 17.8916 229.714 17.856C229.627 17.8205 229.548 17.7681 229.482 17.7019C229.415 17.6355 229.361 17.5565 229.325 17.4695C229.289 17.3824 229.27 17.2891 229.27 17.1948C229.27 17.1005 229.289 17.0071 229.325 16.9201C229.361 16.833 229.415 16.7541 229.482 16.6877L235.317 10.8521C235.718 10.4503 235.944 9.90567 235.944 9.33782C235.944 8.76998 235.718 8.22535 235.317 7.82357L229.482 1.98799C229.347 1.85349 229.271 1.67107 229.271 1.48086C229.271 1.29065 229.347 1.10823 229.482 0.973732C229.616 0.839233 229.798 0.763672 229.989 0.763672C230.179 0.763672 230.361 0.839233 230.496 0.973732L236.331 6.80931C236.664 7.14106 236.928 7.53516 237.108 7.96904C237.288 8.40293 237.381 8.86807 237.381 9.33782C237.381 9.80758 237.288 10.2727 237.108 10.7066C236.928 11.1405 236.664 11.5346 236.331 11.8663L230.496 17.7019C230.429 17.7681 230.35 17.8205 230.263 17.856C230.176 17.8916 230.083 17.9096 229.989 17.909Z"
+                fill="#575757"
+              />
+              <path
+                d="M7.7518 0.758919C7.84581 0.758375 7.93899 0.776392 8.02602 0.811937C8.11304 0.847483 8.1922 0.899858 8.25894 0.966057C8.32588 1.03246 8.37902 1.11146 8.41528 1.1985C8.45155 1.28554 8.47022 1.3789 8.47022 1.47319C8.47022 1.56748 8.45155 1.66084 8.41528 1.74788C8.37902 1.83492 8.32588 1.91392 8.25894 1.98032L2.42335 7.8159C2.02207 8.21767 1.79668 8.7623 1.79668 9.33015C1.79668 9.89799 2.02207 10.4426 2.42335 10.8444L8.25894 16.68C8.39343 16.8145 8.469 16.9969 8.469 17.1871C8.469 17.3773 8.39343 17.5597 8.25894 17.6942C8.12444 17.8287 7.94201 17.9043 7.7518 17.9043C7.56159 17.9043 7.37917 17.8287 7.24467 17.6942L1.40909 11.8587C1.0765 11.5269 0.812629 11.1328 0.632587 10.6989C0.452545 10.265 0.35987 9.7999 0.35987 9.33015C0.35987 8.86039 0.452545 8.39525 0.632587 7.96137C0.812629 7.52748 1.0765 7.13338 1.40909 6.80163L7.24467 0.966057C7.31141 0.899858 7.39057 0.847483 7.47759 0.811937C7.56462 0.776392 7.6578 0.758375 7.7518 0.758919Z"
+                fill="#C4C4C4"
+              />
+            </svg>
+            <div className="flex flex-col justify-end items-center">
+              <div className="w-[13px] bg-argenpesos-skyBlue rounded-[4.9px] h-[50px]"></div>
+              <p className="text-[9.6px] font-book text-argenpesos-textos mt-1">
+                AMBA
+              </p>
+
+              <p className="text-argenpesos-textos text-[15.36px] font-book">
+                52%
+              </p>
+            </div>
+            <div className="flex flex-col items-center justify-end">
+              <div className="h-[40%] w-[13px] bg-argenpesos-skyBlue rounded-[4.9px]"></div>
+              <p className="text-[9.6px] font-book text-argenpesos-textos mt-1">
+                CABA
+              </p>
+              <p className="text-argenpesos-textos text-[15.36px] font-book">
+                16%
+              </p>
+            </div>
+            <div className="flex flex-col justify-end items-center">
+              <div className="h-[25%] w-[13px] bg-argenpesos-skyBlue rounded-[4.9px]"></div>
+              <p className="text-[9.6px] font-book text-argenpesos-textos mt-1">
+                Bs As.
+              </p>
+              <p className="text-argenpesos-textos text-[15.36px] font-book">
+                53%
+              </p>
+            </div>
+            <div className="flex flex-col justify-end items-center">
+              <div className="h-[20%] w-[13px] bg-argenpesos-skyBlue rounded-[4.9px]"></div>
+              <p className="text-[9.6px] font-book text-argenpesos-textos mt-1">
+                Jujuy
+              </p>
+              <p className="text-argenpesos-textos text-[15.36px] font-book">
+                21%
+              </p>
+            </div>
           </div>
         </div>
         <div className="border-[1px] border-argenpesos-gray col-span-2 h-[207px] rounded-[13px] p-4">

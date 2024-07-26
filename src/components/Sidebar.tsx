@@ -35,7 +35,7 @@ const Sidebar = () => {
                 <link.Icon
                   className={
                     currentPath === link.to
-                      ? "text-argenpesos-skyBlue" 
+                      ? "text-argenpesos-skyBlue"
                       : "text-argenpesos-textos"
                   }
                 />
@@ -57,7 +57,6 @@ const Sidebar = () => {
           className="flex items-center justify-center gap-1 text-[15.21px] text-argenpesos-red mt-2 cursor-pointer font-book"
           onClick={() => dispatch(logOutAsync())}
         >
-
           <IconLogout />
           Cerrar Sesión
         </p>
