@@ -3,12 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
 import { logInAsync } from "@store/actions/auth";
 import { Navigate } from "react-router-dom";
+import { IconEyes, IconEyesOff } from "@utils/svg";
 
 const LogIn = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(prevShowPassword => !prevShowPassword);
+  };
 
   const dispatch = useDispatch<AppDispatch>();
   const { authenticated, loading } = useSelector(
@@ -48,7 +54,10 @@ const LogIn = () => {
 
   return (
     <div className="flex w-full flex-row">
-      <img className="w-[50%] h-[100vh]" src="login/image_login.png"></img>
+      <img
+        className="lg:w[-40%] xl:w-[50%] h-[100vh]"
+        src="login/image_login.png"
+      ></img>
       <div className="py-[80px] mx-auto max-w-[600px]">
         <img
           className="w-[235px] h-[49px] mb-[27.67px]"
@@ -64,21 +73,29 @@ const LogIn = () => {
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col">
             <input
-              className="w-[560px] rounded-[8px] mb-[24px] h-[60px] px-[22px] border-1 border-argenpesos-gray text-argenpesos-textos text-[19px] font-book leading-[19px]"
+              className="w-[560px] rounded-[8px] text-[19px] mb-[24px] h-[60px] px-[22px] border-1 border-argenpesos-gray text-argenpesos-gray font-book leading-[19px] placeholder:text-argenpesos-gray"
               type="text"
               placeholder="Email o alias"
               onChange={handleChange}
               value={data.email}
               name="email"
             />
-            <input
-              className="w-[560px] rounded-[8px] mb-[24px] h-[60px] px-[22px] border-1 border-argenpesos-gray text-argenpesos-textos"
-              type="password"
-              placeholder="Contraseña"
-              onChange={handleChange}
-              value={data.password}
-              name="password"
-            />
+            <div className="relative">
+              <input
+                className="w-[560px] rounded-[8px] mb-[24px] text-[19px] h-[60px] px-[22px] border-1 border-argenpesos-gray text-argenpesos-gray font-book leading-[19px] placeholder:text-argenpesos-gray"
+                type={showPassword ? "text" : "password"}
+                placeholder="Contraseña"
+                onChange={handleChange}
+                value={data.password}
+                name="password"
+              />
+              <div
+                className="absolute right-16 top-6"
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? <IconEyesOff /> : <IconEyes />}
+              </div>
+            </div>
           </div>
 
           {error ? (
@@ -103,19 +120,13 @@ const LogIn = () => {
             </p>
           </div>
           <button
-            className="w-[560px] bg-argenpesos-skyBlue h-[52px] text-white text-[19px] font-norma leading-[19px] disabled:bg-argenpesos-gray"
+            className="w-[560px] bg-argenpesos-skyBlue h-[52px] text-white text-[19px] font-norma leading-[19px] disabled:bg-argenpesos-gray rounded-[8px]"
             type="submit"
             disabled={active}
           >
             Iniciar sesion
           </button>
         </form>
-        <p className="text-argenpesos-textos text-[19px] font-book leading-[19px] mt-10 text-center w-[560px]">
-          ¿Sos nuevo en la plataforma?{" "}
-          <span className="text-argenpesos-skyBlue text-[19px] font-book leading-[100%] ">
-            Solicitá tu demo
-          </span>
-        </p>
       </div>
     </div>
   );
