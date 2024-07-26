@@ -10,7 +10,19 @@ export const apiUrls = {
   resendCode: () => `${baseUrl}/api/admin/resend-code`,
   //user
   getUsers: () => `/api/user/all`,
+  getUser: () => `${baseUrl}/admin`,
   avatarUser: (img: string) => `${baseUrl}/avatar/${img}`,
+  //banner
+  getBanners: () => `/api/banner`,
+  uploadBanner: () => `/api/banner`,
+  deleteBanner: (id: string) => `/api/banner/${id}`,
+  bannerImg: (img: string) => `${baseUrl}/banner/${img}`,
+  //notice
+  getNotices: () => `/api/notice`,
+  uploadImageNotice: () => `/api/notice/image`,
+  uploadNotice: () => `/api/notice`,
+  deleteNotice: (id: string) => `/api/notice/${id}`,
+  noticeImg: (img: string) => `${baseUrl}/notice/${img}`,
 };
 
 export const tokenAccess = {

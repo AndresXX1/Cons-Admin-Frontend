@@ -4,7 +4,6 @@ import {
   getUserAsync,
   logInAsync,
   verifySessionAsync,
-  uploadAvatarAsync,
   logOutAsync,
 } from "@store/actions/auth";
 
@@ -40,11 +39,6 @@ export const authSlice = createSlice({
       })
       .addCase(logInAsync.rejected, state => {
         state.authenticated = false;
-      })
-      .addCase(uploadAvatarAsync.fulfilled, (state, action) => {
-        if (state.user) {
-          state.user.avatar = action.payload;
-        }
       })
       .addCase(logOutAsync.fulfilled, state => {
         state.authenticated = false;

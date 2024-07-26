@@ -1,12 +1,10 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { useAppDispatch } from "@store/hooks";
 import { IErrorResponse } from "@store/types/auth";
 import { apiUrls, baseUrl, tokenAccess } from "@config/config";
 import { alertConfirm, alertError } from "@utils/alerts";
-import { NavigateFunction } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { UserProps } from "@utils/interfaces";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,
@@ -162,42 +160,6 @@ const setupAxiosInterceptors = (
   );
 };
 
-export const verifyCode = createAsyncThunk(
-  "auth/verifyCode",
-  async (
-    {
-      dto,
-      setActive,
-      setError,
-    }: {
-      dto: {
-        code: string;
-      };
-      setActive: (boolean: boolean) => void;
-      setError: (error: string) => void;
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await axiosInstance.post(apiUrls.verifyEmail(), dto);
-      if (response.data.ok) {
-        return {};
-      } else {
-        setActive(false);
-        setError(response.data.message);
-        return rejectWithValue("error");
-      }
-    } catch (error) {
-      setActive(false);
-      const message =
-        (error as IErrorResponse).response.data.message ||
-        "El codigo es incorrecto";
-      setError(message);
-      return rejectWithValue("error");
-    }
-  }
-);
-
 export const resendCode = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
@@ -213,22 +175,7 @@ export const resendCode = async (
     alertError("Error al reenviar codigo");
   }
 };
-export const myEventsAsync = createAsyncThunk(
-  "auth/myEventsAsync",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.get(apiUrls.myEvents());
-      if (response.data.ok) {
-        return response.data.events;
-      } else {
-        return rejectWithValue("error");
-      }
-    } catch (error) {
-      deleteAccess();
-      return rejectWithValue("error");
-    }
-  }
-);
+
 export const getUserAsync = createAsyncThunk(
   "auth/getUserAsync",
   async (_, { rejectWithValue }) => {
@@ -245,47 +192,6 @@ export const getUserAsync = createAsyncThunk(
     }
   }
 );
-
-export const forgetPasswordNewPassword = async ({
-  data,
-  setActive,
-  setError,
-  navigate,
-}: {
-  data: {
-    newPassword: string;
-    repeatNewPassword: string;
-  };
-  setActive: (boolean: boolean) => void;
-  setError: (error: string) => void;
-  navigate: NavigateFunction;
-}) => {
-  const formattedData = {
-    code: localStorage.getItem("code"),
-    token: localStorage.getItem("forgetPasswordToken"),
-    password: data.newPassword,
-    confirmPassword: data.repeatNewPassword,
-  };
-  try {
-    const response = await axios.post(
-      apiUrls.forgetPasswordNewPassword(),
-      formattedData
-    );
-    if (response.data.ok) {
-      alertConfirm("Contraseña actualizada.");
-      navigate("/auth/log-in");
-    } else {
-      setActive(false);
-      setError(response.data.message);
-    }
-  } catch (error) {
-    setActive(false);
-    const message =
-      (error as IErrorResponse).response.data.message ||
-      "No existe el email ingresado";
-    setError(message);
-  }
-};
 
 export const logInAsync = createAsyncThunk(
   "auth/logInAsync",
@@ -333,133 +239,6 @@ export const logInAsync = createAsyncThunk(
     }
   }
 );
-
-export const completeProfile = async ({
-  data,
-  setActive,
-  setError,
-  dispatch,
-}: {
-  data: {
-    first_name: string;
-    last_name: string;
-    news_letter: boolean;
-    keep_me_updated: boolean;
-    phone: string;
-    day: string;
-    month: string;
-    year: string;
-  };
-  setActive: (boolean: boolean) => void;
-  setError: (error: string) => void;
-  dispatch: ReturnType<typeof useAppDispatch>;
-}) => {
-  try {
-    const response = await axiosInstance.put(apiUrls.completeProfile(), data);
-    if (response.data.ok) {
-      alertConfirm("Perfil completado");
-      dispatch(getUserAsync());
-    } else {
-      setError(response.data.message);
-    }
-  } catch (error) {
-    const message =
-      (error as IErrorResponse).response.data.message ||
-      "Error al completar perfil";
-    setError(message);
-  } finally {
-    setActive(false);
-  }
-};
-
-export const uploadAvatarAsync = createAsyncThunk(
-  "auth/uploadAvatarAsync",
-  async (file: FormData, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.put(apiUrls.uploadAvatar(), file, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      if (response.data.ok) {
-        alertConfirm("Avatar actualizado");
-        return response.data.user.avatar;
-      } else {
-        alertError("Error al actualizar avatar");
-        return rejectWithValue("error");
-      }
-    } catch (error) {
-      alertError("Error al actualizar avatar");
-      return rejectWithValue("error");
-    }
-  }
-);
-
-export const forgetPasswordCode = async ({
-  codeToString,
-  setActive,
-  setError,
-  navigate,
-}: {
-  codeToString: string;
-  setActive: (boolean: boolean) => void;
-  setError: (error: string) => void;
-  navigate: NavigateFunction;
-}) => {
-  try {
-    const data = {
-      code: codeToString,
-      token: localStorage.getItem("forgetPasswordToken"),
-    };
-    localStorage.setItem("code", codeToString);
-    const response = await axios.post(apiUrls.forgetPasswordCode(), data);
-    if (response.data.ok) {
-      navigate("/auth/forgot-password/new-password");
-    } else {
-      setActive(false);
-      setError(response.data.message);
-    }
-  } catch (error) {
-    setActive(false);
-    const message =
-      (error as IErrorResponse).response.data.message ||
-      "No existe el email ingresado";
-    setError(message);
-  }
-};
-
-export const forgetPassword = async ({
-  email,
-  setActive,
-  setError,
-  navigate,
-}: {
-  email: string;
-  setActive?: (boolean: boolean) => void;
-  setError?: (error: string) => void;
-  navigate: NavigateFunction;
-}) => {
-  try {
-    const response = await axios.post(apiUrls.forgetPassword(), { email });
-    if (response.data.ok) {
-      localStorage.setItem("forgetPasswordToken", response.data.token);
-      navigate("/auth/forgot-password/verify-code");
-    } else {
-      if (setActive && setError) {
-        setActive(false);
-        setError(response.data.message);
-      }
-    }
-  } catch (error) {
-    if (setActive && setError) {
-      setActive(false);
-      const message =
-        (error as IErrorResponse).response.data.message ||
-        "No existe el email ingresado";
-      setError(message);
-    }
-  }
-};
 
 export const verifySessionAsync = createAsyncThunk(
   "auth/verifySessionAsync",
@@ -528,82 +307,5 @@ export const getMySessions = async (
     alertError("Error al obtener sesiones");
     dispatch(logOutAsync());
     return [];
-  }
-};
-
-export const putUserAsync = createAsyncThunk(
-  "auth/putUserAsync",
-  async (
-    {
-      data,
-      setActive,
-      setError,
-    }: {
-      data: Partial<UserProps>;
-      setActive: (boolean: boolean) => void;
-      setError: (error: string) => void;
-    },
-    { dispatch, rejectWithValue }
-  ) => {
-    try {
-      const response = await axiosInstance.put(apiUrls.putUser(), data);
-      if (response.data.ok) {
-        alertConfirm("Usuario actualizado");
-        dispatch(getUserAsync());
-        setError("");
-        return data;
-      } else {
-        alertError("Error al actualizar usuario");
-        setError(response.data.message);
-        return rejectWithValue("error");
-      }
-    } catch (error) {
-      const message =
-        (error as IErrorResponse).response.data.message ||
-        "Error al actualizar usuario";
-      setError(message);
-      console.error(error);
-      return rejectWithValue("error");
-    } finally {
-      setActive(false);
-    }
-  }
-);
-
-export const setRedirect = createAsyncThunk(
-  "redirect/set",
-  async (redirect: string) => {
-    return { redirect };
-  }
-);
-
-export const resetRedirect = createAsyncThunk("redirect/reset", async () => {
-  return {};
-});
-
-export const setNewPasswordSubmit = async ({
-  newPassword,
-  setActive,
-  setError,
-}: {
-  newPassword: string;
-  setActive: (boolean: boolean) => void;
-  setError: (error: string) => void;
-}) => {
-  setActive(true);
-  setError("");
-  try {
-    const response = await axiosInstance.post(apiUrls.setNewPassword(), {
-      newPassword,
-    });
-    if (response.data.ok) {
-      setActive(false);
-    }
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      setError(`${error.response?.data.message[0]}`);
-    }
-    setActive(false);
-    console.error(error);
   }
 };
