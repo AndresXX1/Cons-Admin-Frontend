@@ -12,43 +12,46 @@ const Sidebar = () => {
   return (
     <div className="flex w-[285px]">
       <div className="bg-argenpesos-white w-[285px] fixed">
-        <div className="flex gap-2 mt-9 mb-7 xl:mt-12 xl:mb-12">
+        <div className="flex gap-2 mt-9 mb-7 xl:mt-12 xl:mb-10">
           <img
             className="select-none w-[235px] h-[50px] mx-auto"
             src="/login/logo_argenpesos.png"
             alt="Logo"
           />
         </div>
-        <ul className="flex flex-col gap-2 px-6">
-          {links.map((link, index) => {
-            const { Icon } = link;
-            return (
-              <li
-                key={`${link.text}-${index}`}
-                className={`flex h-14 pl-3 gap-3 ${
-                  currentPath === link.to || link.active.includes(currentPath)
-                    ? " text-argenpesos-skyBlue"
-                    : " text-argenpesos-textos"
-                }`}
-              >
-                <div className="flex items-center justify-center gap-5">
-                  <Icon className="" />
-                  <Link to={link.to} className="font-book text-[20px]">
-                    {link.text}
-                  </Link>
-                </div>
-              </li>
-            );
-          })}
+        <ul className="flex flex-col gap-2">
+          {links.map((link, index) => (
+            <li
+              key={`${link.text}-${index}`}
+              className={`flex h-12 pl-3 gap-3 ${
+                currentPath === link.to
+                  ? "text-argenpesos-skyBlue border-l-8 pl-6 border-argenpesos-skyBlue"
+                  : "text-argenpesos-textos border-l-8 border-transparent pl-6"
+              }`}
+            >
+              <div className="flex items-center justify-center gap-5">
+                <link.Icon
+                  className={
+                    currentPath === link.to
+                      ? "text-argenpesos-skyBlue" 
+                      : "text-argenpesos-textos"
+                  }
+                />
+                <Link to={link.to} className="font-book text-[20px]">
+                  {link.text}
+                </Link>
+              </div>
+            </li>
+          ))}
         </ul>
-        <div className="mt-16 flex items-center justify-center border-[2px] border-argenpesos-textos w-[66px] h-[66px] mx-auto rounded-[15px]">
+        <div className="mt-12 flex items-center justify-center border-[2px] border-argenpesos-textos w-[66px] h-[66px] mx-auto rounded-[15px]">
           <IconUser />
         </div>
         <p className="text-center mt-6 text-argenpesos-textos text-[23px] font-book">
           Félix Bilbao
         </p>
 
-        <p className="flex items-center justify-center gap-1 text-[15.21px] text-argenpesos-red mt-2 cursor-pointer">
+        <p className="flex items-center justify-center gap-1 text-[15.21px] text-argenpesos-red mt-2 cursor-pointer font-book">
           <IconLogout />
           Cerrar Sesión
         </p>
