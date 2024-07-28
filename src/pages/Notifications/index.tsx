@@ -413,7 +413,7 @@ const Notifications = () => {
 
         <div className="flex gap-6">
           <input
-            className="w-[735px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10"
+            className="w-[735px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10 text-argenpesos-gray2 placeholder:text-argenpesos-gray2 placeholder:font-book"
             type="search"
             placeholder="Buscar estadísticas o datos"
           />
