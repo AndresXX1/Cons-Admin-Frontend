@@ -111,17 +111,12 @@ const Setting = () => {
                     htmlFor=""
                   >
                     Email
-                    <p
-                      onClick={() => setModalEmail(true)}
-                      className="text-argenpesos-skyBlue font-light text-[1rem] cursor-pointer"
-                    >
-                      Cambiar email
-                    </p>
                   </label>
                   <input
                     className="w-[625px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
                     type="text"
                     placeholder="maruubc00@gmail.com"
+                    readOnly
                   />
                 </div>
                 <div className="flex flex-col gap-1">
@@ -143,9 +138,6 @@ const Setting = () => {
                       type="text"
                       placeholder="**************"
                     />
-                    <div className="absolute right-4 top-5">
-                      <IconEyes />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -468,21 +460,22 @@ const Setting = () => {
             Nombre y Apellido
           </p>
           <input
-            className="min-w-[438px] max-w-[438px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray mt-[11px]"
+            className="min-w-[438px] max-w-[438px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray mt-[11px] text-argenpesos-textos font-book leading-[23.04px]"
             type="text"
             placeholder="Felix Bilbao"
           />
-          <p className="text-[14px] text-argenpesos-textos font-bold">Mail</p>
+          <p className="text-[14px] text-argenpesos-textos font-bold">Email</p>
           <input
-            className="min-w-[438px] max-w-[438px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray mt-[11px]"
+            className="min-w-[438px] max-w-[438px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray mt-[11px] text-argenpesos-textos font-book leading-[23.04px]"
             type="email"
             placeholder="felixbilbao01@gmail.com"
+            readOnly
           />
           <p className="text-[14px] text-argenpesos-textos font-bold">
             Contraseña
           </p>
           <input
-            className="min-w-[438px] max-w-[438px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray mt-[11px]"
+            className="min-w-[438px] max-w-[438px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray mt-[11px] text-argenpesos-textos font-book leading-[23.04px]"
             type="password"
             placeholder="*******************"
           />
