@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { ArrowBlue, ArrowLeft, ArrowRight, IconFilter } from "@utils/svg";
+import {
+  ArrowBlue,
+  ArrowLeft,
+  ArrowRight,
+  IconFilter,
+  IconMagnifyingGlass,
+} from "@utils/svg";
 
 import { getusers } from "../../store/services/users";
 import CardUser from "./CardUser";
@@ -36,17 +42,22 @@ const Users = () => {
       </div>
 
       <div className="flex">
-        <input
-          className="w-[477px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10"
-          type="search"
-          placeholder="Buscar estadísticas o datos"
-        />
+        <div className="relative">
+          <input
+            className="w-[457px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10 placeholder:text-argenpesos-textos font-book text-argenpesos-textos text-[15.36px]"
+            type="search"
+            placeholder="Buscar estadísticas o datos"
+          />
+          <IconMagnifyingGlass className="absolute top-[18px] left-4" />
+        </div>
         <div className="flex w-[120px] h-[54px] ml-4 border-[1px] border-argenpesos-textos items-center justify-center gap-2 rounded-[13px]">
           <IconFilter />
-          <p>Filtros</p>
+          <p className="text-[15.36px] font-book text-argenpesos-textos">
+            Filtros
+          </p>
         </div>
         <div className="flex justify-between gap-32 items-center">
-          <p className="pl-40">1 - 50 de {users.length}</p>
+          <p className="pl-32">1 - 50 de {users.length}</p>
           <div className="flex gap-10">
             <ArrowLeft />
             <ArrowRight />

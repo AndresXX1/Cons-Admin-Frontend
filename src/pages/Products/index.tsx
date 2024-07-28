@@ -6,6 +6,7 @@ import {
   IconPencil,
   IconViewBlue,
   IconX,
+  IconViewBlueOff,
 } from "@utils/svg";
 import Modal from "@components/Modal";
 
@@ -14,6 +15,11 @@ const Products = () => {
   const [modalCreate, setModalCreate] = useState<boolean>(false);
   const [modalCanceled, setModalCanceled] = useState<boolean>(false);
   const [modalEdit, setModalEdit] = useState<boolean>(false);
+  const [showVisible, setShowVisible] = useState(false);
+
+  const toggleVisibility = () => {
+    setShowVisible(prevShowPassword => !prevShowPassword);
+  };
 
   const info = [
     {
@@ -425,8 +431,11 @@ const Products = () => {
               </div>
               <div className="h-full w-[150px] rounded-[13px] bg-[#F9F9F9] flex items-center relative">
                 <img className="w-[150px] h-[150px]" src={inf.image} alt="" />
-                <div className="absolute bottom-2 flex gap-2 right-4">
-                  <IconViewBlue />
+                <div
+                  onClick={toggleVisibility}
+                  className="absolute bottom-2 flex gap-2 right-4"
+                >
+                  {showVisible ? <IconViewBlue /> : <IconViewBlueOff />}
                 </div>
               </div>
             </div>
