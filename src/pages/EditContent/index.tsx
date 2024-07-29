@@ -38,6 +38,8 @@ const EditContent = () => {
     getNoticesList();
   }, []);
 
+  console.log(banners);
+
   return (
     <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
       <p className="text-[3rem] text-argenpesos-textos font-bold pb-14">
@@ -57,7 +59,9 @@ const EditContent = () => {
             />
           );
         })}
-        <UploadBanner getBannersList={getBannersList} />
+        {banners.length < 3 ? (
+          <UploadBanner getBannersList={getBannersList} />
+        ) : null}
       </div>
 
       <p className="text-[23px] font-bold text-argenpesos-textos mt-10 mb-5">

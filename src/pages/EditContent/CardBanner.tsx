@@ -60,9 +60,9 @@ const CardBanner = ({ banner, getBannersList }: CardBannerProps) => {
         }
       />
       <div className="max-w-[306px] h-[200px] flex border-[1px] rounded-[13px] border-argenpesos-gray">
-        <div className="rounded-[13px] bg-[#F9F9F9] flex items-center relative">
+        <div className="rounded-[13px] bg-[#F9F9F9] flex items-center relative w-[306px]">
           <img
-            className="w-full h-full overflow-hidden"
+            className="w-full h-full overflow-hidden rounded-[13px]"
             src={apiUrls.bannerImg(banner.url)}
             alt=""
           />
