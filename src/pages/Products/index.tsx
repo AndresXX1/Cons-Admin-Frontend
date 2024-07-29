@@ -433,7 +433,7 @@ const Products = () => {
                 <img className="w-[150px] h-[150px]" src={inf.image} alt="" />
                 <div
                   onClick={toggleVisibility}
-                  className="absolute bottom-2 flex gap-2 right-4"
+                  className="absolute bottom-2 flex gap-2 right-4 cursor-pointer"
                 >
                   {showVisible ? <IconViewBlue /> : <IconViewBlueOff />}
                 </div>
