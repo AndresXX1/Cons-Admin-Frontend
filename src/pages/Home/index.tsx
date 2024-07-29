@@ -14,27 +14,68 @@ import {
   IconTime,
   IconUser,
   IconUserMore,
+  LineHome,
 } from "@utils/svg";
 
 type Props = {
   state: boolean;
   text?: string;
+  fontSize?: string;
+  iconClassName?: string;
 };
 
 const Home = () => {
-  const IconSelector: React.FC<Props> = ({ state }) => {
-    return state ? <IconIncrease /> : <IconLower />;
+  const IconSelector: React.FC<Props> = ({ state, iconClassName }) => {
+    const iconClass = iconClassName || "";
+
+    return state ? (
+      <IconIncrease className={iconClass} />
+    ) : (
+      <IconLower className={iconClass} />
+    );
   };
-  const ColorfulText: React.FC<Props> = ({ state, text }) => {
+  const ColorfulText: React.FC<Props> = ({
+    state,
+    text,
+    fontSize = "22px",
+  }) => {
     return (
       <p
         className="text-[22px] font-book"
-        style={{ color: state ? "#05B922" : "#ED1A00" }}
+        style={{ color: state ? "#05B922" : "#ED1A00", fontSize: fontSize }}
       >
         {text}
       </p>
     );
   };
+  const date = [
+    {
+      info: "Mayo 1/4",
+    },
+    {
+      info: "Mayo 2/4",
+    },
+    {
+      info: "Mayo 3/4",
+    },
+    {
+      info: "Mayo 4/4",
+    },
+    {
+      info: "Julio 1/4",
+    },
+    {
+      info: "Julio 2/4",
+    },
+    {
+      info: "Julio 3/4",
+    },
+    {
+      info: "Julio 4/4",
+    },
+  ];
+
+  console.log(date);
 
   return (
     <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
@@ -142,6 +183,59 @@ const Home = () => {
             <IconSelector state={true} />
             <ColorfulText state={true} text="+4%" />
           </div>
+          <div className="flex gap-5">
+            <div className="flex flex-col gap-[13px]">
+              <p className="text-argenpesos-gray2 text-[9.6px] font-book">
+                200k
+              </p>
+              <p className="text-argenpesos-gray2 text-[9.6px] font-book">
+                150k
+              </p>
+              <p className="text-argenpesos-gray2 text-[9.6px] font-book">
+                100k
+              </p>
+              <p className="text-argenpesos-gray2 text-[9.6px] font-book">
+                50k
+              </p>
+            </div>
+            <div className="grid grid-cols-8 grid-rows-3 w-[90%] relative">
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <div className="border-[1px] h-[33px]"></div>
+              <LineHome className="absolute top-9" />
+              <div className="absolute bg-argenpesos-blue w-[7.68px] h-[7.68px] rounded-[4px] top-[2.1rem] right-[16.25rem]"></div>
+            </div>
+          </div>
+          <div className="px-[22px] pt-3 flex gap-7">
+            {date.map((inf, key) => (
+              <div className="flex" key={key}>
+                <p className="text-[9.6px] text-argenpesos-textos font-book">
+                  {inf.info}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="border-[1px] border-argenpesos-gray row-span-2 h-[435px] rounded-[13px] p-5">
           <div className="flex gap-3 items-center pb-3">
@@ -212,7 +306,7 @@ const Home = () => {
           </p>
           <div className="flex gap-5 justify-center relative">
             <svg
-            className="absolute top-8"
+              className="absolute top-8"
               xmlns="http://www.w3.org/2000/svg"
               width="238"
               height="18"
@@ -280,6 +374,66 @@ const Home = () => {
               </p>
               <ArrowLeft className="w-[6px] h-[11.52px] rotate-[270deg] mt-1" />
             </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <p className="text-[9.6px] text-argenpesos-textos font-bold">#01</p>
+            <p className="text-[9.6px] text-argenpesos-textos font-book mb-1 pr-14">
+              Home
+            </p>
+            <div className="bg-argenpesos-skyBlue w-[50%] h-[13.44px] rounded-[4.8px] mr-2"></div>
+            <p className="text-[15.36px] mr-1 font-bold text-argenpesos-textos">
+              01:42s
+            </p>
+            <IconSelector iconClassName="w-[9.6px]" state={true} />
+            <ColorfulText state={true} text="+12%" fontSize="9.6px" />
+            <p className="text-[9.6px] ml-1 text-argenpesos-gray2 font-book">
+              esta semana
+            </p>
+          </div>
+          <div className="flex items-center gap-1 mt-2">
+            <p className="text-[9.6px] text-argenpesos-textos font-bold">#02</p>
+            <p className="text-[9.6px] text-argenpesos-textos font-book mb-1 pr-14">
+              Perfil
+            </p>
+            <div className="bg-[#F3E670] w-[30%] h-[13.44px] rounded-[4.8px] mr-2"></div>
+            <p className="text-[15.36px] mr-1 font-bold text-argenpesos-textos">
+              01:14s
+            </p>
+            <IconSelector iconClassName="w-[9.6px]" state={true} />
+            <ColorfulText state={true} text="+10%" fontSize="9.6px" />
+            <p className="text-[9.6px] ml-1 text-argenpesos-gray2 font-book">
+              esta semana
+            </p>
+          </div>
+          <div className="flex items-center gap-1 mt-2">
+            <p className="text-[9.6px] text-argenpesos-textos font-bold">#03</p>
+            <p className="text-[9.6px] text-argenpesos-textos font-book mb-1 pr-[10px]">
+              Argencompras
+            </p>
+            <div className="bg-[#F47666] w-[20%] h-[13.44px] rounded-[4.8px] mr-2"></div>
+            <p className="text-[15.36px] mr-1 font-bold text-argenpesos-textos">
+              00:59s
+            </p>
+            <IconSelector iconClassName="w-[9.6px]" state={true} />
+            <ColorfulText state={true} text="+8%" fontSize="9.6px" />
+            <p className="text-[9.6px] ml-1 text-argenpesos-gray2 font-book">
+              esta semana
+            </p>
+          </div>
+          <div className="flex items-center gap-1 mt-2">
+            <p className="text-[9.6px] text-argenpesos-textos font-bold">#04</p>
+            <p className="text-[9.6px] text-argenpesos-textos font-book mb-1 pr-6">
+              Cuponizate
+            </p>
+            <div className="bg-[#AE81F4] w-[15%] h-[13.44px] rounded-[4.8px] mr-2"></div>
+            <p className="text-[15.36px] mr-1 font-bold text-argenpesos-textos">
+              00:43s
+            </p>
+            <IconSelector iconClassName="w-[9.6px]" state={true} />
+            <ColorfulText state={true} text="+1%" fontSize="9.6px" />
+            <p className="text-[9.6px] ml-1 text-argenpesos-gray2 font-book">
+              esta semana
+            </p>
           </div>
         </div>
         <div className="border-[1px] border-argenpesos-gray col-span-1 h-[207px] rounded-[13px] px-5 py-5">
