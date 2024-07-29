@@ -1,4 +1,11 @@
-import { IconDelete, IconX, IconPencil, IconEyes, IconUser } from "@utils/svg";
+import {
+  IconDelete,
+  IconX,
+  IconPencil,
+  IconEyes,
+  IconUser,
+  IconEyesOff,
+} from "@utils/svg";
 import { useState } from "react";
 import Modal from "@components/Modal";
 
@@ -6,8 +13,14 @@ const Setting = () => {
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [modalEdit, setModalEdit] = useState<boolean>(false);
   const [modalPassword, setModalPassword] = useState<boolean>(false);
-  const [modalEmail, setModalEmail] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(prevShowPassword => !prevShowPassword);
+  };
+
   const info = [
     {
       img: "/image_user.png",
@@ -199,11 +212,14 @@ const Setting = () => {
                 <div className="relative w-[625px]">
                   <input
                     className="w-[625px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
-                    type="text"
+                    type={showPassword ? "text" : "password"}
                     placeholder="**************"
                   />
-                  <div className="absolute right-4 top-5">
-                    <IconEyes />
+                  <div
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-4 top-5 cursor-pointer"
+                  >
+                    {showPassword ? <IconEyesOff /> : <IconEyes />}
                   </div>
                 </div>
               </div>
@@ -227,7 +243,7 @@ const Setting = () => {
         }
       ></Modal>
 
-      <Modal
+      {/* <Modal
         isShown={modalEmail}
         element={
           <div className="px-12 py-[50px] flex flex-col w-[751px] h-[446px]">
@@ -291,7 +307,7 @@ const Setting = () => {
             </div>
           </div>
         }
-      ></Modal>
+      ></Modal> */}
       <Modal
         isShown={modalCreate}
         element={
@@ -346,10 +362,7 @@ const Setting = () => {
                     htmlFor=""
                   >
                     Email
-                    <p
-                      onClick={() => setModalEmail(true)}
-                      className="text-argenpesos-skyBlue font-light text-[1rem] cursor-pointer"
-                    >
+                    <p className="text-argenpesos-skyBlue font-light text-[1rem] cursor-pointer">
                       Cambiar email
                     </p>
                   </label>
@@ -441,7 +454,7 @@ const Setting = () => {
               <p className="text-[1rem] text-argenpesos-textos font-book">
                 {inf.email}
               </p>
-              <div className="flex justify-center items-center gap-1">
+              <div className="flex justify-center items-center gap-1 cursor-pointer">
                 <IconDelete />
                 <p className="text-[1rem] font-book text-argenpesos-red">
                   Eliminar
@@ -463,6 +476,7 @@ const Setting = () => {
             className="min-w-[438px] max-w-[438px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray mt-[11px] text-argenpesos-textos font-book leading-[23.04px]"
             type="text"
             placeholder="Felix Bilbao"
+            readOnly
           />
           <p className="text-[14px] text-argenpesos-textos font-bold">Email</p>
           <input
@@ -478,6 +492,7 @@ const Setting = () => {
             className="min-w-[438px] max-w-[438px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray mt-[11px] text-argenpesos-textos font-book leading-[23.04px]"
             type="password"
             placeholder="*******************"
+            readOnly
           />
 
           <div className="flex gap-5 mt-10 mb-14">
