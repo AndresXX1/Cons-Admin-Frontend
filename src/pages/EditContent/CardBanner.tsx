@@ -18,6 +18,7 @@ const CardBanner = ({ banner, getBannersList }: CardBannerProps) => {
 
     if (result) {
       getBannersList();
+      setModalDelete(false);
     }
   };
   return (

@@ -3,9 +3,10 @@ import { IconMas } from "@utils/svg";
 
 interface UploadBannerProps {
   getBannersList: () => void;
+  type: "home" | "cuponizate" | "argencompras";
 }
 
-const UploadBanner = ({ getBannersList }: UploadBannerProps) => {
+const UploadBanner = ({ getBannersList, type }: UploadBannerProps) => {
   const handleUpdoadBanner = async () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -17,7 +18,7 @@ const UploadBanner = ({ getBannersList }: UploadBannerProps) => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "nextjs");
-      const result = await uploadImgBanner(formData);
+      const result = await uploadImgBanner(formData, type);
       if (result) {
         getBannersList();
       }

@@ -2,9 +2,9 @@ import { apiUrls } from "@config/config";
 import { axiosInstance } from "@store/actions/auth";
 import { alertConfirm, alertError } from "@utils/alerts";
 
-export const getBanners = async () => {
+export const getBannersHome = async () => {
   try {
-    const response = await axiosInstance.get(apiUrls.getBanners());
+    const response = await axiosInstance.get(apiUrls.getBannersHome());
     if (response.data.ok) {
       return response.data.banners;
     } else {
@@ -15,22 +15,52 @@ export const getBanners = async () => {
   }
 };
 
-export const uploadImgBanner = async (file: FormData) => {
+export const getBannersCuponizate = async () => {
   try {
-    const response = await axiosInstance.post(apiUrls.uploadBanner(), file, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axiosInstance.get(apiUrls.getBannersCuponizate());
     if (response.data.ok) {
-      alertConfirm("Avatar actualizado");
+      return response.data.banners;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    return [];
+  }
+};
+
+export const getBannersArgenCompras = async () => {
+  try {
+    const response = await axiosInstance.get(apiUrls.getBannersArgenCompras());
+    if (response.data.ok) {
+      return response.data.banners;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    return [];
+  }
+};
+
+export const uploadImgBanner = async (file: FormData, type: string) => {
+  try {
+    const response = await axiosInstance.post(
+      apiUrls.uploadBanner(type),
+      file,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    if (response.data.ok) {
+      alertConfirm("Banner subido");
       return true;
     } else {
-      alertError("Error al actualizar avatar");
+      alertError("Error al subir banner");
       return false;
     }
   } catch (error) {
-    alertError("Error al actualizar avatar");
+    alertError("Error al subir banner");
     return false;
   }
 };
@@ -46,7 +76,7 @@ export const deleteBannerById = async (id: string) => {
       return false;
     }
   } catch (error) {
-    alertError("Error al obtener banners");
+    alertError("Error al eliminar banner");
     return false;
   }
 };
