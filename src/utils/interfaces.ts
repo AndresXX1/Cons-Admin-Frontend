@@ -4,8 +4,7 @@ export type UserProps = {
   update: string;
   email: string;
   email_verified: boolean;
-  completed_form: boolean;
-  completed_profile: boolean;
-  completed_welcome_form: boolean;
-  avatar: string | null;
+  full_name: string;
+  avatar: string;
+  role: string;
 };

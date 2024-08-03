@@ -10,11 +10,13 @@ export const apiUrls = {
   resendCode: () => `${baseUrl}/api/admin/resend-code`,
   //user
   getUsers: () => `/api/user/all`,
-  getUser: () => `${baseUrl}/admin`,
+  getUser: () => `${baseUrl}/api/admin`,
   avatarUser: (img: string) => `${baseUrl}/avatar/${img}`,
   //banner
-  getBanners: () => `/api/banner`,
-  uploadBanner: () => `/api/banner`,
+  getBannersHome: () => `/api/banner/home`,
+  getBannersCuponizate: () => `/api/banner/cuponizate`,
+  getBannersArgenCompras: () => `/api/banner/argencompras`,
+  uploadBanner: (type: string) => `/api/banner/${type}`,
   deleteBanner: (id: string) => `/api/banner/${id}`,
   bannerImg: (img: string) => `${baseUrl}/banner/${img}`,
   //notice
@@ -23,6 +25,11 @@ export const apiUrls = {
   uploadNotice: () => `/api/notice`,
   deleteNotice: (id: string) => `/api/notice/${id}`,
   noticeImg: (img: string) => `${baseUrl}/notice/${img}`,
+  // admin
+  getAllAdmins: () => `/api/admin/all`,
+  deleteAdminById: (id: string) => `/api/admin/remove/${id}`,
+  uploadImgAvatar: () => `/api/admin/avatar`,
+  createAdmin: () => `/api/admin/create`,
 };
 
 export const tokenAccess = {

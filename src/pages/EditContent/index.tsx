@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import CardBanner from "./CardBanner";
 import UploadBanner from "./UploadBanner";
-import { getBanners } from "@store/services/banners";
+import {
+  getBannersArgenCompras,
+  getBannersCuponizate,
+  getBannersHome,
+} from "@store/services/banners";
 import { getNotices } from "@store/services/notices";
 import CreateNotice from "./CreateNotice";
 import CardNotice from "./CardNotice";
@@ -20,12 +24,24 @@ export interface Notice {
 }
 
 const EditContent = () => {
-  const [banners, setBanners] = useState<Banner[]>([]);
+  const [bannersHome, setBannersHome] = useState<Banner[]>([]);
+  const [bannersCuponizate, setBannersCuponizate] = useState<Banner[]>([]);
+  const [bannersArgenCompras, setBannersArgenCompras] = useState<Banner[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
 
-  const getBannersList = async () => {
-    const banners = await getBanners();
-    setBanners(banners);
+  const getBannersListHome = async () => {
+    const bannersHome = await getBannersHome();
+    setBannersHome(bannersHome);
+  };
+
+  const getBannersListCuponizate = async () => {
+    const bannersCoponizate = await getBannersCuponizate();
+    setBannersCuponizate(bannersCoponizate);
+  };
+
+  const getBannersListArgenCompras = async () => {
+    const bannersArgenCompras = await getBannersArgenCompras();
+    setBannersArgenCompras(bannersArgenCompras);
   };
 
   const getNoticesList = async () => {
@@ -34,11 +50,11 @@ const EditContent = () => {
   };
 
   useEffect(() => {
-    getBannersList();
+    getBannersListHome();
+    getBannersListCuponizate();
+    getBannersListArgenCompras();
     getNoticesList();
   }, []);
-
-  console.log(banners);
 
   return (
     <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
@@ -50,17 +66,61 @@ const EditContent = () => {
       </p>
 
       <div className="flex gap-5">
-        {banners.map(banner => {
+        {bannersHome.map(banner => {
           return (
             <CardBanner
               key={banner.id}
               banner={banner}
-              getBannersList={getBannersList}
+              getBannersList={getBannersListHome}
             />
           );
         })}
-        {banners.length < 3 ? (
-          <UploadBanner getBannersList={getBannersList} />
+        {bannersHome.length < 3 ? (
+          <UploadBanner getBannersList={getBannersListHome} type="home" />
+        ) : null}
+      </div>
+
+      <p className="text-[23px] font-bold text-argenpesos-textos mb-6 mt-6">
+        ArgenCompras banner
+      </p>
+
+      <div className="flex gap-5">
+        {bannersArgenCompras.map(banner => {
+          return (
+            <CardBanner
+              key={banner.id}
+              banner={banner}
+              getBannersList={getBannersListArgenCompras}
+            />
+          );
+        })}
+        {bannersArgenCompras.length < 3 ? (
+          <UploadBanner
+            getBannersList={getBannersListArgenCompras}
+            type="argencompras"
+          />
+        ) : null}
+      </div>
+
+      <p className="text-[23px] font-bold text-argenpesos-textos mb-6 mt-6">
+        Cuponizate banner
+      </p>
+
+      <div className="flex gap-5">
+        {bannersCuponizate.map(banner => {
+          return (
+            <CardBanner
+              key={banner.id}
+              banner={banner}
+              getBannersList={getBannersListCuponizate}
+            />
+          );
+        })}
+        {bannersCuponizate.length < 3 ? (
+          <UploadBanner
+            getBannersList={getBannersListCuponizate}
+            type="cuponizate"
+          />
         ) : null}
       </div>
 
