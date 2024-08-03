@@ -1,13 +1,15 @@
 import { links } from "@utils/format";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { IconLogout, IconUser } from "@utils/svg";
+import { IconLogout } from "@utils/svg";
 import { logOutAsync } from "@store/actions/auth";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@store/index";
+import { apiUrls } from "../config/config";
 
 const Sidebar = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -47,10 +49,10 @@ const Sidebar = () => {
           ))}
         </ul>
         <div className="mt-12 flex items-center justify-center border-[2px] border-argenpesos-textos w-[66px] h-[66px] mx-auto rounded-[15px]">
-          <IconUser />
+          {user && <img src={apiUrls.avatarUser(user.avatar)} alt="avatar" />}
         </div>
         <p className="text-center mt-6 text-argenpesos-textos text-[23px] font-book">
-          Félix Bilbao
+          {user?.full_name ? user.full_name : "Nombre de usuario"}
         </p>
 
         <p

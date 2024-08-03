@@ -223,7 +223,7 @@ export const logInAsync = createAsyncThunk(
         setupAxiosInterceptors(dispatch);
         setActive(false);
         alertConfirm("Sesión iniciada correctamente");
-        // dispatch(getUserAsync());
+        dispatch(getUserAsync());
         return {};
       } else {
         setError(response.data.message);
@@ -256,7 +256,7 @@ export const verifySessionAsync = createAsyncThunk(
     }
     try {
       setupAxiosInterceptors(dispatch);
-      // await dispatch(getUserAsync());
+      await dispatch(getUserAsync());
       return {};
     } catch (error) {
       await deleteAccess();
