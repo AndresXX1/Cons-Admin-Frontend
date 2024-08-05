@@ -1,5 +1,6 @@
 import { apiUrls } from "@config/config";
 import { axiosInstance } from "@store/actions/auth";
+import { IErrorResponse } from "@store/types/auth";
 import { alertConfirm, alertError } from "@utils/alerts";
 
 export const getAllAdmins = async () => {
@@ -66,6 +67,82 @@ export const createAdmin = async (data: {
     }
   } catch (error) {
     alertError("Error al crear admin");
+    return false;
+  }
+};
+
+export const uploadMyAvatar = async (file: FormData) => {
+  try {
+    const response = await axiosInstance.put(apiUrls.uploadMyAvatar(), file, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    if (response.data.ok) {
+      alertConfirm("Avatar actualizado");
+      return true;
+    } else {
+      alertError("Error al actualizar avatar");
+      return false;
+    }
+  } catch (error) {
+    alertError("Error al actualizar avatar");
+    return false;
+  }
+};
+
+export const removeMyAvatar = async () => {
+  try {
+    const response = await axiosInstance.delete(apiUrls.removeMyAvatar());
+    if (response.data.ok) {
+      alertConfirm("Avatar removido");
+      return true;
+    } else {
+      alertError("Error al actualizar avatar");
+      return false;
+    }
+  } catch (error) {
+    alertError("Error al actualizar avatar");
+    return false;
+  }
+};
+
+export const updateFullname = async (fullName: string) => {
+  try {
+    const response = await axiosInstance.put(apiUrls.updateFullname(), {
+      full_name: fullName,
+    });
+    if (response.data.ok) {
+      alertConfirm("Nombre actualizado");
+      return true;
+    } else {
+      alertError("Error al actualizar nombre");
+      return false;
+    }
+  } catch (error) {
+    alertError("Error al actualizar nombre");
+    return false;
+  }
+};
+
+export const updatePassword = async (data: {
+  password: string;
+  new_password: string;
+}) => {
+  try {
+    const response = await axiosInstance.put(apiUrls.updatePassword(), data);
+    if (response.data.ok) {
+      alertConfirm("Contraseña actualizada");
+      return true;
+    } else {
+      alertError(response.data.message);
+      return false;
+    }
+  } catch (error) {
+    const message =
+      (error as IErrorResponse).response.data.message ||
+      "Error al actualizar contraseña";
+    alertError(message);
     return false;
   }
 };
