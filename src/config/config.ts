@@ -30,6 +30,10 @@ export const apiUrls = {
   deleteAdminById: (id: string) => `/api/admin/remove/${id}`,
   uploadImgAvatar: () => `/api/admin/avatar`,
   createAdmin: () => `/api/admin/create`,
+  uploadMyAvatar: () => `/api/admin/avatar`,
+  removeMyAvatar: () => `/api/admin/avatar`,
+  updateFullname: () => `/api/admin/full-name`,
+  updatePassword: () => `/api/admin/password`,
 };
 
 export const tokenAccess = {
