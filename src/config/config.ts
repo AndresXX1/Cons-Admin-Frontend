@@ -34,6 +34,8 @@ export const apiUrls = {
   removeMyAvatar: () => `/api/admin/avatar`,
   updateFullname: () => `/api/admin/full-name`,
   updatePassword: () => `/api/admin/password`,
+  //product
+  getProductsAll: () => `/api/product`,
 };
 
 export const tokenAccess = {

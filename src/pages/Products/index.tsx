@@ -1,24 +1,74 @@
-import { useState } from "react";
-import {
-  IconDelete,
-  IconEdit,
-  IconMas,
-  IconPencil,
-  IconViewBlue,
-  IconX,
-  IconViewBlueOff,
-} from "@utils/svg";
+import { useEffect, useState } from "react";
+import { IconDelete, IconEdit, IconMas, IconPencil, IconX } from "@utils/svg";
 import Modal from "@components/Modal";
+import { getProductsAll } from "@store/services/product";
+import ProductCard from "./ProductCard";
+
+export interface ICategory {
+  id: string;
+  created_at: string;
+  description: {
+    es: string;
+  };
+  name: {
+    es: string;
+  };
+}
+
+export interface IProduct {
+  id: string;
+  brand: string;
+  created_at: string;
+  canonical_url: string;
+  name: {
+    es: string;
+  };
+  categories: ICategory[];
+  description: {
+    es: string;
+  };
+  images: {
+    id: string;
+    src: string;
+  }[];
+}
 
 const Products = () => {
   const [modal, setModal] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
   const [modalCanceled, setModalCanceled] = useState<boolean>(false);
   const [modalEdit, setModalEdit] = useState<boolean>(false);
-  const [showVisible, setShowVisible] = useState(false);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<ICategory | null>(null);
 
-  const toggleVisibility = () => {
-    setShowVisible(prevShowPassword => !prevShowPassword);
+  const [products, setProducts] = useState<IProduct[]>([]);
+
+  const getProducts = async () => {
+    const products = await getProductsAll();
+    setProducts(products);
+    const categoriesResponse = getUniqueCategoryNames(products);
+    setCategories(categoriesResponse);
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+  const getUniqueCategoryNames = (products: IProduct[]): ICategory[] => {
+    const categoriesData = [] as ICategory[];
+
+    products.forEach(product => {
+      product.categories.forEach(category => {
+        const include = categoriesData.find(
+          existingCategory => existingCategory.id === category.id
+        );
+        if (!include) {
+          categoriesData.push(category);
+        }
+      });
+    });
+
+    return categoriesData;
   };
 
   const info = [
@@ -34,59 +84,6 @@ const Products = () => {
     },
   ];
 
-  const info2 = [
-    {
-      name: "Productos destacados",
-    },
-    {
-      name: "Electrodomésticos",
-    },
-    {
-      name: "Celulares",
-    },
-    {
-      name: "Juguetes",
-    },
-    {
-      name: "Televisores",
-    },
-    {
-      name: "Audios",
-    },
-  ];
-
-  const info3 = [
-    {
-      title: "Auricular Bluetooth F9-5",
-      points: "$270.000",
-      image: "/products/image_auricular.png",
-    },
-    {
-      title: "Reloj Smartwatch Y68",
-      points: "$270.000",
-      image: "/products/image_reloj.png",
-    },
-    {
-      title: "Reloj Smartwatch Y68",
-      points: "$270.000",
-      image: "/products/image_reloj.png",
-    },
-    {
-      title: "Reloj Smartwatch Y68",
-      points: "$270.000",
-      image: "/products/image_reloj.png",
-    },
-    {
-      title: "Reloj Smartwatch Y68",
-      points: "$270.000",
-      image: "/products/image_reloj.png",
-    },
-    {
-      title: "Reloj Smartwatch Y68",
-      points: "$270.000",
-      image: "/products/image_reloj.png",
-    },
-  ];
   return (
     <>
       <Modal
@@ -406,40 +403,40 @@ const Products = () => {
         />
 
         <div className="flex justify-between mt-10 pr-4">
-          {info2.map((info, key) => (
-            <div key={key}>
-              <p className="text-[1rem] text-argenpesos-textos font-book">
-                {info.name}
+          <p
+            onClick={() => setCategoryFilter(null)}
+            className={`text-[1rem] font-book ${categoryFilter !== null ? "text-argenpesos-textos cursor-pointer" : "text-argenpesos-black"}`}
+          >
+            Todos
+          </p>
+          {categories.map((category: ICategory) => (
+            <div key={category.id}>
+              <p
+                onClick={() => setCategoryFilter(category)}
+                className={`text-[1rem] font-book ${
+                  categoryFilter?.id !== category.id
+                    ? "text-argenpesos-textos cursor-pointer"
+                    : "text-argenpesos-black"
+                }`}
+              >
+                {category.name.es}
               </p>
             </div>
           ))}
         </div>
 
         <div className="grid grid-cols-3 mt-5 mb-5">
-          {info3.map((inf, key) => (
-            <div
-              className="max-w-[305px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10"
-              key={key}
-            >
-              <div className="flex flex-col justify-between pt-5  pb-3 pl-4">
-                <h4 className="w-[141px] text-[20px] font-book leading-[24px] text-argenpesos-textos">
-                  {inf.title}
-                </h4>
-                <p className="text-argenpesos-red text-[20px] font-bold leading-[19px]">
-                  {inf.points}
-                </p>
-              </div>
-              <div className="h-full w-[150px] rounded-[13px] bg-[#F9F9F9] flex items-center relative">
-                <img className="w-[150px] h-[150px]" src={inf.image} alt="" />
-                <div
-                  onClick={toggleVisibility}
-                  className="absolute bottom-2 flex gap-2 right-4 cursor-pointer"
-                >
-                  {showVisible ? <IconViewBlue /> : <IconViewBlueOff />}
-                </div>
-              </div>
-            </div>
-          ))}
+          {products.map(product => {
+            if (categoryFilter) {
+              const include = product.categories.find(
+                category => category.id === categoryFilter.id
+              );
+              if (!include) {
+                return null;
+              }
+            }
+            return <ProductCard key={product.id} product={product} />;
+          })}
         </div>
       </div>
     </>
