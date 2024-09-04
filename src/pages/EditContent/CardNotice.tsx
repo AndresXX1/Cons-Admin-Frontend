@@ -96,24 +96,38 @@ const CardNotice = ({ notice, getNoticesList }: CardNoticeProps) => {
                 </div>
                 <div></div>
                 <div className="flex flex-col gap-4">
-                  <label htmlFor="">Título</label>
+                  <label
+                    className="text-argenpesos-textos font-bold text-[14px]"
+                    htmlFor=""
+                  >
+                    Título
+                  </label>
                   <input
                     className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
                     type="text"
                     placeholder="Título"
                   />
 
-                  <label htmlFor="">Fecha</label>
+                  <label
+                    className="text-argenpesos-textos font-bold text-[14px]"
+                    htmlFor=""
+                  >
+                    Fecha
+                  </label>
                   <input
                     className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
                     type="text"
                     placeholder="1 / 1 / 2025"
                   />
 
-                  <label htmlFor="">Descripción</label>
-                  <input
-                    className="w-[617px] h-[181px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
-                    type="text"
+                  <label
+                    className="text-argenpesos-textos font-bold text-[14px]"
+                    htmlFor=""
+                  >
+                    Descripción
+                  </label>
+                  <textarea
+                    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
                     placeholder="Cuerpo de texto"
                   />
                 </div>
@@ -136,7 +150,7 @@ const CardNotice = ({ notice, getNoticesList }: CardNoticeProps) => {
           </div>
         }
       />
-      <div className="w-[306px] h-[200px] flex border-[1px] rounded-[13px] border-argenpesos-gray">
+      <div className="w-[306px] h-[200px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10">
         <div className="rounded-[13px] bg-[#F9F9F9] flex items-center relative w-full h-full">
           <img
             className="w-full h-full overflow-hidden object-cover"

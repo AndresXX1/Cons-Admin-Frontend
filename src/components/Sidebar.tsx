@@ -34,13 +34,7 @@ const Sidebar = () => {
               }`}
             >
               <div className="flex items-center justify-center gap-5">
-                <link.Icon
-                  className={
-                    currentPath === link.to
-                      ? "text-argenpesos-skyBlue"
-                      : "text-argenpesos-textos"
-                  }
-                />
+                <link.Icon color={currentPath === link.to ? "#4DCCFF" : ""} />
                 <Link to={link.to} className="font-book text-[20px]">
                   {link.text}
                 </Link>
