@@ -171,22 +171,38 @@ const Products = () => {
                 </div>
                 <div></div>
                 <div className="flex flex-col gap-4">
-                  <label htmlFor="">Nombre del producto</label>
+                  <label
+                    className="text-argenpesos-textos font-bold text-[14px]"
+                    htmlFor=""
+                  >
+                    Nombre del producto
+                  </label>
                   <input
                     className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
                     type="text"
                   />
 
-                  <label htmlFor="">Valor del producto (puntos)</label>
+                  <label
+                    className="text-argenpesos-textos font-bold text-[14px]"
+                    htmlFor=""
+                  >
+                    Valor del producto (puntos)
+                  </label>
                   <input
                     className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
                     type="text"
                   />
 
-                  <label htmlFor="">Descripción</label>
-                  <input
-                    className="w-[617px] h-[181px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                    type="text"
+                  <label
+                    className="text-argenpesos-textos font-bold text-[14px]"
+                    htmlFor=""
+                  >
+                    Descripción
+                  </label>
+
+                  <textarea
+                    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
+                    placeholder="Cuerpo de texto"
                   />
                 </div>
               </div>
@@ -308,24 +324,39 @@ const Products = () => {
                 </div>
                 <div></div>
                 <div className="flex flex-col gap-4">
-                  <label htmlFor="">Nombre del producto</label>
+                  <label
+                    className="text-[14px] font-bold text-argenpesos-textos"
+                    htmlFor=""
+                  >
+                    Nombre del producto
+                  </label>
                   <input
                     className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
                     type="text"
                     placeholder={info[0].title}
                   />
 
-                  <label htmlFor="">Valor del producto (puntos)</label>
+                  <label
+                    className="text-[14px] font-bold text-argenpesos-textos"
+                    htmlFor=""
+                  >
+                    Valor del producto (puntos)
+                  </label>
                   <input
                     className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
                     type="text"
                     placeholder={info[0].points}
                   />
 
-                  <label htmlFor="">Descripción</label>
-                  <input
-                    className="w-[617px] h-[181px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                    type="text"
+                  <label
+                    className="text-[14px] font-bold text-argenpesos-textos"
+                    htmlFor=""
+                  >
+                    Descripción
+                  </label>
+                  <textarea
+                    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
+                    placeholder="Cuerpo de texto"
                   />
                 </div>
               </div>
