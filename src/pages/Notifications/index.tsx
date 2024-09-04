@@ -179,9 +179,8 @@ const Notifications = () => {
                   </div>
 
                   <label htmlFor="">Descripción</label>
-                  <input
-                    className="w-[617px] h-[181px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
-                    type="text"
+                  <textarea
+                    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
                     placeholder="Cuerpo de texto"
                   />
                   <p className="pt-5 text-[14px] font-bold text-argenpesos-textos">
@@ -335,9 +334,8 @@ const Notifications = () => {
                   </div>
 
                   <label htmlFor="">Descripción</label>
-                  <input
-                    className="w-[617px] h-[181px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
-                    type="text"
+                  <textarea
+                    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
                     placeholder="Cuerpo de texto"
                   />
                   <p className="pt-5 text-[14px] font-bold text-argenpesos-textos">
