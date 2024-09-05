@@ -12,6 +12,9 @@ import ProtectedAuth from "@components/ProtectedAuth";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
 import { verifySessionAsync } from "@store/actions/auth";
+import EditBanners from "@pages/EditContent/EditBanners";
+import EditNotice from "@pages/EditContent/EditNotice";
+import EditBranches from "@pages/EditContent/EditBranches";
 
 const App = (): JSX.Element => {
   const { loading } = useSelector((state: RootState) => state.auth);
@@ -40,6 +43,9 @@ const App = (): JSX.Element => {
         <Route path="users" element={<Users />} />
         <Route path="products" element={<Products />} />
         <Route path="edit-content" element={<EditContent />} />
+        <Route path="edit-content/banners" element={<EditBanners />} />
+        <Route path="edit-content/notices" element={<EditNotice />} />
+        <Route path="edit-content/branches" element={<EditBranches />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="setting" element={<Setting />} />
       </Route>

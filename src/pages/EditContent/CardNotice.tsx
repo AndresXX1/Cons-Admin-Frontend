@@ -1,5 +1,5 @@
 import { IconDelete, IconEdit, IconPencil, IconX } from "@utils/svg";
-import { Notice } from ".";
+import { Notice } from "./EditNotice";
 import { useState } from "react";
 import Modal from "@components/Modal";
 import { apiUrls } from "@config/config";
