@@ -3,23 +3,23 @@ import { Notice } from "./EditNotice";
 import { useState } from "react";
 import Modal from "@components/Modal";
 import { apiUrls } from "@config/config";
-import { deleteNoticeById } from "@store/services/notices";
+// import { deleteNoticeById } from "@store/services/notices";
 
 export interface CardNoticeProps {
   notice: Notice;
   getNoticesList: () => void;
 }
 
-const CardNotice = ({ notice, getNoticesList }: CardNoticeProps) => {
+const CardBranches = ({ notice }: CardNoticeProps) => {
   const [modalEditNotice, setModalEditNotice] = useState<boolean>(false);
   const [modalDeleteNotice, setModalDeleteNotice] = useState<boolean>(false);
-  const handleDelete = async () => {
-    const result = await deleteNoticeById(notice.id);
+  //   const handleDelete = async () => {
+  //     const result = await deleteNoticeById(notice.id);
 
-    if (result) {
-      getNoticesList();
-    }
-  };
+  //     if (result) {
+  //       getNoticesList();
+  //     }
+  //   };
   return (
     <>
       <Modal
@@ -42,7 +42,7 @@ const CardNotice = ({ notice, getNoticesList }: CardNoticeProps) => {
             </p>
             <div className="flex gap-4">
               <button
-                onClick={handleDelete}
+                // onClick={handleDelete}
                 className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
               >
                 Eliminar
@@ -173,4 +173,4 @@ const CardNotice = ({ notice, getNoticesList }: CardNoticeProps) => {
   );
 };
 
-export default CardNotice;
+export default CardBranches;
