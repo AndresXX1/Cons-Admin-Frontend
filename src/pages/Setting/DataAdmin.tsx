@@ -54,7 +54,7 @@ const DataAdmin = () => {
         <div className="flex gap-5 mt-10 mb-14">
           <button
             onClick={() => setModalEdit(true)}
-            className="flex w-[147px] h-[38px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-book rounded-[5px]"
+            className="flex w-[147px] h-[38px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-book rounded-[5px] hover:bg-argenpesos-blue hover:transition-colors duration-100"
           >
             Editar cuenta
           </button>
