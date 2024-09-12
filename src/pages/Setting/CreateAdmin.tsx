@@ -196,7 +196,7 @@ const CreateAdmin = ({ fetchAdmins }: CreateAdminProps) => {
 
         <button
           onClick={handlerOpenModal}
-          className="w-[228px] h-[54px] bg-argenpesos-skyBlue rounded-[13px] flex items-center justify-center text-argenpesos-white gap-2 text-[15.36px] font-book"
+          className="w-[228px] h-[54px] bg-argenpesos-skyBlue rounded-[13px] flex items-center justify-center text-argenpesos-white gap-2 text-[15.36px] font-book hover:bg-argenpesos-blue hover:transition-colors duration-100"
         >
           <IconUser className="w-[20px] h-[20px]" color="#FFFFFF" />
           Nuevo administrador

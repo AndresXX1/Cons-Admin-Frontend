@@ -216,7 +216,7 @@ const Products = () => {
               </button>
               <button
                 onClick={() => setModalCreate(false)}
-                className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
+                className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book hover:bg-argenpesos-blue hover:transition-colors duration-100"
               >
                 Guardar
               </button>
@@ -370,7 +370,7 @@ const Products = () => {
               </button>
               <button
                 onClick={() => setModalEdit(false)}
-                className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
+                className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book hover:bg-argenpesos-blue hover:transition-colors duration-100"
               >
                 Guardar
               </button>
