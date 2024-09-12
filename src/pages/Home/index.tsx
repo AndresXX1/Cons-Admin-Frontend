@@ -101,7 +101,7 @@ const Home = () => {
           </p>
           <ArrowLeft className="w-[7px] h-[20px] rotate-[270deg]" />
         </div>
-        <button className="flex gap-2 w-[291px] h-[54px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-book rounded-[13px]">
+        <button className="flex gap-2 w-[291px] h-[54px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-book rounded-[13px] hover:bg-argenpesos-blue hover:transition-colors duration-100">
           <IconDownload />
           Descargar planillla
         </button>
