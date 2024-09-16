@@ -36,6 +36,11 @@ export const apiUrls = {
   updatePassword: () => `/api/admin/password`,
   //product
   getProductsAll: () => `/api/product`,
+  //branch
+  getBranches: () => `/api/branch`,
+  BranchImg: (img: string) => `${baseUrl}/branch/${img}`,
+  uploadImageBranch: () => `/api/branch/image`,
+  createBranch: () => `/api/branch`,
 };
 
 export const tokenAccess = {
@@ -43,3 +48,5 @@ export const tokenAccess = {
   refreshTokenName:
     import.meta.env.VITE_PUBLIC_TOKEN_REFRESH_NAME || "refreshToken",
 };
+
+export const googleMapKey = import.meta.env.VITE_PUBLIC_MAP_API_KEY;
