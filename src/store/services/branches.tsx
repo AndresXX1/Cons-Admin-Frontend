@@ -1,0 +1,65 @@
+import { apiUrls } from "@config/config";
+import { axiosInstance } from "@store/actions/auth";
+import { alertConfirm, alertError } from "@utils/alerts";
+
+export const getBranches = async () => {
+  try {
+    const response = await axiosInstance.get(apiUrls.getBranches());
+    if (response.data.ok) {
+      return response.data.branches;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    return [];
+  }
+};
+
+export const uploadImgBranch = async (file: FormData) => {
+  try {
+    const response = await axiosInstance.post(
+      apiUrls.uploadImageBranch(),
+      file,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    if (response.data.ok) {
+      return response.data.url;
+    } else {
+      alertError("Error al subir imagen");
+      return "";
+    }
+  } catch (error) {
+    alertError("Error al subir imagen");
+    return "";
+  }
+};
+
+export const createBranch = async (data: {
+  name: string;
+  image: string;
+  address: string;
+  schedules_1: string;
+  schedules_2: string;
+  whatsapp: string;
+  phone: string;
+  lat: number;
+  lon: number;
+}) => {
+  try {
+    const response = await axiosInstance.post(apiUrls.createBranch(), data);
+    if (response.data.ok) {
+      alertConfirm("Sucursal creada correctamente");
+      return true;
+    } else {
+      alertError("Error al crear sucursal");
+      return false;
+    }
+  } catch (error) {
+    alertError("Error al crear sucursal");
+    return false;
+  }
+};

@@ -1,30 +1,35 @@
 import { ArrowLeft } from "@utils/svg";
 import { useNavigate } from "react-router-dom";
-import CardBranches from "../CardBranches";
-import { getNotices } from "@store/services/notices";
 import { useEffect, useState } from "react";
-import CreateBranches from "../CreateBranches";
+import CardBranch from "./CardBranch";
+import { getBranches } from "@store/services/branches";
+import CreateBranch from "./CreateBranch";
 
-export interface Notice {
-  id: string;
-  url: string;
-  title: string;
-  description: string;
-  date: string;
+export interface Branch {
+  id: number;
+  name: string;
+  image: string;
+  address: string;
+  schedules_1: string;
+  schedules_2: string;
+  whatsapp: string;
+  phone: string;
+  lat: number;
+  lon: number;
 }
 
 const EditBranches = () => {
   const navigate = useNavigate();
 
-  const [notices, setNotices] = useState<Notice[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
 
-  const getNoticesList = async () => {
-    const notices = await getNotices();
-    setNotices(notices);
+  const getBranchesList = async () => {
+    const response = await getBranches();
+    setBranches(response);
   };
 
   useEffect(() => {
-    getNoticesList();
+    getBranchesList();
   }, []);
   return (
     <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
@@ -42,16 +47,16 @@ const EditBranches = () => {
       </p>
 
       <div className="flex gap-5">
-        {notices.map(notice => {
+        {branches.map(branch => {
           return (
-            <CardBranches
-              key={notice.id}
-              notice={notice}
-              getNoticesList={getNoticesList}
+            <CardBranch
+              key={branch.id}
+              branch={branch}
+              getBranchesList={getBranchesList}
             />
           );
         })}
-        <CreateBranches getNoticesList={getNoticesList} />
+        <CreateBranch getBranchesList={getBranchesList} />
       </div>
     </div>
   );
