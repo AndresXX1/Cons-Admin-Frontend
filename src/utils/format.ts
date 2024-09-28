@@ -1,3 +1,6 @@
+import { parseISO, format } from "date-fns";
+import { es } from "date-fns/locale";
+
 import {
   IconHome,
   IconUser,
@@ -45,3 +48,23 @@ export const links = [
     Icon: IconConfig,
   },
 ];
+
+export const formatDateString = (dateString: string) => {
+  const date = parseISO(dateString);
+  return format(date, "MMMM d yyyy, HH:mm'h'", { locale: es });
+};
+
+export const calculateAge = (birthDateString: string) => {
+  if (!birthDateString) return "No disponible";
+  const birthDate = new Date(birthDateString);
+  const currentDate = new Date();
+
+  let age = currentDate.getFullYear() - birthDate.getFullYear();
+  const monthDifference = currentDate.getMonth() - birthDate.getMonth();
+  const dayDifference = currentDate.getDate() - birthDate.getDate();
+  if (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)) {
+    age--;
+  }
+
+  return age;
+};
