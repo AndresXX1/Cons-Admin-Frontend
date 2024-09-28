@@ -12,6 +12,7 @@ export const apiUrls = {
   getUsers: () => `/api/user/all`,
   getUser: () => `${baseUrl}/api/admin`,
   avatarUser: (img: string) => `${baseUrl}/avatar/${img}`,
+  putUserCuponizate: (userId: number) => `/api/user/cuponizate/${userId}`,
   //banner
   getBannersHome: () => `/api/banner/home`,
   getBannersCuponizate: () => `/api/banner/cuponizate`,

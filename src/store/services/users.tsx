@@ -13,3 +13,16 @@ export const getusers = async () => {
     return [];
   }
 };
+
+export const putUserCuponizateById = async (userId: number) => {
+  try {
+    const response = await axiosInstance.put(apiUrls.putUserCuponizate(userId));
+    if (response.data.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    return false;
+  }
+};
