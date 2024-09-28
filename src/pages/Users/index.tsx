@@ -17,7 +17,10 @@ export interface User {
   last_name: string;
   avatar: string;
   phone: string;
-  date: string;
+  last_login: string;
+  birthday: string;
+  create: string;
+  cuponizate: boolean;
 }
 
 const Users = () => {
@@ -69,7 +72,7 @@ const Users = () => {
           Nombre de usuario
         </p>
         <p className="text-[1rem] text-argenpesos-textos font-bold ml-5">
-          % Smarter
+          Cuponizate
         </p>
         <p className="text-[1rem] text-argenpesos-textos font-bold">Status</p>
         <p className="text-[1rem] text-argenpesos-textos font-bold">Edad</p>
@@ -81,7 +84,9 @@ const Users = () => {
       </div>
       <div>
         {users.map(user => {
-          return <CardUser key={user.id} user={user} />;
+          return (
+            <CardUser key={user.id} user={user} getUsersList={getUsersList} />
+          );
         })}
       </div>
     </div>

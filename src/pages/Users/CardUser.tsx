@@ -2,70 +2,115 @@ import { BlockedIcon, IconDelete, IconEdit, ThreePoints } from "@utils/svg";
 import { User } from ".";
 import { apiUrls } from "@config/config";
 import { useState } from "react";
+import { calculateAge, formatDateString } from "@utils/format";
+import { checkStatus } from "@utils/validators";
+import Modal from "@components/Modal";
+import ModalAction from "@components/ModalAction";
+import { putUserCuponizateById } from "@store/services/users";
 
 interface CardUserProps {
   user: User;
+  getUsersList: () => void;
 }
-const CardUser = ({ user }: CardUserProps) => {
+const CardUser = ({ user, getUsersList }: CardUserProps) => {
   const [menuVisibility, setMenuVisibility] = useState(false);
+  const [modalActiveCuponizate, setModalActiveCuponizate] = useState(false);
   const toggleVisibility = () => {
     setMenuVisibility(!menuVisibility);
   };
+  const handleAction = async () => {
+    const response = await putUserCuponizateById(user.id);
+    if (response) {
+      getUsersList();
+      setModalActiveCuponizate(false);
+    }
+  };
   return (
-    <div
-      className="grid grid-cols-6 gap-5 relative items-center"
-      onMouseLeave={() => setMenuVisibility(false)}
-    >
-      <div className="flex items-center gap-1 z-[-1]">
-        <img
-          className="w-[50px] h-[50px]"
-          src={apiUrls.avatarUser(user.avatar)}
-          alt={user.first_name}
-        />
-        <p className="text-[1rem] text-argenpesos-textos font-book">
-          {`${user.first_name} ${user.last_name}`}
-        </p>
-      </div>
-      <p className="text-[1rem] text-argenpesos-textos font-book ml-12">67%</p>
-      <p className="text-[1rem] text-argenpesos-textos font-book">Activo</p>
-      <p className="text-[1rem] text-argenpesos-textos font-book">30</p>
-      <p className="text-[1rem] text-argenpesos-textos font-book">12.500</p>
-      <p className="text-[1rem] text-argenpesos-textos font-book z-[-1]">
-        {user.date}
-      </p>
+    <>
+      <Modal
+        closeModal={setModalActiveCuponizate}
+        isShown={modalActiveCuponizate}
+        element={
+          <ModalAction
+            close={() => setModalActiveCuponizate(false)}
+            handleAction={handleAction}
+            title={`¿Está seguro que desea ${user.cuponizate ? "desactivar" : "activar"} este usuario?`}
+            description={`En caso de que quiera ${user.cuponizate ? "activarlo" : "desactivarlo"} más adelante podrá hacerlo desde este menú. Email de suuario: ${user.email}`}
+            textCancel="Cancelar"
+            textOk={user.cuponizate ? "Desactivar" : "Activar"}
+          />
+        }
+      />
       <div
-        onClick={() => toggleVisibility()}
-        className="absolute right-0 top-3 w-[0px]"
+        className="grid grid-cols-6 gap-5 relative items-center"
+        onMouseLeave={() => setMenuVisibility(false)}
       >
-        <button>
-          <ThreePoints />
-        </button>
-        <div
-          className={`transition-all duration-2000 ease-in-out ${
-            menuVisibility ? "opacity-100 h-[132px]" : "opacity-0 max-h-0"
-          } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px] relative right-[7rem] z-[100]`}
+        <div className="flex items-center gap-1 z-[-1]">
+          <img
+            className="w-[50px] h-[50px]"
+            src={apiUrls.avatarUser(user.avatar)}
+            alt={user.first_name}
+          />
+          <p className="text-[1rem] text-argenpesos-textos font-book">
+            {`${user.first_name} ${user.last_name}`}
+          </p>
+        </div>
+        <button
+          type="button"
+          title={user.cuponizate ? "Desactivar" : "Activar"}
+          onClick={() => setModalActiveCuponizate(true)}
+          className={`text-[1rem] font-book border-[2px] rounded-xl py-[4px] w-[140px] ${
+            user.cuponizate
+              ? "text-argenpesos-skyBlue border-argenpesos-skyBlue"
+              : "text-argenpesos-textos border-argenpesos-textos"
+          }`}
         >
-          <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
-            <p
-              //   onClick={() => setOpenModalEdit(true)}
-              className="flex items-center mr-7 cursor-pointer"
-            >
-              <IconEdit color="#575757" />
-              Editar
-            </p>
-            <p className="flex items-center gap-1 cursor-pointer">
-              <BlockedIcon />
-              Bloquear
-            </p>
-            <p className="flex items-center mr-3 cursor-pointer">
-              <IconDelete />
-              Eliminar
-            </p>
+          {user.cuponizate ? "Activo" : "Inactivo"}
+        </button>
+        <p className="text-[1rem] text-argenpesos-textos font-book">
+          {checkStatus(user.last_login)}
+        </p>
+        <p className="text-[1rem] text-argenpesos-textos font-book">
+          {calculateAge(user.birthday)}
+        </p>
+        <p className="text-[1rem] text-argenpesos-textos font-book">12.500</p>
+        <p className="text-[1rem] text-argenpesos-textos font-book z-[-1]">
+          {formatDateString(user.create)}
+        </p>
+        <div
+          onClick={() => toggleVisibility()}
+          className="absolute right-0 top-3 w-[0px]"
+        >
+          <button>
+            <ThreePoints />
+          </button>
+          <div
+            className={`transition-all duration-2000 ease-in-out ${
+              menuVisibility ? "opacity-100 h-[132px]" : "opacity-0 max-h-0"
+            } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px] relative right-[7rem] z-[100]`}
+          >
+            <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
+              <p
+                //   onClick={() => setOpenModalEdit(true)}
+                className="flex items-center mr-7 cursor-pointer"
+              >
+                <IconEdit color="#575757" />
+                Editar
+              </p>
+              <p className="flex items-center gap-1 cursor-pointer">
+                <BlockedIcon />
+                Bloquear
+              </p>
+              <p className="flex items-center mr-3 cursor-pointer">
+                <IconDelete />
+                Eliminar
+              </p>
+            </div>
           </div>
         </div>
+        <div className="w-[100%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
       </div>
-      <div className="w-[100%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
-    </div>
+    </>
   );
 };
 
