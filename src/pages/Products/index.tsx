@@ -31,6 +31,7 @@ export interface IProduct {
     id: string;
     src: string;
   }[];
+  is_visible: boolean;
 }
 
 const Products = () => {
@@ -466,7 +467,13 @@ const Products = () => {
                 return null;
               }
             }
-            return <ProductCard key={product.id} product={product} />;
+            return (
+              <ProductCard
+                key={product.id}
+                product={product}
+                getProducts={getProducts}
+              />
+            );
           })}
         </div>
       </div>

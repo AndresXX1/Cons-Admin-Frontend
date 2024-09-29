@@ -40,7 +40,7 @@ const Users = () => {
       <div className="flex gap-2 mb-8">
         <p className="text-[3rem] text-argenpesos-textos font-bold">Usuarios</p>
         <p className="text-[40px] text-argenpesos-textos font-book mt-[6px]">
-          (127)
+          {`(${users.length})`}
         </p>
       </div>
 
