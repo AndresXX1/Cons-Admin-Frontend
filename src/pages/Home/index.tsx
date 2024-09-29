@@ -1,3 +1,6 @@
+import { RootState } from "@store";
+import { getData } from "@store/services/admin";
+import { getFormattedDate } from "@utils/format";
 import {
   ArrowLeft,
   IconArrows,
@@ -16,6 +19,8 @@ import {
   IconUserMore,
   LineHome,
 } from "@utils/svg";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 type Props = {
   state: boolean;
@@ -24,7 +29,38 @@ type Props = {
   iconClassName?: string;
 };
 
+type IDataDashboard = {
+  usage_time: {
+    last_week: number;
+    these_week: number;
+  };
+  active_users: {
+    these_week: number;
+  };
+  age: {
+    age18_30: number;
+    age31_45: number;
+    age46_60: number;
+    age61_over: number;
+    total: number;
+  };
+  gender: {
+    female: number;
+    male: number;
+  };
+  created_users: number[];
+};
+
 const Home = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const [data, setData] = useState<IDataDashboard | null>(null);
+
+  const getDataApi = async () => {
+    const response = await getData();
+    if (response) {
+      setData(response);
+    }
+  };
   const IconSelector: React.FC<Props> = ({ state, iconClassName }) => {
     const iconClass = iconClassName || "";
 
@@ -75,12 +111,34 @@ const Home = () => {
     },
   ];
 
-  console.log(date);
+  useEffect(() => {
+    getDataApi();
+  }, []);
+
+  const progress_18_30 =
+    data?.age.age18_30 && data?.age.total
+      ? (data?.age.age18_30 / data?.age.total) * 100
+      : 0;
+  const progress_30_45 =
+    data?.age.age31_45 && data?.age.total
+      ? (data?.age.age31_45 / data?.age.total) * 100
+      : 0;
+  const progress_45_60 =
+    data?.age.age46_60 && data?.age.total
+      ? (data?.age.age46_60 / data?.age.total) * 100
+      : 0;
+  const progress_60_over =
+    data?.age.age61_over && data?.age.total
+      ? (data?.age.age61_over / data?.age.total) * 100
+      : 0;
 
   return (
     <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
       <p className="text-[46.08px] text-argenpesos-textos font-bold">
-        Hola <span className="text-argenpesos-skyBlue">Félix</span>
+        Hola{" "}
+        <span className="text-argenpesos-skyBlue">
+          {user?.full_name || "Usuario"}
+        </span>
       </p>
       <p className="text-[19.2px] text-argenpesos-gray font-book">
         ¡Bienvenido de vuelta!
@@ -109,7 +167,7 @@ const Home = () => {
       <p className="flex items-center gap-[6px] pt-5 text-argenpesos-gray text-[15.36px] font-book">
         {" "}
         <div className="w-[10.56px] h-[10.56px] bg-argenpesos-green rounded-full bg-opacity-[0.7]"></div>
-        Julio 2024, semana 4
+        {getFormattedDate()}
         <IconArrows />
       </p>
 
@@ -123,7 +181,7 @@ const Home = () => {
           </div>
 
           <p className="text-[46.08px] font-bold text-argenpesos-textos mb-4">
-            1.208
+            {data?.active_users.these_week}
           </p>
 
           <div className="flex gap-2 items-center">
@@ -250,34 +308,54 @@ const Home = () => {
             <p className="text-[15.36px] font-book text-argenpesos-gray2">
               18-30
             </p>
-            <div className="w-[20%] bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"></div>
+            <div
+              className="bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"
+              style={{
+                width: `${Math.round(progress_18_30)}%`,
+              }}
+            ></div>
             <p className="text-argenpesos-textos text-[15.36px] font-book">
-              10%
+              {progress_18_30}%
             </p>
           </div>
           <div className="flex gap-[18px] items-center">
             <p className="text-[15.36px] font-book text-argenpesos-gray2">
               30-45
             </p>
-            <div className="w-[25%] bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"></div>
+            <div
+              className="bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"
+              style={{
+                width: `${Math.round(progress_30_45)}%`,
+              }}
+            ></div>
             <p className="text-argenpesos-textos text-[15.36px] font-book">
-              16%
+              {progress_30_45}%
             </p>
           </div>
           <div className="flex gap-4 items-center">
             <p className="text-[15.36px] font-book text-argenpesos-gray2">
               45-60
             </p>
-            <div className="w-[50%] bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"></div>
+            <div
+              className="bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"
+              style={{
+                width: `${Math.round(progress_45_60)}%`,
+              }}
+            ></div>
             <p className="text-argenpesos-textos text-[15.36px] font-book">
-              53%
+              {progress_45_60}%
             </p>
           </div>
           <div className="flex gap-8 items-center">
             <p className="text-[15.36px] font-book text-argenpesos-gray2">{`>60     `}</p>
-            <div className="w-[31%] bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"></div>
+            <div
+              className="bg-argenpesos-skyBlue rounded-[4.9px] h-[13.44px]"
+              style={{
+                width: `${Math.round(progress_60_over)}%`,
+              }}
+            ></div>
             <p className="text-argenpesos-textos text-[15.36px] font-book">
-              21%
+              {progress_60_over}%
             </p>
           </div>
           <p className="text-[20px] text-argenpesos-textos font-book pt-3">

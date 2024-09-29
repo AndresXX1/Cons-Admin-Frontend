@@ -35,8 +35,10 @@ export const apiUrls = {
   removeMyAvatar: () => `/api/admin/avatar`,
   updateFullname: () => `/api/admin/full-name`,
   updatePassword: () => `/api/admin/password`,
+  getData: () => `/api/admin/data`,
   //product
-  getProductsAll: () => `/api/product`,
+  getProductsAll: () => `/api/product/all`,
+  changeOfVisibilityProduct: (id: string) => `/api/product/visibility/${id}`,
   //branch
   getBranches: () => `/api/branch`,
   BranchImg: (img: string) => `${baseUrl}/branch/${img}`,

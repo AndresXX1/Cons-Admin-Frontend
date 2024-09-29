@@ -39,7 +39,6 @@ const App = (): JSX.Element => {
         }
       >
         <Route index element={<Home />} />
-        <Route path="home" element={<Home />} />
         <Route path="users" element={<Users />} />
         <Route path="products" element={<Products />} />
         <Route path="edit-content" element={<EditContent />} />

@@ -1,15 +1,18 @@
 import { IconViewBlue, IconViewBlueOff } from "@utils/svg";
 import { IProduct } from ".";
-import { useState } from "react";
+import { changeOfVisibilityProduct } from "@store/services/product";
 
 interface ProductCardProps {
   product: IProduct;
+  getProducts: () => void;
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
-  const [showVisible, setShowVisible] = useState(false);
-  const toggleVisibility = () => {
-    setShowVisible(prevShowPassword => !prevShowPassword);
+const ProductCard = ({ product, getProducts }: ProductCardProps) => {
+  const toggleVisibility = async () => {
+    const response = await changeOfVisibilityProduct(product.id);
+    if (response) {
+      getProducts();
+    }
   };
   return (
     <div className="max-w-[305px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10">
@@ -33,7 +36,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           onClick={toggleVisibility}
           className="absolute bottom-2 flex gap-2 right-4 cursor-pointer"
         >
-          {showVisible ? <IconViewBlue /> : <IconViewBlueOff />}
+          {product.is_visible ? <IconViewBlueOff /> : <IconViewBlue />}
         </div>
       </div>
     </div>
