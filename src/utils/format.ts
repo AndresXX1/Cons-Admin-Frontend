@@ -12,9 +12,9 @@ import {
 
 export const links = [
   {
-    to: "/dashboard/home",
+    to: "/dashboard",
     text: "Home",
-    active: ["/dashboard/home", "/dashboard"],
+    active: ["/dashboard"],
     Icon: IconHome,
   },
   {
@@ -67,4 +67,31 @@ export const calculateAge = (birthDateString: string) => {
   }
 
   return age;
+};
+
+export const getFormattedDate = () => {
+  const monthNames = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = monthNames[now.getMonth()];
+
+  // Calcular la semana del mes actual
+  const startOfMonth = new Date(year, now.getMonth(), 1);
+  const weekNumber = Math.ceil((now.getDate() + startOfMonth.getDay()) / 7);
+
+  return `${month} ${year}, semana ${weekNumber}`;
 };

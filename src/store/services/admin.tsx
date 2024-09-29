@@ -146,3 +146,16 @@ export const updatePassword = async (data: {
     return false;
   }
 };
+
+export const getData = async () => {
+  try {
+    const response = await axiosInstance.get(apiUrls.getData());
+    if (response.data.ok) {
+      return response.data.dashboard;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
+};

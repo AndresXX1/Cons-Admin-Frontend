@@ -13,3 +13,18 @@ export const getProductsAll = async () => {
     return [];
   }
 };
+
+export const changeOfVisibilityProduct = async (id: string) => {
+  try {
+    const response = await axiosInstance.put(
+      apiUrls.changeOfVisibilityProduct(id)
+    );
+    if (response.data.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    return false;
+  }
+};
