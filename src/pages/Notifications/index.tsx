@@ -9,12 +9,17 @@ import {
   IconPencil,
 } from "@utils/svg";
 import Modal from "@components/Modal";
+import Datetime from "react-datetime";
+import "react-datetime/css/react-datetime.css";
+import { Moment } from "moment";
 
 const Notifications = () => {
   const [visibleIndex, setVisibleIndex] = useState<number | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [modalEdit, setModalEdit] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
+  const [dateTime, setDateTime] = useState<Moment | null>(null);
+  const [isOptionYes, setIsOptionYes] = useState<boolean>(false);
   const toggleVisibility = (index: number) => {
     if (visibleIndex === index) {
       setVisibleIndex(null);
@@ -137,43 +142,52 @@ const Notifications = () => {
                   </p>
                   <div className="flex gap-5">
                     <div className="flex items-center gap-3 rounded-[4px]">
-                      <p className="text-[14px] font-book leading-[24px] text-argenpesos-textos">
-                        Si
-                      </p>
                       <input
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[4px]"
-                        type="checkbox"
+                        id="option-yes"
+                        className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
+                        type="radio"
+                        name="notification-option"
+                        checked={isOptionYes}
+                        onChange={() => setIsOptionYes(true)}
                       />
+                      <label
+                        htmlFor="option-yes"
+                        className="text-[14px] font-book leading-[24px] text-argenpesos-textos"
+                      >
+                        Si
+                      </label>
                     </div>
                     <div className="flex items-center gap-3 rounded-[4px]">
-                      <p className="text-[14px] font-book leading-[24px] text-argenpesos-textos">
-                        No
-                      </p>
                       <input
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[4px]"
-                        type="checkbox"
+                        id="option-no"
+                        className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
+                        type="radio"
+                        name="notification-option"
+                        checked={!isOptionYes}
+                        onChange={() => setIsOptionYes(false)}
                       />
+                      <label
+                        htmlFor="option-no"
+                        className="text-[14px] font-book leading-[24px] text-argenpesos-textos"
+                      >
+                        No
+                      </label>
                     </div>
                   </div>
                   <div className="flex">
                     <div>
                       <label className="text-[14px] font-bold text-argenpesos-textos">
-                        Fecha
+                        Fecha y Hora
                       </label>
-                      <input
-                        className="w-[298px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
-                        type="text"
-                        placeholder="1 / 1 / 2025"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[14px] font-bold text-argenpesos-textos">
-                        Hora
-                      </label>
-                      <input
-                        className="w-[298px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
-                        type="text"
-                        placeholder="00 : 00"
+                      <Datetime
+                        className="w-[full] h-[full] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
+                        onChange={moment => setDateTime(moment as Moment)}
+                        inputProps={{
+                          placeholder: "Selecciona fecha y hora",
+                        }}
+                        dateFormat="DD/MM/YYYY"
+                        timeFormat="HH:mm"
+                        closeOnSelect={true}
                       />
                     </div>
                   </div>
