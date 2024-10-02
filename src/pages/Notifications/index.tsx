@@ -206,8 +206,12 @@ const Notifications = () => {
                         Si
                       </p>
                       <input
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[4px]"
-                        type="checkbox"
+                        id="option-no"
+                        className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
+                        type="radio"
+                        name="notification-option"
+                        checked={!isOptionYes}
+                        onChange={() => setIsOptionYes(false)}
                       />
                     </div>
                     <div className="flex items-center gap-3 rounded-[4px]">
@@ -215,8 +219,12 @@ const Notifications = () => {
                         No
                       </p>
                       <input
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[4px]"
-                        type="checkbox"
+                       id="option-no"
+                       className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
+                       type="radio"
+                       name="notification-option"
+                       checked={!isOptionYes}
+                       onChange={() => setIsOptionYes(false)}
                       />
                     </div>
                   </div>
@@ -230,8 +238,12 @@ const Notifications = () => {
                         Si
                       </p>
                       <input
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[4px]"
-                        type="checkbox"
+                        id="option-no"
+                        className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
+                        type="radio"
+                        name="notification-option"
+                        checked={!isOptionYes}
+                        onChange={() => setIsOptionYes(false)}
                       />
                     </div>
                     <div className="flex items-center gap-3 rounded-[4px]">
@@ -239,8 +251,12 @@ const Notifications = () => {
                         No
                       </p>
                       <input
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[4px]"
-                        type="checkbox"
+                        id="option-no"
+                        className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
+                        type="radio"
+                        name="notification-option"
+                        checked={!isOptionYes}
+                        onChange={() => setIsOptionYes(false)}
                       />
                     </div>
                   </div>
