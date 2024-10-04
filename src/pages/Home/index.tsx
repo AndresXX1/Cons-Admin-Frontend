@@ -1,6 +1,6 @@
 import { RootState } from "@store";
 import { getData } from "@store/services/admin";
-import { getFormattedDate } from "@utils/format";
+import { capitalizeFirstLetter, getFormattedDate } from "@utils/format";
 import {
   ArrowLeft,
   IconArrows,
@@ -21,6 +21,7 @@ import {
 } from "@utils/svg";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { formatSecondsToMinutes } from "../../utils/format";
 
 type Props = {
   state: boolean;
@@ -49,6 +50,20 @@ type IDataDashboard = {
     male: number;
   };
   created_users: number[];
+  timers: {
+    last_week: {
+      home: number;
+      cuponizate: number;
+      argencompras: number;
+      profile: number;
+    };
+    these_week: {
+      home: number;
+      cuponizate: number;
+      argencompras: number;
+      profile: number;
+    };
+  };
 };
 
 const Home = () => {
@@ -131,6 +146,17 @@ const Home = () => {
     data?.age.age61_over && data?.age.total
       ? (data?.age.age61_over / data?.age.total) * 100
       : 0;
+
+  const viewTop = data
+    ? Object.entries(data?.timers?.these_week).sort((a, b) => b[1] - a[1])
+    : [];
+
+  const totalSeconds = data
+    ? Object.values(data?.timers?.these_week).reduce(
+        (total, value) => total + value,
+        0
+      )
+    : 0;
 
   return (
     <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
@@ -379,7 +405,7 @@ const Home = () => {
               </p>
             </div>
           </div>
-          <p className="text-[20px] text-argenpesos-textos font-book pt-3 pb-3">
+          {/* <p className="text-[20px] text-argenpesos-textos font-book pt-3 pb-3">
             Ubicación
           </p>
           <div className="flex gap-5 justify-center relative">
@@ -437,7 +463,7 @@ const Home = () => {
                 21%
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="border-[1px] border-argenpesos-gray col-span-2 h-[207px] rounded-[13px] p-4">
           <div className="flex gap-3 items-center pb-5">
@@ -453,66 +479,73 @@ const Home = () => {
               <ArrowLeft className="w-[6px] h-[11.52px] rotate-[270deg] mt-1" />
             </div>
           </div>
-          <div className="flex items-center gap-1">
-            <p className="text-[9.6px] text-argenpesos-textos font-bold">#01</p>
-            <p className="text-[9.6px] text-argenpesos-textos font-book mb-1 pr-14">
-              Home
-            </p>
-            <div className="bg-argenpesos-skyBlue w-[50%] h-[13.44px] rounded-[4.8px] mr-2"></div>
-            <p className="text-[15.36px] mr-1 font-bold text-argenpesos-textos">
-              01:42s
-            </p>
-            <IconSelector iconClassName="w-[9.6px]" state={true} />
-            <ColorfulText state={true} text="+12%" fontSize="9.6px" />
-            <p className="text-[9.6px] ml-1 text-argenpesos-gray2 font-book">
-              esta semana
-            </p>
-          </div>
-          <div className="flex items-center gap-1 mt-2">
-            <p className="text-[9.6px] text-argenpesos-textos font-bold">#02</p>
-            <p className="text-[9.6px] text-argenpesos-textos font-book mb-1 pr-14">
-              Perfil
-            </p>
-            <div className="bg-[#F3E670] w-[30%] h-[13.44px] rounded-[4.8px] mr-2"></div>
-            <p className="text-[15.36px] mr-1 font-bold text-argenpesos-textos">
-              01:14s
-            </p>
-            <IconSelector iconClassName="w-[9.6px]" state={true} />
-            <ColorfulText state={true} text="+10%" fontSize="9.6px" />
-            <p className="text-[9.6px] ml-1 text-argenpesos-gray2 font-book">
-              esta semana
-            </p>
-          </div>
-          <div className="flex items-center gap-1 mt-2">
-            <p className="text-[9.6px] text-argenpesos-textos font-bold">#03</p>
-            <p className="text-[9.6px] text-argenpesos-textos font-book mb-1 pr-[10px]">
-              Argencompras
-            </p>
-            <div className="bg-[#F47666] w-[20%] h-[13.44px] rounded-[4.8px] mr-2"></div>
-            <p className="text-[15.36px] mr-1 font-bold text-argenpesos-textos">
-              00:59s
-            </p>
-            <IconSelector iconClassName="w-[9.6px]" state={true} />
-            <ColorfulText state={true} text="+8%" fontSize="9.6px" />
-            <p className="text-[9.6px] ml-1 text-argenpesos-gray2 font-book">
-              esta semana
-            </p>
-          </div>
-          <div className="flex items-center gap-1 mt-2">
-            <p className="text-[9.6px] text-argenpesos-textos font-bold">#04</p>
-            <p className="text-[9.6px] text-argenpesos-textos font-book mb-1 pr-6">
-              Cuponizate
-            </p>
-            <div className="bg-[#AE81F4] w-[15%] h-[13.44px] rounded-[4.8px] mr-2"></div>
-            <p className="text-[15.36px] mr-1 font-bold text-argenpesos-textos">
-              00:43s
-            </p>
-            <IconSelector iconClassName="w-[9.6px]" state={true} />
-            <ColorfulText state={true} text="+1%" fontSize="9.6px" />
-            <p className="text-[9.6px] ml-1 text-argenpesos-gray2 font-book">
-              esta semana
-            </p>
-          </div>
+          {viewTop.map((item, key) => {
+            const previousValue = viewTop[key + 1] ? viewTop[key + 1][1] : null; // Valor de la semana pasada
+            const currentValue = item[1]; // Valor de esta semana
+
+            let changeText = "";
+
+            if (previousValue !== null) {
+              // Verificamos si el valor anterior es 0
+              if (previousValue === 0) {
+                // Si el valor anterior es 0 y el actual es mayor, consideramos que es un aumento del 100%
+                changeText = currentValue > 0 ? "+100%" : "0%";
+              } else {
+                // Cálculo del cambio porcentual
+                const percentageChange = Math.round(
+                  ((previousValue - currentValue) / previousValue) * 100
+                );
+
+                // Generar el texto de cambio
+                if (percentageChange < 0) {
+                  changeText = `${Math.abs(percentageChange)}%`; // Crecimiento
+                } else {
+                  changeText = `${percentageChange}%`; // Decrecimiento
+                }
+              }
+            } else {
+              changeText = "0%"; // Si no hay valor anterior
+            }
+            return (
+              <div className="flex items-center gap-1" key={`${key}=view`}>
+                <p className="text-[9.6px] text-argenpesos-textos font-bold">
+                  {`#0${key + 1}`}
+                </p>
+                <p className="text-[9.6px] text-argenpesos-textos font-book mb-1 pr-14">
+                  {capitalizeFirstLetter(item[0])}
+                </p>
+                <div
+                  className={`h-[13.44px] rounded-[4.8px] mr-2 ${
+                    item[0] === "home"
+                      ? "bg-argenpesos-skyBlue"
+                      : item[0] === "profile"
+                        ? "bg-[#F3E670]"
+                        : item[0] === "argencompras"
+                          ? "bg-[#F47666]"
+                          : "bg-[#AE81F4]"
+                  }`}
+                  style={{
+                    width: `${(item[1] / totalSeconds) * 100}%`,
+                  }}
+                ></div>
+                <p className="text-[15.36px] mr-1 font-bold text-argenpesos-textos">
+                  {`${formatSecondsToMinutes(item[1])}`}
+                </p>
+                <IconSelector
+                  iconClassName="w-[9.6px]"
+                  state={viewTop[key + 1] && item[1] > viewTop[key + 1][1]}
+                />
+                <ColorfulText
+                  state={viewTop[key + 1] && item[1] > viewTop[key + 1][1]}
+                  text={`${viewTop[key + 1] && item[1] > viewTop[key + 1][1] ? "+" : "-"} ${changeText}%`}
+                  fontSize="9.6px"
+                />
+                <p className="text-[9.6px] ml-1 text-argenpesos-gray2 font-book">
+                  esta semana
+                </p>
+              </div>
+            );
+          })}
         </div>
         <div className="border-[1px] border-argenpesos-gray col-span-1 h-[207px] rounded-[13px] px-5 py-5">
           <div className="flex gap-3 items-center pb-5">
