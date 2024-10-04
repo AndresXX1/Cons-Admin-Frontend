@@ -37,7 +37,7 @@ const Users = () => {
   }, []);
 
   return (
-    <div className="flex flex-col pl-16 pt-12 px-10">
+    <div className="flex flex-col pl-16 pt-12 px-10 max-w-[1200px]">
       <div className="flex gap-2 mb-8">
         <p className="text-[3rem] text-argenpesos-textos font-bold">Usuarios</p>
         <p className="text-[40px] text-argenpesos-textos font-book mt-[6px]">
