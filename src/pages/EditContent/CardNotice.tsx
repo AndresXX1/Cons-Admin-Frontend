@@ -151,9 +151,9 @@ const CardNotice = ({ notice, getNoticesList }: CardNoticeProps) => {
         }
       />
       <div className="w-[306px] h-[200px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10">
-        <div className="rounded-[13px] bg-[#F9F9F9] flex items-center relative w-full h-full">
+        <div className="rounded-[13px] bg-[#F9F9F9] flex items-center relative w-full h-full overflow-hidden">
           <img
-            className="w-full h-full overflow-hidden object-cover"
+            className="w-full h-full object-cover"
             src={apiUrls.noticeImg(notice.url)}
             alt=""
           />
