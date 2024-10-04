@@ -9,16 +9,15 @@ import {
   IconPencil,
 } from "@utils/svg";
 import Modal from "@components/Modal";
-import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
-// import { Moment } from "moment";
 
 const Notifications = () => {
   const [visibleIndex, setVisibleIndex] = useState<number | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [modalEdit, setModalEdit] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
-  // const [dateTime, setDateTime] = useState<Moment | null>(null);
+
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 16));
   const [isOptionYes, setIsOptionYes] = useState<boolean>(false);
   const toggleVisibility = (index: number) => {
     if (visibleIndex === index) {
@@ -179,15 +178,14 @@ const Notifications = () => {
                       <label className="text-[14px] font-bold text-argenpesos-textos">
                         Fecha y Hora
                       </label>
-                      <Datetime
-                        className="w-[full] h-[full] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
-                        // onChange={moment => setDateTime(moment as Moment)}
-                        inputProps={{
-                          placeholder: "Selecciona fecha y hora",
-                        }}
-                        dateFormat="DD/MM/YYYY"
-                        timeFormat="HH:mm"
-                        closeOnSelect={true}
+                      <input
+                        className="border-0 border-[#C2C2C2] w-full h-[36px] pl-2 border-b-[1px] leading-[27px] text-sofiaCall-dark font-poppinsMedium text-[13px]"
+                        type="datetime-local"
+                        id="start_time"
+                        name="start_time"
+                        value={date}
+                        required
+                        onChange={event => setDate(event.target.value)}
                       />
                     </div>
                   </div>

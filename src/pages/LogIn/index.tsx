@@ -53,15 +53,14 @@ const LogIn = () => {
   }
 
   return (
-    <div className="flex w-full flex-row">
-      <img
-        className="lg:w[-40%] xl:w-[50%] h-[100vh]"
-        src="login/image_login.png"
-      ></img>
+    <div className="flex w-full flex-row min-h-[100vh]">
+      <figcaption className="overflow-hidden w-[50%]">
+        <img className="object-cover" src="login/image_login.png"></img>
+      </figcaption>
       <div className="py-[80px] mx-auto max-w-[600px]">
         <img
           className="w-[235px] h-[49px] mb-[27.67px] object-cover"
-          src="login/logo_argenpesos.png"
+          src="login/logo.svg"
           alt=""
         />
         <h2 className="text-argenpesos-textos text-[44px] font-bold leading-[48px] tracking-[-0.96px] mb-[13px] mx-auto">
@@ -115,9 +114,7 @@ const LogIn = () => {
                 Recordarme
               </p>
             </div>
-            <p className="text-argenpesos-skyBlue text-[16px] font-book leading-[125%]">
-              ¿Olvidaste tu contraseña?
-            </p>
+            <p className="text-argenpesos-skyBlue text-[16px] font-book leading-[125%]"></p>
           </div>
           <button
             className="w-[560px] bg-argenpesos-skyBlue h-[52px] text-white text-[19px] font-norma leading-[19px] disabled:bg-argenpesos-gray rounded-[8px]"
