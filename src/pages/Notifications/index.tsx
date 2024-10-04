@@ -17,7 +17,12 @@ const Notifications = () => {
   const [modalEdit, setModalEdit] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
 
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 16));
+  const [date, setDate] = useState(
+    new Date()
+      .toLocaleString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" })
+      .replace(" ", "T")
+      .slice(0, 16)
+  );
   const [isOptionYes, setIsOptionYes] = useState<boolean>(false);
   const toggleVisibility = (index: number) => {
     if (visibleIndex === index) {
