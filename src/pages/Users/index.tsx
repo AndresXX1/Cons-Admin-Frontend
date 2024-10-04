@@ -21,6 +21,7 @@ export interface User {
   birthday: string;
   create: string;
   cuponizate: boolean;
+  points: number;
 }
 
 const Users = () => {

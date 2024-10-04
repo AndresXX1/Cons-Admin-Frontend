@@ -95,3 +95,21 @@ export const getFormattedDate = () => {
 
   return `${month} ${year}, semana ${weekNumber}`;
 };
+
+export const capitalizeFirstLetter = (text: string) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
+export const formatSecondsToMinutes = (seconds: number): string => {
+  if (seconds < 0) return "00:00"; // Validar si el valor de los segundos es válido
+
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+
+  // Rellenar con ceros si los valores son menores a 10
+  const formattedMinutes = String(minutes).padStart(2, "0");
+  const formattedSeconds = String(remainingSeconds).padStart(2, "0");
+
+  return `${formattedMinutes}:${formattedSeconds}`;
+};

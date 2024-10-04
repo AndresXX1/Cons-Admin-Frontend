@@ -11,14 +11,14 @@ import {
 import Modal from "@components/Modal";
 import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
-import { Moment } from "moment";
+// import { Moment } from "moment";
 
 const Notifications = () => {
   const [visibleIndex, setVisibleIndex] = useState<number | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [modalEdit, setModalEdit] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
-  const [dateTime, setDateTime] = useState<Moment | null>(null);
+  // const [dateTime, setDateTime] = useState<Moment | null>(null);
   const [isOptionYes, setIsOptionYes] = useState<boolean>(false);
   const toggleVisibility = (index: number) => {
     if (visibleIndex === index) {
@@ -181,7 +181,7 @@ const Notifications = () => {
                       </label>
                       <Datetime
                         className="w-[full] h-[full] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
-                        onChange={moment => setDateTime(moment as Moment)}
+                        // onChange={moment => setDateTime(moment as Moment)}
                         inputProps={{
                           placeholder: "Selecciona fecha y hora",
                         }}
@@ -219,12 +219,12 @@ const Notifications = () => {
                         No
                       </p>
                       <input
-                       id="option-no"
-                       className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
-                       type="radio"
-                       name="notification-option"
-                       checked={!isOptionYes}
-                       onChange={() => setIsOptionYes(false)}
+                        id="option-no"
+                        className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
+                        type="radio"
+                        name="notification-option"
+                        checked={!isOptionYes}
+                        onChange={() => setIsOptionYes(false)}
                       />
                     </div>
                   </div>

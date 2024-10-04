@@ -73,7 +73,7 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
         <p className="text-[1rem] text-argenpesos-textos font-book">
           {calculateAge(user.birthday)}
         </p>
-        <p className="text-[1rem] text-argenpesos-textos font-book">12.500</p>
+        <p className="text-[1rem] text-argenpesos-textos font-book">{user.points}</p>
         <p className="text-[1rem] text-argenpesos-textos font-book z-[-1]">
           {formatDateString(user.create)}
         </p>
