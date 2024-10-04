@@ -14,7 +14,7 @@ const Sidebar = () => {
   const currentPath = location.pathname;
 
   return (
-    <div className="flex w-[285px]">
+    <div className="flex w-[285px] font-book">
       <div className="bg-argenpesos-white w-[285px] fixed">
         <div className="flex gap-2 mt-9 mb-7 xl:mt-12 xl:mb-10">
           <img

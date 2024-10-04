@@ -59,7 +59,7 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
           type="button"
           title={user.cuponizate ? "Desactivar" : "Activar"}
           onClick={() => setModalActiveCuponizate(true)}
-          className={`text-[1rem] font-book border-[2px] rounded-xl py-[4px] w-[140px] ${
+          className={`text-[0.9rem] font-book border-[2px] rounded-full py-[4px] w-[60%] ${
             user.cuponizate
               ? "text-argenpesos-skyBlue border-argenpesos-skyBlue"
               : "text-argenpesos-textos border-argenpesos-textos"
