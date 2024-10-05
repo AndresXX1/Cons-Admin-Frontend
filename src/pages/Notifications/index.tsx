@@ -23,6 +23,13 @@ const Notifications = () => {
       .replace(" ", "T")
       .slice(0, 16)
   );
+
+  const [isShippingIncluded, setIsShippingIncluded] = useState<boolean>(false);
+  const [isPushNotificationIncluded, setIsPushNotificationIncluded] =
+    useState<boolean>(false);
+  const [isInAppNotificationIncluded, setIsInAppNotificationIncluded] =
+    useState<boolean>(false);
+
   const [isOptionYes, setIsOptionYes] = useState<boolean>(false);
   const toggleVisibility = (index: number) => {
     if (visibleIndex === index) {
@@ -105,7 +112,7 @@ const Notifications = () => {
           <div className="px-[54px] py-12 flex flex-col w-[969px] h-[700px] mb-5">
             <div className="flex justify-between items-center">
               <p className="text-[32px] text-argenpesos-textos font-bold">
-                Nueva noticia
+                Nueva notificación
               </p>
               <p
                 className="cursor-pointer"
@@ -121,7 +128,8 @@ const Notifications = () => {
                     <img
                       className="w-[84px] h-[84px]"
                       src="/products/image_default.png"
-                    ></img>
+                      alt="default"
+                    />
                   </div>
                   <p className="flex gap-1 items-center pt-[18px] text-[14px] font-book text-argenpesos-textos">
                     <IconPencil />
@@ -130,10 +138,7 @@ const Notifications = () => {
                 </div>
                 <div></div>
                 <div className="flex flex-col gap-4">
-                  <label
-                    htmlFor=""
-                    className="text-[14px] font-bold text-argenpesos-textos"
-                  >
+                  <label className="text-[14px] font-bold text-argenpesos-textos">
                     Título / Nombre de la App
                   </label>
                   <input
@@ -147,15 +152,15 @@ const Notifications = () => {
                   <div className="flex gap-5">
                     <div className="flex items-center gap-3 rounded-[4px]">
                       <input
-                        id="option-yes"
+                        id="shipping-yes"
                         className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
                         type="radio"
-                        name="notification-option"
-                        checked={isOptionYes}
-                        onChange={() => setIsOptionYes(true)}
+                        name="shipping-option"
+                        checked={isShippingIncluded}
+                        onChange={() => setIsShippingIncluded(true)}
                       />
                       <label
-                        htmlFor="option-yes"
+                        htmlFor="shipping-yes"
                         className="text-[14px] font-book leading-[24px] text-argenpesos-textos"
                       >
                         Si
@@ -163,15 +168,15 @@ const Notifications = () => {
                     </div>
                     <div className="flex items-center gap-3 rounded-[4px]">
                       <input
-                        id="option-no"
+                        id="shipping-no"
                         className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
                         type="radio"
-                        name="notification-option"
-                        checked={!isOptionYes}
-                        onChange={() => setIsOptionYes(false)}
+                        name="shipping-option"
+                        checked={!isShippingIncluded}
+                        onChange={() => setIsShippingIncluded(false)}
                       />
                       <label
-                        htmlFor="option-no"
+                        htmlFor="shipping-no"
                         className="text-[14px] font-book leading-[24px] text-argenpesos-textos"
                       >
                         No
@@ -201,34 +206,40 @@ const Notifications = () => {
                     placeholder="Cuerpo de texto"
                   />
                   <p className="pt-5 text-[14px] font-bold text-argenpesos-textos">
-                    Incluye notificación push
+                    Incluye notificación Push
                   </p>
                   <div className="flex gap-5">
                     <div className="flex items-center gap-3 rounded-[4px]">
-                      <p className="text-[14px] font-book leading-[24px] text-argenpesos-textos">
-                        Si
-                      </p>
                       <input
-                        id="option-no"
+                        id="push-notification-yes"
                         className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
                         type="radio"
-                        name="notification-option"
-                        checked={!isOptionYes}
-                        onChange={() => setIsOptionYes(false)}
+                        name="push-notification-option"
+                        checked={isPushNotificationIncluded}
+                        onChange={() => setIsPushNotificationIncluded(true)}
                       />
+                      <label
+                        htmlFor="push-notification-yes"
+                        className="text-[14px] font-book leading-[24px] text-argenpesos-textos"
+                      >
+                        Si
+                      </label>
                     </div>
                     <div className="flex items-center gap-3 rounded-[4px]">
-                      <p className="text-[14px] font-book leading-[24px] text-argenpesos-textos">
-                        No
-                      </p>
                       <input
-                        id="option-no"
+                        id="push-notification-no"
                         className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
                         type="radio"
-                        name="notification-option"
-                        checked={!isOptionYes}
-                        onChange={() => setIsOptionYes(false)}
+                        name="push-notification-option"
+                        checked={!isPushNotificationIncluded}
+                        onChange={() => setIsPushNotificationIncluded(false)}
                       />
+                      <label
+                        htmlFor="push-notification-no"
+                        className="text-[14px] font-book leading-[24px] text-argenpesos-textos"
+                      >
+                        No
+                      </label>
                     </div>
                   </div>
 
@@ -237,30 +248,36 @@ const Notifications = () => {
                   </p>
                   <div className="flex gap-5">
                     <div className="flex items-center gap-3 rounded-[4px]">
-                      <p className="text-[14px] font-book leading-[24px] text-argenpesos-textos">
-                        Si
-                      </p>
                       <input
-                        id="option-no"
+                        id="in-app-notification-yes"
                         className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
                         type="radio"
-                        name="notification-option"
-                        checked={!isOptionYes}
-                        onChange={() => setIsOptionYes(false)}
+                        name="in-app-notification-option"
+                        checked={isInAppNotificationIncluded}
+                        onChange={() => setIsInAppNotificationIncluded(true)}
                       />
+                      <label
+                        htmlFor="in-app-notification-yes"
+                        className="text-[14px] font-book leading-[24px] text-argenpesos-textos"
+                      >
+                        Si
+                      </label>
                     </div>
                     <div className="flex items-center gap-3 rounded-[4px]">
-                      <p className="text-[14px] font-book leading-[24px] text-argenpesos-textos">
-                        No
-                      </p>
                       <input
-                        id="option-no"
+                        id="in-app-notification-no"
                         className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
                         type="radio"
-                        name="notification-option"
-                        checked={!isOptionYes}
-                        onChange={() => setIsOptionYes(false)}
+                        name="in-app-notification-option"
+                        checked={!isInAppNotificationIncluded}
+                        onChange={() => setIsInAppNotificationIncluded(false)}
                       />
+                      <label
+                        htmlFor="in-app-notification-no"
+                        className="text-[14px] font-book leading-[24px] text-argenpesos-textos"
+                      >
+                        No
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -268,9 +285,19 @@ const Notifications = () => {
             </div>
 
             <div className="flex justify-end gap-4 mt-10 pb-10">
-              <button className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book">
+              <button
+                onClick={() => {
+                  setDate("");
+                  setIsShippingIncluded(false);
+                  setIsPushNotificationIncluded(false);
+                  setIsInAppNotificationIncluded(false);
+                  setModalCreate(false);
+                }}
+                className="border-[1px] border-argenpesos-gray3 rounded-[10px] text-argenpesos-textos text-[14px] px-4 py-2"
+              >
                 Cancelar
               </button>
+
               <button
                 onClick={() => setModalCreate(false)}
                 className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
@@ -280,7 +307,7 @@ const Notifications = () => {
             </div>
           </div>
         }
-      ></Modal>
+      />
       <Modal
         isShown={modalEdit}
         element={
