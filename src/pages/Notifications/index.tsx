@@ -30,7 +30,6 @@ const Notifications = () => {
   const [isInAppNotificationIncluded, setIsInAppNotificationIncluded] =
     useState<boolean>(false);
 
-  const [isOptionYes, setIsOptionYes] = useState<boolean>(false);
   const toggleVisibility = (index: number) => {
     if (visibleIndex === index) {
       setVisibleIndex(null);
