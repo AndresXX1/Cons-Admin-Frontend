@@ -3,8 +3,6 @@ import AdminCard from "./AdminCard";
 import { getAllAdmins } from "@store/services/admin";
 import DataAdmin from "./DataAdmin";
 import CreateAdmin from "./CreateAdmin";
-import { useSelector } from "react-redux";
-import { RootState } from "@store";
 
 export interface IAdmin {
   id: string;
@@ -16,8 +14,6 @@ export interface IAdmin {
 
 const Setting = () => {
   const [admins, setAdmins] = useState<IAdmin[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const adminsPerPage = 5;
 
   const fetchAdmins = async () => {
     const response = await getAllAdmins();
@@ -28,87 +24,99 @@ const Setting = () => {
     fetchAdmins();
   }, []);
 
-  const indexOfLastAdmin = currentPage * adminsPerPage;
-  const indexOfFirstAdmin = indexOfLastAdmin - adminsPerPage;
-  const currentAdmins = admins.slice(indexOfFirstAdmin, indexOfLastAdmin);
-
-  const { user } = useSelector((state: RootState) => state.auth);
-
-  // Funciones para manejar la paginación
-  const totalPages = Math.ceil(admins.length / adminsPerPage);
-
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
   return (
     <>
-      {user?.role === "admin" ? (
-        <div className="flex flex-col pl-16 pt-12 px-10 h-[100%] w-[1100px]">
-
-          <DataAdmin />
-        </div>
-      ) : (
-        <div className="flex flex-col pl-16 pt-12 px-10 h-[100%] w-[1100px]">
-          <p className="text-[3rem] text-argenpesos-textos font-bold pb-14">
-            Configuración
-          </p>
-          <CreateAdmin fetchAdmins={fetchAdmins} />
-
-          {admins.length !== 0 && (
-            <div className="flex justify-between gap-5 my-8 max-w-[950px]">
-              <p className="text-[1rem] text-argenpesos-textos font-bold">
-                Nombre
+      {/* <Modal
+        isShown={modalEmail}
+        element={
+          <div className="px-12 py-[50px] flex flex-col w-[751px] h-[446px]">
+            <div className="flex justify-between items-center max-w-[640px] px-2">
+              <p className="text-[32px] text-argenpesos-textos font-bold pb-6">
+                Cambiar email
               </p>
-              <p className="text-[1rem] text-argenpesos-textos font-bold">
-                Email
+              <p
+                className="cursor-pointer"
+                onClick={() => setModalEmail(false)}
+              >
+                <IconX />
               </p>
-              <p className="text-[1rem] text-argenpesos-textos font-bold"></p>
             </div>
-          )}
 
-          {currentAdmins.map(admin => (
-            <AdminCard key={admin.id} admin={admin} fetchAdmins={fetchAdmins} />
-          ))}
+            <div className="flex flex-col gap-10 mx-auto">
+              <div className="flex flex-col gap-1">
+                <label
+                  className="flex items-center gap-2 text-[14px] text-argenpesos-textos font-bold"
+                  htmlFor=""
+                >
+                  Email viejo
+                </label>
+                <input
+                  className="w-[625px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
+                  type="email"
+                  placeholder="maruubc00@gmail.com"
+                />
+              </div>
 
-          <div className="flex justify-between mt-4">
-            <button
-              onClick={prevPage}
-              disabled={currentPage === 1 || admins.length === 0} // Deshabilitar si no hay admins
-              className={`flex w-[147px] h-[38px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-book rounded-[5px] hover:bg-argenpesos-blue hover:transition-colors duration-100 ${
-                currentPage === 1 || admins.length === 0
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
-            >
-              Anterior
-            </button>
-            <span className="text-[1rem] text-argenpesos-textos font-bold">
-              Página {currentPage} de {totalPages}
-            </span>
-            <button
-              onClick={nextPage}
-              disabled={currentPage === totalPages}
-              className={`flex w-[147px] h-[38px] items-center justify-center bg-argenpesos-skyBlue text-[1rem] text-argenpesos-white font-book rounded-[5px] hover:bg-argenpesos-blue hover:transition-colors duration-100 ${
-                currentPage === totalPages
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
-            >
-              Siguiente
-            </button>
+              <div className="flex flex-col gap-1">
+                <label
+                  className="text-[14px] text-argenpesos-textos font-bold"
+                  htmlFor=""
+                >
+                  Ingrese nuevo email
+                </label>
+                <div className="relative w-[625px]">
+                  <input
+                    className="w-[625px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
+                    type="email"
+                    placeholder="Email"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-4 mt-10 max-w-[640px]">
+              <button
+                onClick={() => setModalEmail(false)}
+                className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => setModalEmail(false)}
+                className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
+              >
+                Guardar
+              </button>
+            </div>
           </div>
-          <DataAdmin />
-        </div>
-      )}
+        }
+      ></Modal> */}
+
+      <div className="flex flex-col pl-16 pt-12 px-10 h-[100%] w-[1100px]">
+        <p className="text-[3rem] text-argenpesos-textos font-bold pb-14">
+          Configuración
+        </p>
+        <CreateAdmin fetchAdmins={fetchAdmins} />
+
+        {admins.length !== 0 && (
+          <div className="flex justify-between gap-5 my-8 max-w-[950px]">
+            <p className="text-[1rem] text-argenpesos-textos font-bold">
+              Nombre
+            </p>
+
+            <p className="text-[1rem] text-argenpesos-textos font-bold">
+              Email
+            </p>
+            <p className="text-[1rem] text-argenpesos-textos font-bold"></p>
+          </div>
+        )}
+        {admins.map(admin => {
+          return (
+            <AdminCard key={admin.id} admin={admin} fetchAdmins={fetchAdmins} />
+          );
+        })}
+        <DataAdmin />
+      </div>
     </>
   );
 };
