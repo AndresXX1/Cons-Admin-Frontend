@@ -16,19 +16,46 @@ const Notifications = () => {
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [modalEdit, setModalEdit] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("");
 
-  const [date, setDate] = useState(
-    new Date()
-      .toLocaleString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" })
-      .replace(" ", "T")
-      .slice(0, 16)
-  );
+  const currentDate = new Date()
+    .toLocaleString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" })
+    .replace(" ", "T")
+    .slice(0, 16);
+
+  const maxDate = new Date(
+    new Date().setFullYear(new Date().getFullYear() + 10)
+  )
+    .toLocaleString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" })
+    .replace(" ", "T")
+    .slice(0, 16);
+
+  const [date, setDate] = useState(currentDate);
+  const [error, setError] = useState<string>("");
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = event.target.value;
+
+    if (selectedDate < currentDate) {
+      setError("La fecha no puede ser menor a la actual.");
+    } else if (selectedDate > maxDate) {
+      setError("La fecha no puede ser mayor a 10 años en el futuro.");
+    } else {
+      setError("");
+    }
+
+    setDate(selectedDate);
+  };
 
   const [isShippingIncluded, setIsShippingIncluded] = useState<boolean>(false);
   const [isPushNotificationIncluded, setIsPushNotificationIncluded] =
     useState<boolean>(false);
   const [isInAppNotificationIncluded, setIsInAppNotificationIncluded] =
     useState<boolean>(false);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
 
   const toggleVisibility = (index: number) => {
     if (visibleIndex === index) {
@@ -125,26 +152,26 @@ const Notifications = () => {
                 <div>
                   <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
                     <img
-                      className="w-[84px] h-[84px]"
-                      src="/products/image_default.png"
+                      className="w-[175px] h-[175px]"
+                      src="/icon.png"
                       alt="default"
                     />
                   </div>
-                  <p className="flex gap-1 items-center pt-[18px] text-[14px] font-book text-argenpesos-textos">
-                    <IconPencil />
-                    Subir una imagen
-                  </p>
                 </div>
                 <div></div>
                 <div className="flex flex-col gap-4">
                   <label className="text-[14px] font-bold text-argenpesos-textos">
-                    Título / Nombre de la App
+                    Título / Nombre de la Notificación
                   </label>
                   <input
                     className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
                     type="text"
                     placeholder="Título"
+                    maxLength={50}
+                    value={title}
+                    onChange={handleTitleChange}
                   />
+
                   <p className="pt-9 text-[14px] font-bold text-argenpesos-textos">
                     Incluye envío
                   </p>
@@ -193,9 +220,16 @@ const Notifications = () => {
                         id="start_time"
                         name="start_time"
                         value={date}
+                        min={currentDate}
+                        max={maxDate}
                         required
-                        onChange={event => setDate(event.target.value)}
+                        onChange={handleDateChange}
                       />
+                      {error && (
+                        <p className="font-poppins Medium text-red-500 text-sm mt-2">
+                          {error}
+                        </p>
+                      )}{" "}
                     </div>
                   </div>
 
@@ -291,6 +325,7 @@ const Notifications = () => {
                   setIsPushNotificationIncluded(false);
                   setIsInAppNotificationIncluded(false);
                   setModalCreate(false);
+                  setTitle("");
                 }}
                 className="border-[1px] border-argenpesos-gray3 rounded-[10px] text-argenpesos-textos text-[14px] px-4 py-2"
               >
