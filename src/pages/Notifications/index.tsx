@@ -333,7 +333,14 @@ const Notifications = () => {
               </button>
 
               <button
-                onClick={() => setModalCreate(false)}
+                onClick={() => {
+                  setDate("");
+                  setIsShippingIncluded(false);
+                  setIsPushNotificationIncluded(false);
+                  setIsInAppNotificationIncluded(false);
+                  setModalCreate(false);
+                  setTitle("");
+                }}
                 className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
               >
                 Guardar

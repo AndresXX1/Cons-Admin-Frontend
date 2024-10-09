@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { apiUrls } from "@config/config";
 import { IAdmin } from ".";
 import { IconDelete } from "@utils/svg";
@@ -14,28 +13,20 @@ interface AdminCardProps {
 
 const AdminCard = ({ admin, fetchAdmins }: AdminCardProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const handleDeleteAdmin = async () => {
     if (user?.role === "super_admin") {
       if (admin.role === "super_admin") {
-        setIsModalOpen(true);
+        alertError("No puedes eliminar a un super administrador");
       } else {
-        setIsModalOpen(true);
+        const confirmDelete = await deleteAdminById(admin.id);
+        if (confirmDelete) {
+          fetchAdmins();
+        }
       }
     } else {
       alertError("No tienes permisos para realizar esta acción");
     }
   };
-
-  const confirmDelete = async () => {
-    const response = await deleteAdminById(admin.id);
-    if (response) {
-      fetchAdmins();
-      setIsModalOpen(false);
-    }
-  };
-
   return (
     <div>
       <div className="flex justify-between pr-20 items-center">
@@ -61,30 +52,6 @@ const AdminCard = ({ admin, fetchAdmins }: AdminCardProps) => {
         </div>
       </div>
       <div className="w-[100%] h-[1px] bg-argenpesos-gray2 mt-7 col-span-6 mb-7"></div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-md shadow-md max-w-lg w-full">
-            <p className="text-lg font-semibold mb-4">
-              ¿Estás seguro de que deseas eliminar este administrador?
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                className="bg-gray-300 px-4 py-2 rounded-md"
-                onClick={() => setIsModalOpen(false)}
-              >
-                Cancelar
-              </button>
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
-                onClick={confirmDelete}
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
