@@ -25,6 +25,7 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
       setModalActiveCuponizate(false);
     }
   };
+  console.log(user);
   return (
     <>
       <Modal
@@ -42,27 +43,31 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
         }
       />
       <div
-        className="grid grid-cols-6 gap-5 relative items-center"
+        className="grid grid-cols-[1fr_140px_120px_140px_100px_1fr] gap-6 relative items-center justify-start"
         onMouseLeave={() => setMenuVisibility(false)}
       >
-        <div className="flex items-center gap-1 z-[-1]">
+        <div className="flex items-center justify-start gap-1">
           <img
-            className="w-[50px] h-[50px]"
+            className="w-[25px] h-[25px]"
             src={apiUrls.avatarUser(user.avatar)}
             alt={user.first_name}
           />
           <p className="text-[1rem] text-argenpesos-textos font-book">
-            {`${user.first_name} ${user.last_name}`}
+            {`${
+              (user.first_name + " " + user.last_name).length > 25
+                ? (user.first_name + " " + user.last_name).slice(0, 22) + "..."
+                : user.first_name + " " + user.last_name
+            }`}{" "}
           </p>
         </div>
         <button
           type="button"
           title={user.cuponizate ? "Desactivar" : "Activar"}
           onClick={() => setModalActiveCuponizate(true)}
-          className={`text-[0.9rem] font-book border-[2px] rounded-full py-[4px] w-[60%] ${
+          className={`text-[0.9rem] font-book border-[2px] rounded-full py-[4px] w-[80%] ${
             user.cuponizate
-              ? "text-argenpesos-skyBlue border-argenpesos-skyBlue"
-              : "text-argenpesos-textos border-argenpesos-textos"
+              ? "text-argenpesos-skyBlue border-argenpesos-skyBlue hover:bg-argenpesos-skyBlue hover:text-argenpesos-white transition-all"
+              : "text-argenpesos-textos border-argenpesos-textos hover:bg-argenpesos-textos hover:text-argenpesos-white transition-all"
           }`}
         >
           {user.cuponizate ? "Activo" : "Inactivo"}
@@ -73,13 +78,15 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
         <p className="text-[1rem] text-argenpesos-textos font-book">
           {calculateAge(user.birthday)}
         </p>
-        <p className="text-[1rem] text-argenpesos-textos font-book">{user.points}</p>
-        <p className="text-[1rem] text-argenpesos-textos font-book z-[-1]">
-          {formatDateString(user.create)}
+        <p className="text-[1rem] text-argenpesos-textos font-book max-w-[100px] truncate">
+          {user.points}
+        </p>
+        <p className="text-[0.9rem] text-argenpesos-textos font-book ">
+          {formatDateString(user.create).slice(0, 13)}
         </p>
         <div
           onClick={() => toggleVisibility()}
-          className="absolute right-0 top-3 w-[0px]"
+          className="absolute right-0 top-[5%] w-[0px]"
         >
           <button>
             <ThreePoints />
