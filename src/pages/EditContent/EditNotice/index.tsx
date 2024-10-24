@@ -27,7 +27,7 @@ const EditNotice = () => {
 
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
+    <div className="flex flex-col pl-16 pt-12 px-10 min-h-[100%] max-w-[clamp(1100px,77.2vw,1200px)]">
       <div className="flex gap-10 items-center pb-12">
         <ArrowLeft
           className="cursor-pointer"
@@ -39,7 +39,7 @@ const EditNotice = () => {
       <p className="text-[23px] font-bold text-argenpesos-textos mt-10 mb-5">
         Noticias
       </p>
-      <div className="flex gap-5">
+      <div className="flex flex-wrap gap-5 pb-12">
         {notices.map(notice => {
           return (
             <CardNotice

@@ -63,3 +63,50 @@ export const createBranch = async (data: {
     return false;
   }
 };
+
+export const updateBranch = async (
+  id: string,
+  data: {
+    name: string;
+    image: string;
+    address: string;
+    schedules_1: string;
+    schedules_2: string;
+    whatsapp: string;
+    phone: string;
+    lat: number;
+    lon: number;
+  }
+) => {
+  try {
+    const response = await axiosInstance.put(apiUrls.updateBranch(id), data);
+    if (response.data.ok) {
+      alertConfirm("Sucursal actualizada correctamente");
+      return true;
+    } else {
+      alertError("Error al actualizar la sucursal");
+      return false;
+    }
+  } catch (error) {
+    alertError("Error al actualizar la sucursal");
+    return false;
+  }
+};
+
+export const deleteBranchById = async (id: string) => {
+  try {
+    console.log("cualquier cosa");
+    const response = await axiosInstance.delete(apiUrls.deleteBranch(id));
+    console.log(response.data);
+    if (response.data.ok) {
+      alertConfirm("Sucursal eliminada correctamente");
+      return true;
+    } else {
+      alertError("Error al eliminar la sucursal");
+      return false;
+    }
+  } catch (error) {
+    alertError("Error al eliminar la sucursal");
+    return false;
+  }
+};

@@ -37,42 +37,40 @@ const Users = () => {
   }, []);
 
   return (
-    <div className="flex flex-col pl-16 pt-12 px-10 max-w-[1200px]">
-      <div className="flex gap-2 mb-8">
+    <div className="flex flex-col pl-16 pt-12 px-10 max-w-[clamp(1000px,77.2vw,1200px)]">
+      <div className="flex gap-2 mb-2">
         <p className="text-[3rem] text-argenpesos-textos font-bold">Usuarios</p>
         <p className="text-[40px] text-argenpesos-textos font-book mt-[6px]">
           {`(${users.length})`}
         </p>
       </div>
 
-      <div className="flex">
-        <div className="relative">
+      <div className="flex justify-between mb-8">
+        <div className="relative flex">
           <input
             className="w-[457px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10 placeholder:text-argenpesos-textos font-book text-argenpesos-textos text-[15.36px]"
             type="search"
             placeholder="Buscar estadísticas o datos"
           />
           <IconMagnifyingGlass className="absolute top-[18px] left-4" />
+          <div className="flex w-[120px] h-[54px] ml-4 border-[1px] border-argenpesos-textos items-center justify-center gap-2 rounded-[13px]">
+            <IconFilter />
+            <p className="text-[15.36px] font-book text-argenpesos-textos">
+              Filtros
+            </p>
+          </div>
         </div>
-        <div className="flex w-[120px] h-[54px] ml-4 border-[1px] border-argenpesos-textos items-center justify-center gap-2 rounded-[13px]">
-          <IconFilter />
-          <p className="text-[15.36px] font-book text-argenpesos-textos">
-            Filtros
-          </p>
-        </div>
-        <div className="flex justify-between gap-32 items-center">
-          <p className="pl-32">1 - 50 de {users.length}</p>
+        <div className="flex gap-20 items-center">
+          <p className="text-argenpesos-textos">1 - 50 de {users.length}</p>
           <div className="flex gap-10">
             <ArrowLeft />
             <ArrowRight />
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-6 gap-5 my-8">
+      <div className="grid grid-cols-[1fr_140px_120px_140px_100px_1fr] gap-6 my-8">
+        <p className="text-[1rem] text-argenpesos-textos font-bold">Usuario</p>
         <p className="text-[1rem] text-argenpesos-textos font-bold">
-          Nombre de usuario
-        </p>
-        <p className="text-[1rem] text-argenpesos-textos font-bold ml-5">
           Cuponizate
         </p>
         <p className="text-[1rem] text-argenpesos-textos font-bold">Status</p>
