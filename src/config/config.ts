@@ -44,8 +44,8 @@ export const apiUrls = {
   BranchImg: (img: string) => `${baseUrl}/branch/${img}`,
   uploadImageBranch: () => `/api/branch/image`,
   createBranch: () => `/api/branch`,
-  deleteBranch: (id: string) => `/branch/${id}`,
-  updateBranch: (id: string) => `/branch/${id}`,
+  updateBranch: (id: string) => `api/branch/${id}`,
+  deleteBranch: (id: string) => `api/branch/${id}`,
 };
 
 export const tokenAccess = {
