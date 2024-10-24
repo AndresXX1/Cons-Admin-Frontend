@@ -1,6 +1,8 @@
 import { IconDelete, IconEdit } from "@utils/svg";
 import { Branch } from ".";
 import { apiUrls } from "@config/config";
+import { deleteBranchById } from "@store/services/branches";
+
 
 export interface CardBranchProps {
   branch: Branch;
@@ -8,8 +10,16 @@ export interface CardBranchProps {
 }
 
 const CardBranch = ({ branch, getBranchesList }: CardBranchProps) => {
+
+  const handleDelete = async () => {
+    const result = await deleteBranchById(branch.id.toString());
+
+    if (result) {
+      getBranchesList();
+    }
+  };
   return (
-    <div className="w-[306px] h-[200px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10">
+    <div className="w-[306px] h-[200px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10 overflow-hidden">
       <div className="rounded-[13px] bg-[#F9F9F9] flex items-center relative w-full h-full">
         <img
           className="w-full h-full overflow-hidden object-cover"
@@ -23,7 +33,7 @@ const CardBranch = ({ branch, getBranchesList }: CardBranchProps) => {
           />
           <IconDelete
             className="cursor-pointer"
-            onClick={() => getBranchesList()}
+            onClick={() => handleDelete()}
           />
         </div>
       </div>

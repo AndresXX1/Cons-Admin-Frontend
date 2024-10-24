@@ -53,6 +53,8 @@ const Products = () => {
 
   useEffect(() => {
     getProducts();
+    console.log(products);
+    
   }, []);
 
   const getUniqueCategoryNames = (products: IProduct[]): ICategory[] => {
@@ -93,7 +95,7 @@ const Products = () => {
           <div className="px-6 py-6 flex flex-col justify-center gap-5 w-[481px] h-[192px]">
             <div className="flex justify-between items-center">
               <p className="text-[1rem] text-argenpesos-textos font-bold">
-                ¿Está seguro que desea eliminar este usuario?
+                ¿Está seguro que desea eliminar este producto?
               </p>
               <p className="cursor-pointer" onClick={() => setModal(false)}>
                 <IconX />
@@ -379,7 +381,7 @@ const Products = () => {
           </div>
         }
       ></Modal>
-      <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
+      <div className="flex flex-col pl-16 pt-12 px-10 h-[100%] max-w-[clamp(1000px,77.2vw,1200px)]">
         <p className="text-[3rem] text-argenpesos-textos font-bold pb-14">
           Productos
         </p>
@@ -429,26 +431,26 @@ const Products = () => {
           Argencompras
         </h4>
         <input
-          className="w-full h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10"
+          className="w-full rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-6 py-3"
           type="search"
           placeholder="Buscar estadísticas o datos"
         />
 
-        <div className="flex justify-between mt-10 pr-4">
+        <div className="flex justify-between items-end mt-10">
           <p
             onClick={() => setCategoryFilter(null)}
-            className={`text-[1rem] font-book ${categoryFilter !== null ? "text-argenpesos-textos cursor-pointer" : "text-argenpesos-black"}`}
+            className={`text-[1rem] font-book cursor-pointer transition-all hover:font-medium hover:text-argenpesos-black ${categoryFilter !== null ? "text-argenpesos-textos cursor-pointer" : "text-argenpesos-black font-medium"}`}
           >
             Todos
           </p>
           {categories.map((category: ICategory) => (
-            <div key={category.id}>
+            <div key={category.id} className="max-w-[959px]">
               <p
                 onClick={() => setCategoryFilter(category)}
-                className={`text-[1rem] font-book ${
+                className={`text-[0.9rem] cursor-pointer font-book transition-all hover:font-medium hover:text-argenpesos-black ${
                   categoryFilter?.id !== category.id
                     ? "text-argenpesos-textos cursor-pointer"
-                    : "text-argenpesos-black"
+                    : "text-argenpesos-black font-medium"
                 }`}
               >
                 {category.name.es}

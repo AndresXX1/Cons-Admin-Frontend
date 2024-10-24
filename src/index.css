@@ -14,6 +14,7 @@ html,
 body {
   height: 100vh;
   font-family: "Gotham Medium", "Gotham Book", "Montserrat";
+  background-color: #fcfdfd;
 }
 @font-face {
   font-family: "Gotham Light";
@@ -37,7 +38,7 @@ body {
 
 @font-face {
   font-family: "Gotham Book";
-  src: url("../public/fonts/GothamBook.otf");
+  src: url("/fonts/GothamBook.otf");
 }
 
 @font-face {

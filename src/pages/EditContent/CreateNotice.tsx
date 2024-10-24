@@ -118,8 +118,9 @@ const CreateNotice = ({ getNoticesList }: CreateNoticeProps) => {
                     required
                   />
 
-                  <label htmlFor="">Fecha</label>
+                  <label htmlFor="date">Fecha</label>
                   <input
+                    id="date"
                     className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
                     type="text"
                     placeholder="1 / 1 / 2025"
@@ -128,8 +129,9 @@ const CreateNotice = ({ getNoticesList }: CreateNoticeProps) => {
                     value={data.date}
                     required
                   />
-                  <label htmlFor="">Descripción</label>
-                  <input
+                  <label htmlFor="description">Descripción</label>
+                  <textarea
+                    id="description"
                     className="w-[617px] h-[181px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
                     type="text"
                     placeholder="Cuerpo de texto"

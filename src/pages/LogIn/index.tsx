@@ -53,20 +53,16 @@ const LogIn = () => {
   }
 
   return (
-    <div className="flex w-full flex-row min-h-[100vh]">
+    <div className="flex w-full flex-row max-h-[110vh]">
       <figcaption className="overflow-hidden w-[50%]">
-        <img className="object-cover" src="login/image_login.png"></img>
+        <img className="object-center" src="login/image_login.png"></img>
       </figcaption>
-      <div className="py-[80px] mx-auto max-w-[600px]">
-        <img
-          className="w-[235px] h-[49px] mb-[27.67px] object-cover"
-          src="login/logo.svg"
-          alt=""
-        />
+      <div className="pt-[60px] mx-auto max-w-[560px]">
+        <img className="mb-[25px] object-center" src="login/logo.svg" alt="" />
         <h2 className="text-argenpesos-textos text-[44px] font-bold leading-[48px] tracking-[-0.96px] mb-[13px] mx-auto">
           ¡Bienvenido de vuelta!
         </h2>
-        <p className="text-argenpesos-textos text-[23px] font-book mb-[42px]">
+        <p className="text-argenpesos-textos text-[23px] font-book mb-[32px]">
           Iniciá sesión para poder acceder al panel de administración.
         </p>
         <form onSubmit={handleSubmit}>
