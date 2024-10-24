@@ -17,7 +17,11 @@ const CreateNotice = ({ getNoticesList }: CreateNoticeProps) => {
     date: "",
   });
 
-  const handlerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlerChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setData({
       ...data,
       [e.target.name]: e.target.value,
@@ -133,7 +137,6 @@ const CreateNotice = ({ getNoticesList }: CreateNoticeProps) => {
                   <textarea
                     id="description"
                     className="w-[617px] h-[181px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
-                    type="text"
                     placeholder="Cuerpo de texto"
                     name="description"
                     onChange={handlerChange}

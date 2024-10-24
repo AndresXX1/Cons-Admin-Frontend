@@ -32,6 +32,7 @@ export interface IProduct {
     src: string;
   }[];
   is_visible: boolean;
+  variants: { price: string }[];
 }
 
 const Products = () => {
@@ -54,7 +55,6 @@ const Products = () => {
   useEffect(() => {
     getProducts();
     console.log(products);
-    
   }, []);
 
   const getUniqueCategoryNames = (products: IProduct[]): ICategory[] => {
