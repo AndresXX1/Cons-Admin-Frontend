@@ -5,6 +5,7 @@ import {
   logInAsync,
   verifySessionAsync,
   logOutAsync,
+  getAllUser,
 } from "@store/actions/auth";
 
 const initialState: IAuthState = {
@@ -28,6 +29,9 @@ export const authSlice = createSlice({
         state.loading = false;
       })
       .addCase(getUserAsync.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+      })
+      .addCase(getAllUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
       })
       .addCase(getUserAsync.rejected, state => {

@@ -193,6 +193,23 @@ export const getUserAsync = createAsyncThunk(
   }
 );
 
+export const getAllUser = createAsyncThunk(
+  "auth/getAllUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(apiUrls.getUsers());
+      if (response.data.ok) {
+        return response.data;
+      } else {
+        return rejectWithValue("error");
+      }
+    } catch (error) {
+      deleteAccess();
+      return rejectWithValue("error");
+    }
+  }
+);
+
 export const logInAsync = createAsyncThunk(
   "auth/logInAsync",
   async (
