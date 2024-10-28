@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   IconNotification,
   ArrowBlue,
@@ -10,18 +10,54 @@ import {
 } from "@utils/svg";
 import Modal from "@components/Modal";
 import "react-datetime/css/react-datetime.css";
+import {
+  createNotification,
+  getNextNotifications,
+  getOldNotifications,
+} from "@store/services/notification";
+
+export interface NotificationProps {
+  title: string;
+  message: string;
+  scheduledAt: Date | string;
+  saveInHistory: boolean;
+  isPush: boolean;
+}
 
 const Notifications = () => {
   const [visibleIndex, setVisibleIndex] = useState<number | null>(null);
-  const [modalDelete, setModalDelete] = useState<boolean>(false);
-  const [modalEdit, setModalEdit] = useState<boolean>(false);
-  const [modalCreate, setModalCreate] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>("");
-
   const currentDate = new Date()
     .toLocaleString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" })
     .replace(" ", "T")
     .slice(0, 16);
+  const [data, setData] = useState<NotificationProps>({
+    title: "",
+    message: "",
+    scheduledAt: new Date(currentDate),
+    saveInHistory: false,
+    isPush: false,
+  });
+  const [nextNotifications, setNextNotifications] = useState<
+    NotificationProps[]
+  >([]);
+  const [oldNotifications, setOldNotifications] = useState<NotificationProps[]>(
+    []
+  );
+  const [modalDelete, setModalDelete] = useState<boolean>(false);
+  const [modalEdit, setModalEdit] = useState<boolean>(false);
+  const [modalCreate, setModalCreate] = useState<boolean>(false);
+
+  const fetchNotifications = async () => {
+    const response = await getNextNotifications();
+    const response2 = await getOldNotifications();
+    setNextNotifications(response);
+    setOldNotifications(response2);
+    return;
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   const maxDate = new Date(
     new Date().setFullYear(new Date().getFullYear() + 10)
@@ -30,7 +66,6 @@ const Notifications = () => {
     .replace(" ", "T")
     .slice(0, 16);
 
-  const [date, setDate] = useState(currentDate);
   const [error, setError] = useState<string>("");
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,18 +78,36 @@ const Notifications = () => {
     } else {
       setError("");
     }
-
-    setDate(selectedDate);
+    setData({ ...data, scheduledAt: new Date(selectedDate) });
   };
 
-  const [isShippingIncluded, setIsShippingIncluded] = useState<boolean>(false);
-  const [isPushNotificationIncluded, setIsPushNotificationIncluded] =
-    useState<boolean>(false);
-  const [isInAppNotificationIncluded, setIsInAppNotificationIncluded] =
-    useState<boolean>(false);
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setData({
+      ...data,
+      [e.target.name]:
+        e.target.value === "false"
+          ? false
+          : e.target.value === "true"
+            ? true
+            : e.target.value,
+    });
+  };
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+  const handleSubmit = async () => {
+    const response = await createNotification(data, setError);
+    if (response) {
+      setData({
+        title: "",
+        message: "",
+        scheduledAt: new Date(currentDate),
+        saveInHistory: false,
+        isPush: false,
+      });
+      setModalCreate(false);
+      fetchNotifications();
+    }
   };
 
   const toggleVisibility = (index: number) => {
@@ -65,32 +118,6 @@ const Notifications = () => {
     }
   };
 
-  const info = [
-    {
-      name: "Black Friday!",
-      date: "29/11/24",
-      age: "Hora",
-      imagen: "Si",
-      app: "Si",
-      push: "No",
-    },
-    {
-      name: "Black Friday!",
-      date: "29/11/24",
-      age: "Hora",
-      imagen: "No",
-      app: "Si",
-      push: "Si",
-    },
-    {
-      name: "Black Friday!",
-      date: "29/11/24",
-      age: "Hora",
-      imagen: "Si",
-      app: "No",
-      push: "Si",
-    },
-  ];
   return (
     <>
       <Modal
@@ -142,7 +169,16 @@ const Notifications = () => {
               </p>
               <p
                 className="cursor-pointer"
-                onClick={() => setModalCreate(false)}
+                onClick={() => {
+                  setData({
+                    title: "",
+                    message: "",
+                    scheduledAt: new Date(currentDate),
+                    saveInHistory: false,
+                    isPush: false,
+                  });
+                  setModalCreate(false);
+                }}
               >
                 <IconX />
               </p>
@@ -166,49 +202,13 @@ const Notifications = () => {
                   <input
                     className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
                     type="text"
+                    name="title"
                     placeholder="Título"
                     maxLength={50}
-                    value={title}
-                    onChange={handleTitleChange}
+                    value={data.title}
+                    onChange={handleChange}
                   />
 
-                  <p className="pt-9 text-[14px] font-bold text-argenpesos-textos">
-                    Incluye envío
-                  </p>
-                  <div className="flex gap-5">
-                    <div className="flex items-center gap-3 rounded-[4px]">
-                      <input
-                        id="shipping-yes"
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
-                        type="radio"
-                        name="shipping-option"
-                        checked={isShippingIncluded}
-                        onChange={() => setIsShippingIncluded(true)}
-                      />
-                      <label
-                        htmlFor="shipping-yes"
-                        className="text-[14px] font-book leading-[24px] text-argenpesos-textos"
-                      >
-                        Si
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-3 rounded-[4px]">
-                      <input
-                        id="shipping-no"
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
-                        type="radio"
-                        name="shipping-option"
-                        checked={!isShippingIncluded}
-                        onChange={() => setIsShippingIncluded(false)}
-                      />
-                      <label
-                        htmlFor="shipping-no"
-                        className="text-[14px] font-book leading-[24px] text-argenpesos-textos"
-                      >
-                        No
-                      </label>
-                    </div>
-                  </div>
                   <div className="flex">
                     <div>
                       <label className="text-[14px] font-bold text-argenpesos-textos">
@@ -218,8 +218,17 @@ const Notifications = () => {
                         className="border-0 border-[#C2C2C2] w-full h-[36px] pl-2 border-b-[1px] leading-[27px] text-sofiaCall-dark font-poppinsMedium text-[13px]"
                         type="datetime-local"
                         id="start_time"
-                        name="start_time"
-                        value={date}
+                        name="scheduledAt"
+                        value={
+                          data.scheduledAt instanceof Date
+                            ? new Date(
+                                data.scheduledAt.getTime() -
+                                  new Date().getTimezoneOffset() * 60000
+                              )
+                                .toISOString()
+                                .slice(0, 16)
+                            : ""
+                        }
                         min={currentDate}
                         max={maxDate}
                         required
@@ -237,6 +246,9 @@ const Notifications = () => {
                   <textarea
                     className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
                     placeholder="Cuerpo de texto"
+                    name="message"
+                    value={data.message}
+                    onChange={handleChange}
                   />
                   <p className="pt-5 text-[14px] font-bold text-argenpesos-textos">
                     Incluye notificación Push
@@ -247,9 +259,10 @@ const Notifications = () => {
                         id="push-notification-yes"
                         className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
                         type="radio"
-                        name="push-notification-option"
-                        checked={isPushNotificationIncluded}
-                        onChange={() => setIsPushNotificationIncluded(true)}
+                        name="isPush"
+                        value="true"
+                        checked={data.isPush}
+                        onChange={handleChange}
                       />
                       <label
                         htmlFor="push-notification-yes"
@@ -263,9 +276,10 @@ const Notifications = () => {
                         id="push-notification-no"
                         className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
                         type="radio"
-                        name="push-notification-option"
-                        checked={!isPushNotificationIncluded}
-                        onChange={() => setIsPushNotificationIncluded(false)}
+                        name="isPush"
+                        value="false"
+                        checked={!data.isPush}
+                        onChange={handleChange}
                       />
                       <label
                         htmlFor="push-notification-no"
@@ -285,9 +299,10 @@ const Notifications = () => {
                         id="in-app-notification-yes"
                         className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
                         type="radio"
-                        name="in-app-notification-option"
-                        checked={isInAppNotificationIncluded}
-                        onChange={() => setIsInAppNotificationIncluded(true)}
+                        value="true"
+                        name="saveInHistory"
+                        checked={data.saveInHistory}
+                        onChange={handleChange}
                       />
                       <label
                         htmlFor="in-app-notification-yes"
@@ -301,9 +316,10 @@ const Notifications = () => {
                         id="in-app-notification-no"
                         className="border-[1px] border-solid border-argenpesos-gray rounded-[full] mr-2"
                         type="radio"
-                        name="in-app-notification-option"
-                        checked={!isInAppNotificationIncluded}
-                        onChange={() => setIsInAppNotificationIncluded(false)}
+                        value="false"
+                        name="saveInHistory"
+                        checked={!data.saveInHistory}
+                        onChange={handleChange}
                       />
                       <label
                         htmlFor="in-app-notification-no"
@@ -320,12 +336,14 @@ const Notifications = () => {
             <div className="flex justify-end gap-4 mt-10 pb-10">
               <button
                 onClick={() => {
-                  setDate("");
-                  setIsShippingIncluded(false);
-                  setIsPushNotificationIncluded(false);
-                  setIsInAppNotificationIncluded(false);
+                  setData({
+                    title: "",
+                    message: "",
+                    scheduledAt: new Date(currentDate),
+                    saveInHistory: false,
+                    isPush: false,
+                  });
                   setModalCreate(false);
-                  setTitle("");
                 }}
                 className="border-[1px] border-argenpesos-gray3 rounded-[10px] text-argenpesos-textos text-[14px] px-4 py-2"
               >
@@ -333,14 +351,7 @@ const Notifications = () => {
               </button>
 
               <button
-                onClick={() => {
-                  setDate("");
-                  setIsShippingIncluded(false);
-                  setIsPushNotificationIncluded(false);
-                  setIsInAppNotificationIncluded(false);
-                  setModalCreate(false);
-                  setTitle("");
-                }}
+                onClick={handleSubmit}
                 className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
               >
                 Guardar
@@ -517,7 +528,10 @@ const Notifications = () => {
             placeholder="Buscar estadísticas o datos"
           />
           <button
-            onClick={() => setModalCreate(true)}
+            onClick={() => {
+              setModalCreate(true),
+                setData({ ...data, scheduledAt: new Date(currentDate) });
+            }}
             className="w-[219px] h-[54px] bg-argenpesos-skyBlue rounded-[13px] flex items-center justify-center text-argenpesos-white gap-1 hover:bg-argenpesos-blue hover:transition-colors duration-100"
           >
             <IconNotification />
@@ -528,7 +542,7 @@ const Notifications = () => {
           Próximas notificaciones
         </h4>
 
-        <div className="grid grid-cols-6 gap-5 my-8">
+        <div className="grid grid-cols-5 gap-5 my-8">
           <p className="text-[1rem] text-argenpesos-textos font-bold">Nombre</p>
           <div className="flex gap-2 items-center">
             <p className="text-[1rem] text-argenpesos-textos font-bold">
@@ -537,109 +551,107 @@ const Notifications = () => {
             <ArrowBlue />
           </div>
           <p className="text-[1rem] text-argenpesos-textos font-bold">Hora</p>
-          <p className="text-[1rem] text-argenpesos-textos font-bold">Imagen</p>
           <p className="text-[1rem] text-argenpesos-textos font-bold">In-App</p>
-
           <p className="text-[1rem] text-argenpesos-textos font-bold">Push</p>
+          <p className="text-[1rem] text-argenpesos-textos font-bold"></p>
         </div>
         <div>
-          {info.map((inf, index) => (
-            <div
-              className="grid grid-cols-6 gap-5 relative items-center ml-1"
-              key={index}
-            >
-              <div className="flex items-center gap-1">
-                <p className="text-[1rem] text-argenpesos-textos font-book">
-                  {inf.name}
-                </p>
-              </div>
-              <p className="text-[1rem] text-argenpesos-textos font-book">
-                {inf.date}
-              </p>
-              <p className="text-[1rem] text-argenpesos-textos font-book">
-                {inf.age}
-              </p>
-              <p className="text-[1rem] text-argenpesos-textos font-book">
-                {inf.imagen}
-              </p>
-              <p className="text-[1rem] text-argenpesos-textos font-book">
-                {inf.app}
-              </p>
-              <p className="text-[1rem] text-argenpesos-textos font-book">
-                {inf.push}
-              </p>
-
+          {nextNotifications &&
+            nextNotifications.map((inf, index) => (
               <div
-                onClick={() => toggleVisibility(index)}
-                className="absolute right-0 top-0 w-[0px]"
+                className="grid grid-cols-5 gap-5 relative items-center ml-1"
+                key={index}
               >
-                <button onClick={() => toggleVisibility(index)}>
-                  {visibleIndex === index ? <ThreePoints /> : <ThreePoints />}
-                </button>
+                <div className="flex items-center gap-1">
+                  <p className="text-[1rem] text-argenpesos-textos font-book">
+                    {inf.title}
+                  </p>
+                </div>
+                <p className="text-[1rem] text-argenpesos-textos font-book">
+                  {inf.scheduledAt.toString().split("T")[0].replace(/-/g, "/")}
+                </p>
+                <p className="text-[1rem] text-argenpesos-textos font-book ml-1">
+                  {`${inf.scheduledAt.toString().split("T")[1].split(":")[0]}:${inf.scheduledAt.toString().split("T")[1].split(":")[1]}`}
+                </p>
+                <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
+                  {inf.saveInHistory ? "Si" : "No"}
+                </p>
+                <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
+                  {inf.isPush ? "Si" : "No"}
+                </p>
+
                 <div
-                  className={`transition-all duration-2000 ease-in-out ${
-                    visibleIndex === index
-                      ? "opacity-100 h-[90px]"
-                      : "opacity-0 max-h-0"
-                  } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px] relative right-[7rem] z-[100]`}
+                  onClick={() => toggleVisibility(index)}
+                  className="absolute right-0 top-0 w-[0px]"
                 >
-                  <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
-                    <p
-                      onClick={() => setModalEdit(true)}
-                      className="flex items-center mr-7 cursor-pointer"
-                    >
-                      <IconEdit color="#575757" />
-                      Editar
-                    </p>
-                    <p
-                      onClick={() => setModalDelete(true)}
-                      className="flex items-center mr-3 cursor-pointer"
-                    >
-                      <IconDelete />
-                      Eliminar
-                    </p>
+                  <button onClick={() => toggleVisibility(index)}>
+                    {visibleIndex === index ? <ThreePoints /> : <ThreePoints />}
+                  </button>
+                  <div
+                    className={`transition-all duration-2000 ease-in-out ${
+                      visibleIndex === index
+                        ? "opacity-100 h-[90px]"
+                        : "opacity-0 max-h-0"
+                    } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px] relative right-[7rem] z-[100]`}
+                  >
+                    <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
+                      <p
+                        onClick={() => setModalEdit(true)}
+                        className="flex items-center mr-7 cursor-pointer"
+                      >
+                        <IconEdit color="#575757" />
+                        Editar
+                      </p>
+                      <p
+                        onClick={() => setModalDelete(true)}
+                        className="flex items-center mr-3 cursor-pointer"
+                      >
+                        <IconDelete />
+                        Eliminar
+                      </p>
+                    </div>
                   </div>
                 </div>
+                <div className="w-[100%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
               </div>
-              <div className="w-[100%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
-            </div>
-          ))}
+            ))}
 
           <h4 className="text-[23px] font-bold text-argenpesos-textos mt-5 mb-10">
             Historial de notificaciones
           </h4>
           <div>
-            {info.map((inf, key) => (
-              <div
-                className="grid grid-cols-6 gap-5 relative items-center ml-1"
-                key={key}
-              >
-                <div className="flex items-center gap-1">
+            {oldNotifications &&
+              oldNotifications.map((inf, key) => (
+                <div
+                  className="grid grid-cols-5 gap-5 relative items-center ml-1"
+                  key={key}
+                >
+                  <div className="flex items-center gap-1">
+                    <p className="text-[1rem] text-argenpesos-textos font-book">
+                      {inf.title}
+                    </p>
+                  </div>
                   <p className="text-[1rem] text-argenpesos-textos font-book">
-                    {inf.name}
+                    {inf.scheduledAt
+                      .toString()
+                      .split("T")[0]
+                      .replace(/-/g, "/")}
                   </p>
+                  <p className="text-[1rem] text-argenpesos-textos font-book ml-1">
+                    {`${inf.scheduledAt.toString().split("T")[1].split(":")[0]}:${inf.scheduledAt.toString().split("T")[1].split(":")[1]}`}
+                  </p>
+                  <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
+                    {inf.saveInHistory ? "Si" : "No"}
+                  </p>
+                  <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
+                    {inf.isPush ? "Si" : "No"}
+                  </p>
+                  <div className="absolute right-5 top-3">
+                    <ThreePoints />
+                  </div>
+                  <div className="w-[100%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
                 </div>
-                <p className="text-[1rem] text-argenpesos-textos font-book">
-                  {inf.date}
-                </p>
-                <p className="text-[1rem] text-argenpesos-textos font-book">
-                  {inf.age}
-                </p>
-                <p className="text-[1rem] text-argenpesos-textos font-book">
-                  {inf.imagen}
-                </p>
-                <p className="text-[1rem] text-argenpesos-textos font-book">
-                  {inf.app}
-                </p>
-                <p className="text-[1rem] text-argenpesos-textos font-book">
-                  {inf.push}
-                </p>
-                <div className="absolute right-5 top-3">
-                  <ThreePoints />
-                </div>
-                <div className="w-[100%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </div>

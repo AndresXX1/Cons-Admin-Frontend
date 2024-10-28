@@ -46,6 +46,11 @@ export const apiUrls = {
   createBranch: () => `/api/branch`,
   updateBranch: (id: string) => `api/branch/${id}`,
   deleteBranch: (id: string) => `api/branch/${id}`,
+  //notification
+  createNotification: () => `/api/notifications/create`,
+  getAllNotifications: () => `/api/notifications`,
+  getNextNotifications: () => `/api/notifications/nextNotifications`,
+  getOldNotifications: () => `/api/notifications/oldNotifications`,
 };
 
 export const tokenAccess = {
