@@ -1,4 +1,4 @@
-import { IconDelete, IconEdit, IconPencil, IconX } from "@utils/svg";
+import { IconDelete, IconX } from "@utils/svg";
 import { Notice } from "./EditNotice";
 import { useState } from "react";
 import Modal from "@components/Modal";
@@ -12,8 +12,6 @@ export interface CardNoticeProps {
 
 const CardNotice = ({ notice, getNoticesList }: CardNoticeProps) => {
   const [modalDeleteNotice, setModalDeleteNotice] = useState<boolean>(false);
-  const [modalEditNotice, setModalEditNotice] = useState<boolean>(false);
-  
   const handleDelete = async () => {
     const result = await deleteNoticeById(notice.id);
 
