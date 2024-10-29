@@ -20,19 +20,12 @@ export interface IProduct {
   brand: string;
   created_at: string;
   canonical_url: string;
-  name: {
-    es: string;
-  };
+  name: string;
   categories: ICategory[];
-  description: {
-    es: string;
-  };
-  images: {
-    id: string;
-    src: string;
-  }[];
-  is_visible: boolean;
-  variants: { price: string }[];
+  description: string;
+  image: string;
+  status: string;
+  final_price: string;
 }
 
 const Products = () => {
@@ -60,8 +53,8 @@ const Products = () => {
   const getUniqueCategoryNames = (products: IProduct[]): ICategory[] => {
     const categoriesData = [] as ICategory[];
 
-    products.forEach(product => {
-      product.categories.forEach(category => {
+    products?.forEach(product => {
+      product.categories?.forEach(category => {
         const include = categoriesData.find(
           existingCategory => existingCategory.id === category.id
         );

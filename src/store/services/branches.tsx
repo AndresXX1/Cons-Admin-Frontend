@@ -74,12 +74,13 @@ export const updateBranch = async (
     schedules_2: string;
     whatsapp: string;
     phone: string;
-    lat: number;
-    lon: number;
+    url: string;
   }
 ) => {
   try {
+    console.log("cualquier cosa");
     const response = await axiosInstance.put(apiUrls.updateBranch(id), data);
+    console.log(response.data);
     if (response.data.ok) {
       alertConfirm("Sucursal actualizada correctamente");
       return true;
@@ -95,9 +96,7 @@ export const updateBranch = async (
 
 export const deleteBranchById = async (id: string) => {
   try {
-    console.log("cualquier cosa");
     const response = await axiosInstance.delete(apiUrls.deleteBranch(id));
-    console.log(response.data);
     if (response.data.ok) {
       alertConfirm("Sucursal eliminada correctamente");
       return true;

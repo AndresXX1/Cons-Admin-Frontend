@@ -26,6 +26,11 @@ export interface User {
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
 
   const getUsersList = async () => {
     const users = await getusers();
@@ -36,12 +41,55 @@ const Users = () => {
     getUsersList();
   }, []);
 
+  useEffect(() => {
+    if (users.length > 0) {
+      const sortedAndFilteredUsers = users
+        .filter(user =>
+          `${user.first_name} ${user.last_name} ${user.email}`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        )
+        .sort((a, b) => {
+          const dateA = new Date(a.create);
+          const dateB = new Date(b.create);
+          return sortOrder === "asc"
+            ? dateA.getTime() - dateB.getTime()
+            : dateB.getTime() - dateA.getTime();
+        });
+
+      setFilteredUsers(sortedAndFilteredUsers);
+    }
+  }, [searchQuery, users, sortOrder]);
+
+  const toggleSortOrder = () => {
+    setSortOrder(prevOrder => (prevOrder === "asc" ? "desc" : "asc"));
+  };
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const currentUsers = filteredUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div className="flex flex-col pl-16 pt-12 px-10 max-w-[clamp(1000px,77.2vw,1200px)]">
       <div className="flex gap-2 mb-2">
         <p className="text-[3rem] text-argenpesos-textos font-bold">Usuarios</p>
         <p className="text-[40px] text-argenpesos-textos font-book mt-[6px]">
-          {`(${users.length})`}
+          {`(${filteredUsers.length})`}
         </p>
       </div>
 
@@ -51,6 +99,8 @@ const Users = () => {
             className="w-[457px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10 placeholder:text-argenpesos-textos font-book text-argenpesos-textos text-[15.36px]"
             type="search"
             placeholder="Buscar estadísticas o datos"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
           />
           <IconMagnifyingGlass className="absolute top-[18px] left-4" />
           <div className="flex w-[120px] h-[54px] ml-4 border-[1px] border-argenpesos-textos items-center justify-center gap-2 rounded-[13px]">
@@ -61,10 +111,19 @@ const Users = () => {
           </div>
         </div>
         <div className="flex gap-20 items-center">
-          <p className="text-argenpesos-textos">1 - 50 de {users.length}</p>
+          <p className="text-argenpesos-textos">
+            {currentPage} - {totalPages} de {filteredUsers.length}
+          </p>
           <div className="flex gap-10">
-            <ArrowLeft />
-            <ArrowRight />
+            <button onClick={handlePrevPage} disabled={currentPage === 1}>
+              <ArrowLeft />
+            </button>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+            >
+              <ArrowRight />
+            </button>
           </div>
         </div>
       </div>
@@ -76,17 +135,22 @@ const Users = () => {
         <p className="text-[1rem] text-argenpesos-textos font-bold">Status</p>
         <p className="text-[1rem] text-argenpesos-textos font-bold">Edad</p>
         <p className="text-[1rem] text-argenpesos-textos font-bold">Puntos</p>
-        <div className="flex gap-2 items-center">
+        <div
+          className="flex gap-2 items-center cursor-pointer"
+          onClick={toggleSortOrder}
+        >
           <p className="text-[1rem] text-argenpesos-textos font-bold">Creado</p>
-          <ArrowBlue />
+          <ArrowBlue
+            className={`transform transition-transform duration-200 ${
+              sortOrder === "asc" ? "rotate-180" : ""
+            }`}
+          />
         </div>
       </div>
       <div>
-        {users.map(user => {
-          return (
-            <CardUser key={user.id} user={user} getUsersList={getUsersList} />
-          );
-        })}
+        {currentUsers.map(user => (
+          <CardUser key={user.id} user={user} getUsersList={getUsersList} />
+        ))}
       </div>
     </div>
   );
