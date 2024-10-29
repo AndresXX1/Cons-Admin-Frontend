@@ -1,9 +1,8 @@
 import Modal from "@components/Modal";
-import { apiUrls, googleMapKey } from "@config/config";
+import { apiUrls } from "@config/config";
 import { createBranch, uploadImgBranch } from "@store/services/branches";
 import { IconMas, IconPencil, IconX } from "@utils/svg";
-import { useEffect, useState } from "react";
-import GoogleMapReact from "google-map-react";
+import { useState } from "react";
 
 interface CreateBranchProps {
   getBranchesList: () => void;
@@ -19,28 +18,13 @@ const CreateBranch = ({ getBranchesList }: CreateBranchProps) => {
     schedules_2: "",
     whatsapp: "",
     phone: "",
-    lat: -34.72469413135643,
-    lon: -58.42348509928119,
+    url: "",
   });
-  const [marker, setMarker] = useState<google.maps.Marker | null>(null);
-  const defaultCenter = {
-    lat: data.lat,
-    lng: data.lon,
-  };
-  const defaultZoom = 16;
 
   const handlerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({
       ...data,
       [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleMapClick = ({ lat, lng }: { lat: number; lng: number }) => {
-    setData({
-      ...data,
-      lat,
-      lon: lng,
     });
   };
 
@@ -80,18 +64,11 @@ const CreateBranch = ({ getBranchesList }: CreateBranchProps) => {
         schedules_2: "",
         whatsapp: "",
         phone: "",
-        lat: -34.72469413135643,
-        lon: -58.42348509928119,
+        url: "",
       });
       setModalCreateBranch(false);
     }
   };
-
-  useEffect(() => {
-    if (marker) {
-      marker.setPosition({ lat: data.lat, lng: data.lon });
-    }
-  }, [data.lat, data.lon, marker]);
 
   return (
     <>
@@ -200,27 +177,15 @@ const CreateBranch = ({ getBranchesList }: CreateBranchProps) => {
                     required
                   />
                   <p>Ubicación</p>
-                  <div className="w-full h-[200px] mb-2">
-                    <GoogleMapReact
-                      bootstrapURLKeys={{ key: googleMapKey }}
-                      defaultCenter={defaultCenter}
-                      defaultZoom={defaultZoom}
-                      onClick={handleMapClick}
-                      onGoogleApiLoaded={({ map, maps }) => {
-                        const newMarker = new maps.Marker({
-                          position: {
-                            lat: data.lat,
-                            lng: data.lon,
-                          },
-                          map,
-                          icon: "/point.svg",
-                          scaledSize: new maps.Size(20, 20),
-                          title: data.name,
-                        });
-                        setMarker(newMarker);
-                      }}
-                    ></GoogleMapReact>
-                  </div>
+                  <input
+                    className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
+                    type="text"
+                    placeholder="https://www.google.com/maps/place/Argenpesos+Avellaneda/"
+                    name="url"
+                    onChange={handlerChange}
+                    value={data.url}
+                    required
+                  />
                 </div>
               </div>
             </div>
