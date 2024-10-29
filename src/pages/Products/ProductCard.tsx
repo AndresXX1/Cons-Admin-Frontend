@@ -14,23 +14,24 @@ const ProductCard = ({ product, getProducts }: ProductCardProps) => {
       getProducts();
     }
   };
+
   return (
     <div
-      className={`${product.is_visible ? "max-w-[305px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10 font-book" : "max-w-[305px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10 font-book opacity-30"}`}
+      className={`${product?.status === "activo" ? "max-w-[305px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10 font-book" : "max-w-[305px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10 font-book opacity-30"}`}
     >
       <div className="flex flex-col justify-between pt-5  pb-3 pl-4">
         <h4 className="w-[141px] text-[20px] font-book leading-[24px] text-argenpesos-textos">
-          {product.name.es}
+          {product.name}
         </h4>
         <p className="text-argenpesos-red text-[20px] font-bold leading-[19px]">
-          {parseInt(product.variants[0].price).toLocaleString("es-AR")}
+          ${parseInt(product?.final_price).toLocaleString("es-AR")}
         </p>
       </div>
       <div className="h-full w-[150px] rounded-[13px] bg-[#F9F9F9] flex items-center relative">
-        {product.images[0].src && (
+        {product?.image && (
           <img
             className="w-[150px] h-[150px]"
-            src={product.images[0].src}
+            src={`http://back7.maylandlabs.com/product/${product.image}`}
             alt="image"
           />
         )}
@@ -38,7 +39,11 @@ const ProductCard = ({ product, getProducts }: ProductCardProps) => {
           onClick={toggleVisibility}
           className="rounded-md absolute bottom-2 flex right-4 cursor-pointer hover:scale-110 transition-all"
         >
-          {product.is_visible ? <IconViewBlueOff /> : <IconViewBlue />}
+          {product?.status === "activo" ? (
+            <IconViewBlueOff />
+          ) : (
+            <IconViewBlue />
+          )}
         </div>
       </div>
     </div>

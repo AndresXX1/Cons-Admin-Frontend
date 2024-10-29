@@ -74,8 +74,7 @@ export const updateBranch = async (
     schedules_2: string;
     whatsapp: string;
     phone: string;
-    lat: number;
-    lon: number;
+    url: string;
   }
 ) => {
   try {
