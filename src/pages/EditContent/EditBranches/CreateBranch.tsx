@@ -2,7 +2,7 @@ import Modal from "@components/Modal";
 import { apiUrls } from "@config/config";
 import { createBranch, uploadImgBranch } from "@store/services/branches";
 import { IconMas, IconPencil, IconX } from "@utils/svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface CreateBranchProps {
   getBranchesList: () => void;
