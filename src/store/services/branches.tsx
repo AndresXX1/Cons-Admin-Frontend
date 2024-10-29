@@ -46,8 +46,7 @@ export const createBranch = async (data: {
   schedules_2: string;
   whatsapp: string;
   phone: string;
-  lat: number;
-  lon: number;
+  url: string;
 }) => {
   try {
     const response = await axiosInstance.post(apiUrls.createBranch(), data);
