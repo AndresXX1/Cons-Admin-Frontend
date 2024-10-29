@@ -1,6 +1,6 @@
 import { IconDelete, IconEdit, IconPencil, IconX } from "@utils/svg";
 import { Branch } from ".";
-import { apiUrls, googleMapKey } from "@config/config";
+import { apiUrls } from "@config/config";
 import {
   deleteBranchById,
   updateBranch,
@@ -8,7 +8,6 @@ import {
 } from "@store/services/branches";
 import { useEffect, useState } from "react";
 import Modal from "@components/Modal";
-import GoogleMapReact from "google-map-react";
 
 export interface CardBranchProps {
   branch: Branch;
@@ -26,15 +25,8 @@ const CardBranch = ({ branch, getBranchesList }: CardBranchProps) => {
     schedules_2: "",
     whatsapp: "",
     phone: "",
-    lat: -34.72469413135643,
-    lon: -58.42348509928119,
+    url: "",
   });
-  const [marker, setMarker] = useState<google.maps.Marker | null>(null);
-  const defaultCenter = {
-    lat: -34.72469413135643,
-    lng: -58.42348509928119,
-  };
-  const defaultZoom = 16;
 
   const handleDelete = async () => {
     const result = await deleteBranchById(branch.id.toString());
@@ -64,8 +56,7 @@ const CardBranch = ({ branch, getBranchesList }: CardBranchProps) => {
         schedules_2: branch.schedules_2 || "",
         whatsapp: branch.whatsapp || "",
         phone: branch.phone || "",
-        lat: branch.lat || -34.72469413135643,
-        lon: branch.lon || -58.42348509928119,
+        url: branch.url || "",
       });
     }
   }, [modalEdit, branch]);
@@ -78,14 +69,6 @@ const CardBranch = ({ branch, getBranchesList }: CardBranchProps) => {
     setData({
       ...data,
       [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleMapClick = ({ lat, lng }: { lat: number; lng: number }) => {
-    setData({
-      ...data,
-      lat,
-      lon: lng,
     });
   };
 
@@ -107,12 +90,6 @@ const CardBranch = ({ branch, getBranchesList }: CardBranchProps) => {
       });
     };
   };
-
-  useEffect(() => {
-    if (marker) {
-      marker.setPosition({ lat: data.lat, lng: data.lon });
-    }
-  }, [data.lat, data.lon, marker]);
 
   return (
     <>
@@ -254,28 +231,16 @@ const CardBranch = ({ branch, getBranchesList }: CardBranchProps) => {
                     value={data.schedules_2}
                     required
                   />
-                  <p>Ubicación</p>
-                  <div className="w-full h-[200px] mb-2">
-                    <GoogleMapReact
-                      bootstrapURLKeys={{ key: googleMapKey }}
-                      defaultCenter={defaultCenter}
-                      defaultZoom={defaultZoom}
-                      onClick={handleMapClick}
-                      onGoogleApiLoaded={({ map, maps }) => {
-                        const newMarker = new maps.Marker({
-                          position: {
-                            lat: data.lat,
-                            lng: data.lon,
-                          },
-                          map,
-                          icon: "/point.svg",
-                          scaledSize: new maps.Size(20, 20),
-                          title: data.name,
-                        });
-                        setMarker(newMarker);
-                      }}
-                    ></GoogleMapReact>
-                  </div>
+                  <p>Ubicación | Google Maps url</p>
+                  <input
+                    className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
+                    type="text"
+                    placeholder="https://www.google.com/maps/place/Argenpesos+Avellaneda/@-34.649247,-58.4218763,12z/data=!4m6!3m5!1s0x95a33353b52e0ac7:0xecc21ebc001b04d4!8m2!3d-34.6606336!4d-58.3675524!16s%2Fg%2F11f3xgrr15?entry=ttu&g_ep=EgoyMDI0MTAyMy4wIKXMDSoASAFQAw%3D%3D"
+                    name="url"
+                    onChange={handlerChange}
+                    value={data.schedules_2}
+                    required
+                  />
                 </div>
               </div>
             </div>

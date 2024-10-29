@@ -14,8 +14,7 @@ export interface Branch {
   schedules_2: string;
   whatsapp: string;
   phone: string;
-  lat: number;
-  lon: number;
+  url: string;
 }
 
 const EditBranches = () => {
