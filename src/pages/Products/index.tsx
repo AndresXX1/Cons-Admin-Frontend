@@ -198,28 +198,36 @@ const Products = () => {
     ←
   </button>
 
-        <div className="flex gap-7">
-        {currentProducts.map((product, key) => (
+  <div className="flex gap-7">
+  {currentProducts.map((product, key) => (
     <div
       className="max-w-[301px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray"
       key={key}
     >
       <div className="flex flex-col justify-between pt-5 pb-3 pl-4">
-        <h4 className="w-[141px] text-[20px] font-book leading-[24px] text-argenpesos-textos">
+        {/* Nombre del producto */}
+        <h4 className="w-[141px] text-[22px] font-book leading-[28px] text-argenpesos-textos mb-1">
           {product.name}
-        </h4>  
-              <h6 className="w-[141px] text-[20px] font-book leading-[24px] text-argenpesos-textos">
+        </h4>
+
+        {/* Categoría del producto */}
+        <h6 className="w-[141px] text-[18px] font-book leading-[22px] text-argenpesos-textos mb-1">
           {product.category}
         </h6>
-        <h6 className="w-[141px] text-[20px] font-book leading-[24px] text-argenpesos-textos">
+
+        {/* Descripción del producto */}
+        <h6 className="w-[141px] text-[16px] font-book leading-[20px] text-argenpesos-textos mb-3">
           {product.description}
         </h6>
+
         <div className="flex justify-between items-center">
-          <p className="text-argenpesos-red text-[20px] font-bold leading-[19px]">
-            {product.value} Puntos
+          {/* Valor del producto */}
+          <p className="text-argenpesos-red text-[18px] font-bold leading-[22px]">
+          Puntos: {product.value} 
           </p>
+
           {/* Contenedor para los íconos de editar y eliminar */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-[20px] ml-2">
             {/* Icono de editar */}
             <IconEdit
               className="cursor-pointer"
@@ -231,16 +239,21 @@ const Products = () => {
               className="cursor-pointer"
             />
           </div>
-          
         </div>
       </div>
-      <div className="h-full w-[150px] rounded-[13px] bg-[#F9F9F9] flex items-center relative">
-        <img className="w-[150px] h-[150px]" src={product.image} alt={product.name} />
+
+      {/* Contenedor de la imagen con bordes redondeados y ajustada */}
+      <div className="h-full w-[140px] rounded-[13px] bg-[#F9F9F9] flex items-center relative">
+        <img
+          className="w-[150px] h-[150px] rounded-[10px] absolute left-[-7px] top-[10px]"
+          src={product.image}
+          alt={product.name}
+        />
       </div>
     </div>
   ))}
-
 </div>
+
           {/* Flecha a la derecha */}
           <button
     onClick={handleNext}

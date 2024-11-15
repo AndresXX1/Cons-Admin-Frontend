@@ -30,6 +30,13 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   const [colors, setColors] = useState<string[]>([]);
   const [image, setImage] = useState<string | null>(product?.image || null);
   const [, setSuccess] = useState<boolean>(false);
+  const [errors, setErrors] = useState({
+    name: "",
+    price: "",
+    description: "",
+    category: "",
+    image: "",
+  });
 
   // Estados de carga y error
   const { loading, error } = useSelector((state: RootState) => ({
@@ -52,11 +59,46 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
 
 
   const handleSave = async () => {
-    if (!name || !price || !description || !category) {
-      alert("Por favor, completa todos los campos requeridos.");
+    let formIsValid = true;
+    const newErrors: { name: string; price: string; description: string; category: string; image: string } = { // Declarar explícitamente las propiedades
+      name: "",
+      price: "",
+      description: "",
+      category: "",
+      image: "",
+    };
+  
+    // Validación de campos
+    if (!name) {
+      formIsValid = false;
+      newErrors.name = "El nombre es obligatorio.";
+    }
+    if (!price) {
+      formIsValid = false;
+      newErrors.price = "El valor es obligatorio.";
+    }
+    if (!description) {
+      formIsValid = false;
+      newErrors.description = "La descripción es obligatoria.";
+    }
+    if (!category) {
+      formIsValid = false;
+      newErrors.category = "La categoría es obligatoria.";
+    }
+    if (!image) {  // Validación de la imagen
+      formIsValid = false;
+      newErrors.image = "La imagen es obligatoria.";  // Error para la imagen
+    }
+  
+    // Si hay errores, actualizamos el estado de errores
+    setErrors(newErrors);
+  
+    // Si el formulario no es válido, no se realiza el guardado
+    if (!formIsValid) {
       return;
     }
   
+    // Si pasa la validación, continúa con la creación del producto
     const productData = {
       name,
       description,
@@ -68,15 +110,11 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
     };
   
     try {
-      // Dispatch para crear el producto
       const actionResult = await dispatch(createProductAsync(productData));
+      const newProduct = actionResult.payload;
   
-      // Extraemos el payload (el producto creado) de la acción
-      const newProduct = actionResult.payload;  // Asegúrate de acceder al payload
-  
-      // Si el producto se creó correctamente, refresca la lista de productos
       if (newProduct) {
-        refreshProducts(newProduct); // Actualiza la lista de productos
+        refreshProducts(newProduct);
       }
   
       // Resetea el formulario y cierra el modal
@@ -93,6 +131,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
       console.error("Error al crear el producto:", error);
     }
   };
+  
 
   
 
@@ -152,26 +191,31 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
           <div className="mt-5">
             <div className="flex gap-12">
               <div>
-                <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
-                  <img
-                    className="w-[170px] h-[170px]"
-                    src={image || "/products/image_default.png"} // Mostrar la imagen seleccionada o por defecto
-                  />
-                </div>
-                <p
-                  className="flex gap-1 items-center pt-[18px] text-[14px] font-book text-argenpesos-textos cursor-pointer"
-                  onClick={() => document.getElementById("image-upload")?.click()} // Hacemos clic en el input cuando el texto es presionado
-                >
-                  <IconPencil />
-                  {product ? "Editar fotos" : "Añadir fotos"}
-                </p>
-                <input
-                  id="image-upload"
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }} // Ocultamos el input de tipo archivo
-                  onChange={handleImageChange}
-                />
+              <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
+            <img
+              className="w-[170px] h-[170px]"
+              src={image || "/products/image_default.png"} // Mostrar la imagen seleccionada o por defecto
+            />
+          </div>
+          <p
+            className="flex gap-1 items-center pt-[18px] text-[14px] font-book text-argenpesos-textos cursor-pointer"
+            onClick={() => document.getElementById("image-upload")?.click()} // Hacemos clic en el input cuando el texto es presionado
+          >
+            <IconPencil />
+            {product ? "Editar fotos" : "Añadir fotos"}
+          </p>
+          <input
+            id="image-upload"
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }} // Ocultamos el input de tipo archivo
+            onChange={handleImageChange}
+          />
+
+          {/* Mostrar el error de la imagen si no se ha seleccionado */}
+          {errors.image && (
+            <p className="text-red-500 text-sm mt-2">{errors.image}</p> // Estilos para el mensaje de error
+          )}
                 <p className="pt-9 pb-4 text-[14px] font-bold text-argenpesos-textos">
                   Incluye envío
                 </p>
@@ -203,52 +247,56 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
               </div>
 
               <div className="flex flex-col gap-4">
-                <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-name">
-                  Nombre del producto
-                </label>
-                <input
-                  id="product-name"
-                  className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+              <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-name">
+  Nombre del producto
+</label>
+<input
+  id="product-name"
+  className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.name ? 'border-red-500' : 'border-argenpesos-gray'}`}
+  type="text"
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+/>
+{errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
 
-                <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-price">
-                  Valor del producto (puntos)
-                </label>
-                <input
-                  id="product-price"
-                  className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                />
+<label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-price">
+  Valor del producto (puntos)
+</label>
+<input
+  id="product-price"
+  className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.price ? 'border-red-500' : 'border-argenpesos-gray'}`}
+  type="number"
+  value={price}
+  onChange={(e) => setPrice(e.target.value)}
+/>
+{errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
 
-                <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-category">
-                  Categoría
-                </label>
-                <select
-                  id="product-category"
-                  className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  <option value="ArgenCompras">ArgenCompras</option>
-                  <option value="Merch ArgenPesos">Merch ArgenPesos</option>
-                  <option value="Experiencia">Experiencia</option>
-                </select>
+<label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-category">
+  Categoría
+</label>
+<select
+  id="product-category"
+  className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.category ? 'border-red-500' : 'border-argenpesos-gray'}`}
+  value={category}
+  onChange={(e) => setCategory(e.target.value)}
+>
+  <option value="ArgenCompras">ArgenCompras</option>
+  <option value="Merch ArgenPesos">Merch ArgenPesos</option>
+  <option value="Experiencia">Experiencia</option>
+</select>
+{errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
 
-                <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-description">
-                  Descripción
-                </label>
-                <textarea
-                  id="product-description"
-                  className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
-                  placeholder="Cuerpo de texto"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
+<label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-description">
+  Descripción
+</label>
+<textarea
+  id="product-description"
+  className={`w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border ${errors.description ? 'border-red-500' : 'border-argenpesos-gray'} rounded-[5px] resize-none placeholder:text-argenpesos-textos`}
+  placeholder="Cuerpo de texto"
+  value={description}
+  onChange={(e) => setDescription(e.target.value)}
+/>
+{errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
               </div>
             </div>
           </div>
