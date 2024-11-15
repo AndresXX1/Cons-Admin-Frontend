@@ -24,11 +24,11 @@ const ProductCard = ({ product, getProducts }: ProductCardProps) => {
           {product.name}
         </h4>
         <p className="text-argenpesos-red text-[20px] font-bold leading-[19px]">
-          ${parseInt(product?.final_price).toLocaleString("es-AR")}
+          ${parseInt(product?.value).toLocaleString("es-AR")}
         </p>
       </div>
       <div className="h-full w-[150px] rounded-[13px] bg-[#F9F9F9] flex items-center relative">
-        {product?.image && (
+        {product.image && (
           <img
             className="w-[150px] h-[150px]"
             src={`http://back7.maylandlabs.com/product/${product.image}`}

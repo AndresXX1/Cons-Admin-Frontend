@@ -39,6 +39,10 @@ export const apiUrls = {
   //product
   getProductsAll: () => `/api/product/all`,
   changeOfVisibilityProduct: (id: string) => `/api/product/visibility/${id}`,
+  //product por puntos
+  createProduct: () => '/api/product/create',
+  allProducts: () => "/api/product/allProducts",
+  updateProduct: (id: number | string) => `/api/product/update/${id}`,
   //branch
   getBranches: () => `/api/branch`,
   BranchImg: (img: string) => `${baseUrl}/branch/${img}`,

@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
-import { IconDelete, IconEdit, IconMas, IconPencil, IconX } from "@utils/svg";
+import { IconDelete, IconEdit, IconMas } from "@utils/svg";
 import Modal from "@components/Modal";
-import { getProductsAll } from "@store/services/product";
+import { getAllProductsService } from "../../store/services/productsPoint";
 import ProductCard from "./ProductCard";
+import CreateProductModal from "./CreateProductModal";
+import EditProductModal from "./editProductModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { getProductsAll } from "@store/services/product";
+import { ReactNode } from 'react';
 
 export interface ICategory {
   id: string;
@@ -13,9 +18,13 @@ export interface ICategory {
   name: {
     es: string;
   };
+  category:{
+    es:ICategory
+  }
 }
 
 export interface IProduct {
+  category: ReactNode;
   id: string;
   brand: string;
   created_at: string;
@@ -25,355 +34,150 @@ export interface IProduct {
   description: string;
   image: string;
   status: string;
-  final_price: string;
+  value: string;
 }
 
 const Products = () => {
   const [modal, setModal] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
-  const [modalCanceled, setModalCanceled] = useState<boolean>(false);
   const [modalEdit, setModalEdit] = useState<boolean>(false);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<ICategory | null>(null);
-
+  const [productToEdit, setProductToEdit] = useState<IProduct | null>(null);
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [productsPoint, setProductsPoint] = useState<IProduct[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0); // Índice de los productos visibles
+
+  const itemsPerPage = 2; // Mostrar 2 productos a la vez
+  
 
   const getProducts = async () => {
-    const products = await getProductsAll();
-    setProducts(products);
+    const products = await getAllProductsService();  // Productos canjeables por puntos
+    setProductsPoint(products); // Guardamos los productos canjeables en el estado `productsPoint`
     const categoriesResponse = getUniqueCategoryNames(products);
-    setCategories(categoriesResponse);
+    setCategories(categoriesResponse); // Actualizamos las categorías
+  };
+  
+  const getAllProducts = async () => {
+    const productsAll = await getProductsAll();  // Todos los productos
+    setProducts(productsAll); // Guardamos todos los productos en el estado `products`
+    const categoriesResponse = getUniqueCategoryNames(productsAll);
+    setCategories(categoriesResponse); // Actualizamos las categorías
   };
 
   useEffect(() => {
-    getProducts();
-    console.log(products);
+    getProducts(); // Obtén los productos canjeables por puntos
+    getAllProducts(); // Obtén todos los productos
+  }, []);  // Llamada inicial al cargar el componente
+
+  useEffect(() => {
+    loadProducts();
   }, []);
 
-  const getUniqueCategoryNames = (products: IProduct[]): ICategory[] => {
-    const categoriesData = [] as ICategory[];
-
-    products?.forEach(product => {
-      product.categories?.forEach(category => {
-        const include = categoriesData.find(
-          existingCategory => existingCategory.id === category.id
-        );
-        if (!include) {
-          categoriesData.push(category);
-        }
-      });
-    });
-
-    return categoriesData;
+  const handleCreateProduct = () => {
+    setModalCreate(true);
   };
 
-  const info = [
-    {
-      title: "Auricular Bluetooth F9-5",
-      points: "1200 Puntos",
-      image: "/products/image_auricular.png",
-    },
-    {
-      title: "Reloj Smartwatch Y68",
-      points: "1300 Puntos",
-      image: "/products/image_reloj.png",
-    },
-  ];
+  const handleSaveProduct = (updatedProduct: IProduct): void => {
+    console.log("Producto actualizado:", updatedProduct); // Verifica si el producto llega correctamente
+    
+    setProductsPoint((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === updatedProduct.id ? updatedProduct : product
+      )
+    );
+  
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === updatedProduct.id ? updatedProduct : product
+      )
+    );
+    console.log("ProductsPoint actualizado:", productsPoint);
+
+  };
+
+  const handleEditProduct = (product: IProduct) => {
+    setProductToEdit(product); // Establece el producto que se editará
+    setModalEdit(true); // Abre el modal de edición
+  };
+
+  const handleDeleteProduct = async () => {
+    if (productToEdit) {
+      // Lógica para eliminar el producto de la base de datos
+      // Suponiendo que tengas una función deleteProductService que elimina el producto en el backend:
+      // await deleteProductService(productToEdit.id);
+  
+      // Eliminar el producto de los estados
+      setProducts(prevProducts => prevProducts.filter(product => product.id !== productToEdit.id));
+      setProductsPoint(prevProducts => prevProducts.filter(product => product.id !== productToEdit.id));
+  
+      // Cerrar el modal y restablecer el producto a editar
+      setModal(false);
+      setProductToEdit(null);
+    }
+    getAllProducts();
+  };
+
+  const getUniqueCategoryNames = (products: IProduct[]): ICategory[] => {
+    const categoriesMap = new Map<string, ICategory>();
+  
+    products.forEach((product) =>
+      product.categories.forEach((category) => {
+        if (!categoriesMap.has(category.id)) {
+          categoriesMap.set(category.id, category);
+        }
+      })
+    );
+  
+    return Array.from(categoriesMap.values());
+  };
+
+  const handleNext = () => {
+    if (currentIndex + itemsPerPage < productsPoint.length) {
+      setCurrentIndex(currentIndex + itemsPerPage); // Avanzar al siguiente par de productos
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex - itemsPerPage >= 0) {
+      setCurrentIndex(currentIndex - itemsPerPage); // Retroceder al par anterior de productos
+    }
+  };
+
+
+
+  const loadProducts = async () => {
+    const response = await getProductsAll();
+    setProducts(response);
+  };
+  
+
+  
+  
+  const handleCreateProductModalSave = (newProduct: IProduct) => {
+    // Agregar el nuevo producto al estado
+    setProducts((prevProducts) => [...prevProducts, newProduct]);
+    setProductsPoint((prevProducts) => [...prevProducts, newProduct]);
+  
+    // Cerrar el modal de creación
+    setModalCreate(false);
+  };
+
+  const currentProducts = productsPoint.slice(currentIndex, currentIndex + itemsPerPage);
+
+
 
   return (
     <>
-      <Modal
+           {/* Modal de eliminación de producto */}
+           <ConfirmDeleteModal
         isShown={modal}
-        element={
-          <div className="px-6 py-6 flex flex-col justify-center gap-5 w-[481px] h-[192px]">
-            <div className="flex justify-between items-center">
-              <p className="text-[1rem] text-argenpesos-textos font-bold">
-                ¿Está seguro que desea eliminar este producto?
-              </p>
-              <p className="cursor-pointer" onClick={() => setModal(false)}>
-                <IconX />
-              </p>
-            </div>
-            <p className="text-[14px] font-book text-argenpesos-gray w-[380px]">
-              Si lo elimina no podrá recuperarlo más adelante.
-            </p>
-            <div className="flex gap-4">
-              <button className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book">
-                Eliminar
-              </button>
-              <button
-                onClick={() => setModal(false)}
-                className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        }
-      ></Modal>
-      <Modal
-        isShown={modalCreate}
-        element={
-          <div className="px-[54px] py-12 flex flex-col w-[969px] h-[668px]">
-            <div className="flex justify-between items-center">
-              <p className="text-[32px] text-argenpesos-textos font-bold">
-                Editar producto
-              </p>
-              <p
-                className="cursor-pointer"
-                onClick={() => setModalCreate(false)}
-              >
-                <IconX />
-              </p>
-            </div>
-            <div className="mt-5">
-              <div className="flex gap-12">
-                <div>
-                  <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
-                    <img
-                      className="w-[84px] h-[84px]"
-                      src="/products/image_default.png"
-                    ></img>
-                  </div>
-                  <p className="flex gap-1 items-center pt-[18px] text-[14px] font-book text-argenpesos-textos">
-                    <IconPencil />
-                    Editar fotos
-                  </p>
+        onClose={() => setModal(false)}
+        onConfirm={handleDeleteProduct}
+      />
 
-                  <p className="pt-9 pb-4 text-[14px] font-bold text-argenpesos-textos">
-                    Incluye envío
-                  </p>
-                  <div className="flex gap-5">
-                    <div className="flex items-center gap-3 rounded-[4px]">
-                      <p>Si</p>
-                      <input
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[4px]"
-                        type="checkbox"
-                      />
-                    </div>
-                    <div className="flex items-center gap-3 rounded-[4px]">
-                      <p>No</p>
-                      <input
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[4px]"
-                        type="checkbox"
-                      />
-                    </div>
-                  </div>
-                  <p className="pt-9 pb-4 text-[14px] font-bold text-argenpesos-textos">
-                    Colores disponibles
-                  </p>
-
-                  <div className="w-[17px] h-[17px] rounded-full bg-argenpesos-skyBlue"></div>
-                </div>
-                <div></div>
-                <div className="flex flex-col gap-4">
-                  <label
-                    className="text-argenpesos-textos font-bold text-[14px]"
-                    htmlFor=""
-                  >
-                    Nombre del producto
-                  </label>
-                  <input
-                    className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                    type="text"
-                  />
-
-                  <label
-                    className="text-argenpesos-textos font-bold text-[14px]"
-                    htmlFor=""
-                  >
-                    Valor del producto (puntos)
-                  </label>
-                  <input
-                    className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                    type="text"
-                  />
-
-                  <label
-                    className="text-argenpesos-textos font-bold text-[14px]"
-                    htmlFor=""
-                  >
-                    Descripción
-                  </label>
-
-                  <textarea
-                    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
-                    placeholder="Cuerpo de texto"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end gap-4 mt-10">
-              <button
-                onClick={() => setModalCanceled(true)}
-                className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => setModalCreate(false)}
-                className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book hover:bg-argenpesos-blue hover:transition-colors duration-100"
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
-        }
-      ></Modal>
-
-      <Modal
-        isShown={modalCanceled}
-        element={
-          <div className="px-6 py-6 flex flex-col justify-center gap-5 w-[481px] h-[192px]">
-            <div className="flex justify-between items-center">
-              <p className="text-[1rem] text-argenpesos-textos font-bold">
-                ¿Está seguro que desea salir?
-              </p>
-              <p
-                className="cursor-pointer"
-                onClick={() => setModalCanceled(false)}
-              >
-                <IconX />
-              </p>
-            </div>
-            <p className="text-[14px] font-book text-argenpesos-gray w-[380px]">
-              Se descartarán los cambios que hayas realizado.
-            </p>
-            <div className="flex gap-4">
-              <button
-                onClick={() => {
-                  setModalCreate(false);
-                  setModalCanceled(false);
-                }}
-                className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
-              >
-                Salir
-              </button>
-              <button
-                onClick={() => {
-                  setModalCanceled(false);
-                }}
-                className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        }
-      ></Modal>
-      <Modal
-        isShown={modalEdit}
-        element={
-          <div className="px-[54px] py-12 flex flex-col w-[969px] h-[668px]">
-            <div className="flex justify-between items-center">
-              <p className="text-[32px] text-argenpesos-textos font-bold">
-                Editar producto
-              </p>
-              <p className="cursor-pointer" onClick={() => setModalEdit(false)}>
-                <IconX />
-              </p>
-            </div>
-            <div className="mt-5">
-              <div className="flex gap-12">
-                <div>
-                  <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3">
-                    <img
-                      className="w-[185px] h-[185px] border-[1px] border-solid border-argenpesos-gray2 rounded-[15px]"
-                      src={info[0].image}
-                    ></img>
-                  </div>
-                  <div className="flex gap-1 mt-3 mb-5">
-                    <p className="flex items-center gap-1 text-[14px] text-argenpesos-textos font-book cursor-pointer">
-                      <IconPencil />
-                      Editar fotos
-                    </p>
-                    <p className="flex items-center text-[14px] text-argenpesos-red font-book cursor-pointer">
-                      <IconDelete className="w-[22px] h-[22px]" />
-                      Eliminar
-                    </p>
-                  </div>
-
-                  <p className="pt-9 pb-4 text-[14px] font-bold text-argenpesos-textos">
-                    Incluye envío
-                  </p>
-                  <div className="flex gap-5">
-                    <div className="flex items-center gap-3 rounded-[4px]">
-                      <p>Si</p>
-                      <input
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[4px]"
-                        type="checkbox"
-                      />
-                    </div>
-                    <div className="flex items-center gap-3 rounded-[4px]">
-                      <p>No</p>
-                      <input
-                        className="border-[1px] border-solid border-argenpesos-gray rounded-[4px]"
-                        type="checkbox"
-                      />
-                    </div>
-                  </div>
-                  <p className="pt-9 pb-4 text-[14px] font-bold text-argenpesos-textos">
-                    Colores disponibles
-                  </p>
-
-                  <div className="w-[17px] h-[17px] rounded-full bg-argenpesos-skyBlue"></div>
-                </div>
-                <div></div>
-                <div className="flex flex-col gap-4">
-                  <label
-                    className="text-[14px] font-bold text-argenpesos-textos"
-                    htmlFor=""
-                  >
-                    Nombre del producto
-                  </label>
-                  <input
-                    className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                    type="text"
-                    placeholder={info[0].title}
-                  />
-
-                  <label
-                    className="text-[14px] font-bold text-argenpesos-textos"
-                    htmlFor=""
-                  >
-                    Valor del producto (puntos)
-                  </label>
-                  <input
-                    className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                    type="text"
-                    placeholder={info[0].points}
-                  />
-
-                  <label
-                    className="text-[14px] font-bold text-argenpesos-textos"
-                    htmlFor=""
-                  >
-                    Descripción
-                  </label>
-                  <textarea
-                    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
-                    placeholder="Cuerpo de texto"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end gap-4 mt-10">
-              <button
-                onClick={() => setModalEdit(true)}
-                className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => setModalEdit(false)}
-                className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book hover:bg-argenpesos-blue hover:transition-colors duration-100"
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
-        }
-      ></Modal>
+     
+     
       <div className="flex flex-col pl-16 pt-12 px-10 h-[100%] max-w-[clamp(1000px,77.2vw,1200px)]">
         <p className="text-[3rem] text-argenpesos-textos font-bold pb-14">
           Productos
@@ -383,41 +187,104 @@ const Products = () => {
           Canjeables por puntos
         </p>
 
+        
+        <div className="flex items-center gap-4">
+          {/* Flecha a la izquierda */}
+          <button
+    onClick={handlePrev}
+    className="p-3 bg-gray-200 text-gray-800 rounded-full transition-all duration-300 transform hover:scale-110 hover:bg-[#A3D8F3] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#A3D8F3] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    disabled={currentIndex === 0}
+  >
+    ←
+  </button>
+
         <div className="flex gap-7">
-          {info.map((inf, key) => (
-            <div
-              className="max-w-[301px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray"
-              key={key}
-            >
-              <div className="flex flex-col justify-between pt-5  pb-3 pl-4">
-                <h4 className="w-[141px] text-[20px] font-book leading-[24px] text-argenpesos-textos">
-                  {inf.title}
-                </h4>
-                <p className="text-argenpesos-red text-[20px] font-bold leading-[19px]">
-                  {inf.points}
-                </p>
-              </div>
-              <div className="h-full w-[150px] rounded-[13px] bg-[#F9F9F9] flex items-center relative">
-                <img className="w-[150px] h-[150px]" src={inf.image} alt="" />
-                <div className="absolute bottom-2 flex gap-2 left-14">
-                  <IconEdit
-                    className="cursor-pointer"
-                    onClick={() => setModalEdit(true)}
-                  />
-                  <IconDelete
-                    onClick={() => setModal(true)}
-                    className="cursor-pointer"
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-          <div
-            onClick={() => setModalCreate(true)}
-            className="w-[301px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray items-center justify-center cursor-pointer"
-          >
-            <IconMas />
+        {currentProducts.map((product, key) => (
+    <div
+      className="max-w-[301px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray"
+      key={key}
+    >
+      <div className="flex flex-col justify-between pt-5 pb-3 pl-4">
+        <h4 className="w-[141px] text-[20px] font-book leading-[24px] text-argenpesos-textos">
+          {product.name}
+        </h4>  
+              <h6 className="w-[141px] text-[20px] font-book leading-[24px] text-argenpesos-textos">
+          {product.category}
+        </h6>
+        <h6 className="w-[141px] text-[20px] font-book leading-[24px] text-argenpesos-textos">
+          {product.description}
+        </h6>
+        <div className="flex justify-between items-center">
+          <p className="text-argenpesos-red text-[20px] font-bold leading-[19px]">
+            {product.value} Puntos
+          </p>
+          {/* Contenedor para los íconos de editar y eliminar */}
+          <div className="flex gap-2">
+            {/* Icono de editar */}
+            <IconEdit
+              className="cursor-pointer"
+              onClick={() => handleEditProduct(product)} // Pasamos el producto a editar
+            />
+            {/* Icono de eliminar */}
+            <IconDelete
+              onClick={() => setModal(true)} // Abre el modal de confirmación
+              className="cursor-pointer"
+            />
           </div>
+          
+        </div>
+      </div>
+      <div className="h-full w-[150px] rounded-[13px] bg-[#F9F9F9] flex items-center relative">
+        <img className="w-[150px] h-[150px]" src={product.image} alt={product.name} />
+      </div>
+    </div>
+  ))}
+
+</div>
+          {/* Flecha a la derecha */}
+          <button
+    onClick={handleNext}
+    className="p-3 bg-gray-200 text-gray-800 rounded-full transition-all duration-300 transform hover:scale-110 hover:bg-[#A3D8F3] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#A3D8F3] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    disabled={currentIndex + itemsPerPage >= productsPoint.length}
+  >
+    →
+  </button>
+        
+  {/* Modal para editar el producto */}
+  <Modal
+    isShown={modalEdit}
+    element={
+      <div className="px-[54px] py-12 flex flex-col w-[969px] h-[668px]">
+<EditProductModal
+  isOpen={modalEdit}
+  closeModal={() => setModalEdit(false)}
+  product={productToEdit}  // Asegúrate de que `productToEdit` tiene los datos correctos
+  saveProduct={handleSaveProduct} // Asegúrate de que el callback es correcto
+/>
+      </div>
+    }
+  />
+            
+ <div
+  onClick={handleCreateProduct}
+  className="w-[301px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray items-center justify-center cursor-pointer"
+>
+  <IconMas />
+</div>
+
+<Modal
+  isShown={modalCreate}
+  element={
+    <div className="px-[54px] py-12 flex flex-col w-[969px] h-[668px]">
+<CreateProductModal
+  isOpen={modalCreate}
+  closeModal={() => setModalCreate(false)}
+  refreshProducts={handleCreateProductModalSave} // Asegúrate de pasar la función de actualización aquí
+  product={null} // Para crear un nuevo producto
+/>
+    </div>
+  }
+/>
         </div>
 
         <h4 className="text-[23px] font-bold text-argenpesos-textos pt-10 mb-5">
@@ -466,7 +333,7 @@ const Products = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                getProducts={getProducts}
+                getProducts={getAllProducts}
               />
             );
           })}
