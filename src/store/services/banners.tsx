@@ -41,17 +41,13 @@ export const getBannersArgenCompras = async () => {
   }
 };
 
-export const uploadImgBanner = async (file: FormData, type: string) => {
+export const uploadImgBanner = async (formData: FormData, type: string) => {
   try {
-    const response = await axiosInstance.post(
-      apiUrls.uploadBanner(type),
-      file,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    const response = await axiosInstance.post(apiUrls.uploadBanner(type), formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     if (response.data.ok) {
       alertConfirm("Banner subido");
       return true;

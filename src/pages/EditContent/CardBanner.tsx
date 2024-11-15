@@ -8,6 +8,7 @@ import { deleteBannerById } from "@store/services/banners";
 interface CardBannerProps {
   banner: Banner;
   getBannersList: () => void;
+  type: string
 }
 
 const CardBanner = ({ banner, getBannersList }: CardBannerProps) => {
