@@ -27,6 +27,7 @@ const LogIn = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+  
     if (data.email === "" || data.password === "") {
       if (data.email === "") {
         setError("Introduce un Correo electrónico.");
@@ -40,10 +41,23 @@ const LogIn = () => {
       }
       return;
     }
+  
     setActive(true);
-    dispatch(logInAsync({ data, setActive, setError, dispatch }));
+  
+    // Aquí agregamos el console.log para observar la respuesta
+    dispatch(logInAsync({ data, setActive, setError, dispatch }))
+      .then(response => {
+        if (response.payload) {
+          console.log("Token recibido:", response.payload);
+        } else {
+          console.warn("No se encontró el token en la respuesta:", response);
+        }
+      })
+      .catch(error => {
+        console.error("Error en la autenticación:", error);
+      });
   };
-
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
