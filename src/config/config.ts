@@ -1,4 +1,4 @@
-export const baseUrl = import.meta.env.VITE_PUBLIC_BACKEND_URL;
+export const baseUrl = import.meta.env.VITE_PUBLIC_BACKEND_URL || 'http://localhost:8001'; // Usamos la URL del backend
 
 export const apiUrls = {
   // auth
@@ -43,6 +43,10 @@ export const apiUrls = {
   createProduct: () => '/api/product/create',
   allProducts: () => "/api/product/allProducts",
   updateProduct: (id: number | string) => `/api/product/update/${id}`,
+  deleteProduct: (id: number) => `/api/product/delete/${id}`,
+  productImg: (img: string) => {
+    // Nos aseguramos de que la URL base no termine con barra y que la ruta de la imagen comience correctamente
+    return `${baseUrl.replace(/\/$/, '')}/images/products/${img}`},
   //branch
   getBranches: () => `/api/branch`,
   BranchImg: (img: string) => `${baseUrl}/branch/${img}`,

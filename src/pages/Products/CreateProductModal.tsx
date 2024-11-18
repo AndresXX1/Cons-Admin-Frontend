@@ -15,21 +15,18 @@ interface CreateProductModalProps {
 
 const CreateProductModal: React.FC<CreateProductModalProps> = ({
   closeModal,
-  refreshProducts, // Recibe la función de actualización
+  refreshProducts,
   product,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [modalCanceled, setModalCanceled] = useState<boolean>(false);
-  
-  // Estados para el formulario
   const [name, setName] = useState(product?.name || "");
   const [price, setPrice] = useState(product?.value || "");
   const [description, setDescription] = useState(product?.description || "");
   const [category, setCategory] = useState(product?.category || "ArgenCompras");
   const [includeShipping, setIncludeShipping] = useState(false);
-  const [colors, setColors] = useState<string[]>([]);
-  const [image, setImage] = useState<string | null>(product?.image || null);
-  const [, setSuccess] = useState<boolean>(false);
+  const [image, setImage] = useState<string | null>(product?.image ?? null);
+  const [imageFile, setImageFile] = useState<File | undefined>(undefined);
   const [errors, setErrors] = useState({
     name: "",
     price: "",
@@ -38,7 +35,6 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
     image: "",
   });
 
-  // Estados de carga y error
   const { loading, error } = useSelector((state: RootState) => ({
     loading: state.Product.loading,
     error: state.Product.error,
@@ -51,24 +47,20 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    setImageFile(file);
     if (file) {
-      setImage(URL.createObjectURL(file));
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl);  // Muestra la imagen seleccionada
+    } else {
+      setImage(null);  // No seleccionó una imagen
     }
   };
 
-
-
   const handleSave = async () => {
     let formIsValid = true;
-    const newErrors: { name: string; price: string; description: string; category: string; image: string } = { // Declarar explícitamente las propiedades
-      name: "",
-      price: "",
-      description: "",
-      category: "",
-      image: "",
-    };
+    const newErrors = { name: "", price: "", description: "", category: "", image: "" };
   
-    // Validación de campos
+    // Validación de los campos
     if (!name) {
       formIsValid = false;
       newErrors.name = "El nombre es obligatorio.";
@@ -76,6 +68,10 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
     if (!price) {
       formIsValid = false;
       newErrors.price = "El valor es obligatorio.";
+    } else if (Number(price) > 999999) {
+      formIsValid = false;
+      newErrors.price = "El valor no puede ser mayor a 999999 puntos.";
+      setPrice("999999");  // Ajustamos el valor al máximo permitido
     }
     if (!description) {
       formIsValid = false;
@@ -85,55 +81,76 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
       formIsValid = false;
       newErrors.category = "La categoría es obligatoria.";
     }
-    if (!image) {  // Validación de la imagen
+    if (!imageFile) {
       formIsValid = false;
-      newErrors.image = "La imagen es obligatoria.";  // Error para la imagen
+      newErrors.image = "La imagen es obligatoria.";
     }
   
-    // Si hay errores, actualizamos el estado de errores
     setErrors(newErrors);
   
-    // Si el formulario no es válido, no se realiza el guardado
-    if (!formIsValid) {
-      return;
-    }
+    if (!formIsValid) return;
   
-    // Si pasa la validación, continúa con la creación del producto
+    // Asegúrate de que la propiedad sea 'includesShipping', no 'includeShipping'
     const productData = {
       name,
       description,
-      value: Number(price),
+      value: price,
       category,
-      includesShipping: includeShipping,
-      colors,
-      image: image === null ? undefined : image,
+      includesShipping: includeShipping,  // Cambié 'includeShipping' por 'includesShipping'
     };
   
-    try {
-      const actionResult = await dispatch(createProductAsync(productData));
-      const newProduct = actionResult.payload;
+    // Log para ver los datos del producto
+    console.log("Datos del producto a enviar:", productData);
+    console.log("Archivo de imagen:", imageFile);
   
+    try {
+      // Despachar la acción de creación de producto
+      const actionResult = await dispatch(createProductAsync({
+        productData,
+        imageFile,  // Le pasamos el archivo de imagen
+      }));
+  
+      // Si la acción retorna el producto creado
+      const newProduct = actionResult.payload;
       if (newProduct) {
-        refreshProducts(newProduct);
+        refreshProducts(newProduct);  // Actualiza la lista de productos con el nuevo producto
+        closeModal();  // Cierra el modal
       }
   
-      // Resetea el formulario y cierra el modal
+      // Resetear los campos del formulario
       setName("");
       setPrice("");
       setDescription("");
       setCategory("ArgenCompras");
       setIncludeShipping(false);
-      setColors([]);
+      setImageFile(undefined);
       setImage(null);
-      setSuccess(true);
-      closeModal();
     } catch (error) {
       console.error("Error al crear el producto:", error);
     }
   };
   
-
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
   
+    if (value.length > 10) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        name: "El nombre no puede tener más de 10 caracteres.",
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        name: "", // Limpiar el error si la longitud es válida
+      }));
+    }
+  
+    setName(value);
+  };
+  
+  
+
+
 
   return (
     <>
@@ -192,10 +209,11 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
             <div className="flex gap-12">
               <div>
               <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
-            <img
-              className="w-[170px] h-[170px]"
-              src={image || "/products/image_default.png"} // Mostrar la imagen seleccionada o por defecto
-            />
+              <img
+  className="w-[170px] h-[170px]"
+  src={image || "/products/image_default.png"} // Mostrar la imagen seleccionada o por defecto
+   // Agregamos un alt para accesibilidad
+/>
           </div>
           <p
             className="flex gap-1 items-center pt-[18px] text-[14px] font-book text-argenpesos-textos cursor-pointer"
@@ -255,9 +273,10 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.name ? 'border-red-500' : 'border-argenpesos-gray'}`}
   type="text"
   value={name}
-  onChange={(e) => setName(e.target.value)}
+  onChange={handleNameChange}
+  maxLength={10} // Limita el campo a 10 caracteres
 />
-{errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+{errors.name && <p className="text-red-500 text-sm">{errors.name}</p>} 
 
 <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-price">
   Valor del producto (puntos)
@@ -267,9 +286,23 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.price ? 'border-red-500' : 'border-argenpesos-gray'}`}
   type="number"
   value={price}
-  onChange={(e) => setPrice(e.target.value)}
+  max={999999}  // Limitar el valor máximo a 999999
+  onChange={(e) => {
+    let value = Number(e.target.value);
+
+    // Si el valor es mayor que 999999, se establece en 999999
+    if (value > 999999) {
+      value = 999999;
+      setErrors(prevErrors => ({ ...prevErrors, price: "El valor no puede ser mayor a 999999 puntos." }));
+    } else {
+      setErrors(prevErrors => ({ ...prevErrors, price: "" }));
+    }
+
+    setPrice(value.toString()); // Actualiza el valor del precio
+  }}
 />
 {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
+
 
 <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-category">
   Categoría

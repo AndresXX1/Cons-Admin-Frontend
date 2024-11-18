@@ -2,7 +2,7 @@ import Modal from "@components/Modal";
 import { apiUrls } from "@config/config";
 import { IconDelete, IconX } from "@utils/svg";
 import { useState } from "react";
-import { Banner } from "./EditBanners";
+import { Banner } from "../EditBanners";
 import { deleteBannerById } from "@store/services/banners";
 
 interface CardBannerProps {

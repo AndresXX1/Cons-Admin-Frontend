@@ -9,16 +9,16 @@ interface EditProductModalProps {
   isOpen: boolean;
   closeModal: () => void;
   product: any;
-  saveProduct: (updatedProduct: any) => void; // Recibimos saveProduct como prop
+  saveProduct: (updatedProduct: any) => void;
 }
 
 const EditProductModal: React.FC<EditProductModalProps> = ({
   isOpen,
   closeModal,
   product,
-  saveProduct, // Desestructuramos saveProduct de las props
+  saveProduct,
 }) => {
-  const dispatch = useDispatch<AppDispatch>(); // Tipamos dispatch con AppDispatch
+  const dispatch = useDispatch<AppDispatch>();
 
   if (!isOpen) return null;
 
@@ -28,39 +28,97 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
   const [category, setCategory] = useState<string>(product?.category || "ArgenCompras");
   const [includeShipping, setIncludeShipping] = useState<boolean>(product?.includesShipping || false);
   const [image, setImage] = useState<string | null>(product?.image || null);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [errors, setErrors] = useState({
+    name: "",
+    price: "",
+    description: "",
+    category: "",
+    image: "",
+  });
   const [modalCanceled, setModalCanceled] = useState<boolean>(false);
 
+  // Cambiar la imagen cuando el usuario sube una nueva
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setImage(URL.createObjectURL(file)); // Previsualiza la imagen localmente
+      setImage(URL.createObjectURL(file)); // Vista previa de la imagen seleccionada
+      setUploadedImage(file); // Guardar el archivo para enviarlo después
+    } else {
+      setImage(null); // Si no seleccionan ninguna imagen
     }
   };
 
+  // Cambiar el estado del checkbox de envío incluido
   const handleShippingChange = () => {
     setIncludeShipping(!includeShipping);
   };
 
+  const validateFields = () => {
+    let formIsValid = true;
+    const newErrors = { name: "", price: "", description: "", category: "", image: "" };
+  
+    if (!productName) {
+      formIsValid = false;
+      newErrors.name = "El nombre es obligatorio.";
+    } else if (productName.length > 10) {
+      formIsValid = false;
+      newErrors.name = "El nombre no puede exceder los 10 caracteres.";
+    }
+  
+    if (!productPrice) {
+      formIsValid = false;
+      newErrors.price = "El valor es obligatorio.";
+    } else if (Number(productPrice) > 999999) {
+      formIsValid = false;
+      newErrors.price = "El valor no puede ser mayor a 999999 puntos.";
+      setProductPrice("999999");  // Ajustamos el valor al máximo permitido
+    }
+  
+    if (!productDescription) {
+      formIsValid = false;
+      newErrors.description = "La descripción es obligatoria.";
+    }
+  
+    if (!category) {
+      formIsValid = false;
+      newErrors.category = "La categoría es obligatoria.";
+    }
+  
+    if (!uploadedImage) {
+      formIsValid = false;
+      newErrors.image = "La imagen es obligatoria.";
+    }
+  
+    setErrors(newErrors);
+    return formIsValid;
+  };
+
+  // Guardar los cambios del producto
   const handleSave = async () => {
-    const updatedProduct = {
-      id: product.id, // No olvides pasar el ID del producto
-      name: productName,
-      value: parseFloat(productPrice),
-      description: productDescription,
-      category,
-      includeShipping,
-      image: image === null ? undefined : image,
-    };
-  
+    if (!validateFields()) return;  // Si la validación falla, no continúa
+
     try {
-      // Llamamos a la acción para actualizar el producto en la base de datos o servidor
-      await dispatch(updateProductAsync({ id: product.id, productData: updatedProduct }));
-  
-      // Llamamos a la función saveProduct que actualizará el producto en el estado de los productos
-      saveProduct(updatedProduct);
-  
-      // Cerramos el modal después de guardar
-      closeModal();
+      // Crear un nuevo FormData
+      const formData = new FormData();
+      formData.append("name", productName);
+      formData.append("value", productPrice);
+      formData.append("description", productDescription);
+      formData.append("category", category);
+      formData.append("includesShipping", includeShipping ? "true" : "false");
+
+      if (uploadedImage) {
+        formData.append("image", uploadedImage);
+      }
+      formData.append("categories", JSON.stringify(product.categories));
+
+      // Llamar al servicio de actualización del producto
+      const updatedProduct = await dispatch(updateProductAsync({ id: product.id, productData: formData }));
+
+      // Llamar al callback para pasar el producto actualizado
+      console.log("Producto actualizado", updatedProduct);
+      saveProduct(updatedProduct);  // Llamar a saveProduct para pasar el producto actualizado
+      closeModal();  // Cerrar el modal
     } catch (error) {
       console.error("Error al actualizar el producto:", error);
     }
@@ -73,12 +131,19 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
       setProductDescription(product.description);
       setCategory(product.category || "ArgenCompras");
       setIncludeShipping(product.includesShipping || false);
-      setImage(product.image || null);
+      setImage(product.image ? `http://localhost:8001${product.image}` : null);
     }
   }, [product]);
 
+  // Cancelar la edición y mostrar el modal de confirmación
   const handleCancel = () => {
     setModalCanceled(true);
+  };
+
+  // Confirmar si se desea cancelar la edición
+  const confirmCancel = () => {
+    closeModal();
+    setModalCanceled(false);
   };
 
   return (
@@ -101,10 +166,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
             </p>
             <div className="flex gap-4">
               <button
-                onClick={() => {
-                  closeModal();
-                  setModalCanceled(false);
-                }}
+                onClick={confirmCancel}
                 className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
               >
                 Salir
@@ -135,9 +197,12 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               <div>
                 <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
                   <img
+                    src={image || `http://localhost:8001${product.image}`}
+                    alt={product.name}
                     className="w-[170px] h-[170px]"
-                    src={image || "/products/image_default.png"}
-                    alt="Imagen del producto"
+                    onError={(e) => {
+                      e.currentTarget.src = "/products/image_default.png";
+                    }}
                   />
                 </div>
                 <p
@@ -154,6 +219,8 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
                   style={{ display: "none" }}
                   onChange={handleImageChange}
                 />
+                {/* Mostrar el error de la imagen si no se ha seleccionado */}
+                {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
               </div>
 
               {/* Formulario de edición */}
@@ -162,30 +229,46 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
                   Nombre del producto
                 </label>
                 <input
-                  id="product-name"
-                  className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                  type="text"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                />
+  id="product-name"
+  className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.name ? 'border-red-500' : 'border-argenpesos-gray'}`}
+  type="text"
+  value={productName}
+  onChange={(e) => setProductName(e.target.value.slice(0, 10))}  // Limitar a 10 caracteres
+/>
+{errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
 
-                <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-price">
-                  Valor del producto (puntos)
-                </label>
-                <input
-                  id="product-price"
-                  className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
-                  type="number"
-                  value={productPrice}
-                  onChange={(e) => setProductPrice(e.target.value)}
-                />
+
+<label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-price">
+  Valor del producto (puntos)
+</label>
+<input
+  id="product-price"
+  className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.price ? 'border-red-500' : 'border-argenpesos-gray'}`}
+  type="number"
+  value={productPrice}
+  max={999999}  // Limitar el valor máximo a 999999
+  onChange={(e) => {
+    let value = Number(e.target.value);
+
+    // Si el valor es mayor que 999999, se establece en 999999
+    if (value > 999999) {
+      value = 999999;
+      setErrors(prevErrors => ({ ...prevErrors, price: "El valor no puede ser mayor a 999999 puntos." }));
+    } else {
+      setErrors(prevErrors => ({ ...prevErrors, price: "" }));
+    }
+
+    setProductPrice(value.toString()); // Actualiza el valor del precio
+  }}
+/>
+{errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
 
                 <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-category">
                   Categoría
                 </label>
                 <select
                   id="product-category"
-                  className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray"
+                  className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.category ? 'border-red-500' : 'border-argenpesos-gray'}`}
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                 >
@@ -193,6 +276,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
                   <option value="Merch ArgenPesos">Merch ArgenPesos</option>
                   <option value="Experiencia">Experiencia</option>
                 </select>
+                {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
 
                 <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-description">
                   Descripción
@@ -204,6 +288,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
                   onChange={(e) => setProductDescription(e.target.value)}
                   placeholder="Descripción"
                 />
+                {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
 
                 <div className="flex gap-2 items-center">
                   <input
