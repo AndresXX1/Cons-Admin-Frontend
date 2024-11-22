@@ -1,4 +1,4 @@
-import { BlockedIcon, IconDelete, IconEdit, ThreePoints } from "@utils/svg";
+import { BlockedIcon, IconEdit, ThreePoints } from "@utils/svg";
 import { User } from ".";
 import { apiUrls } from "@config/config";
 import { useState } from "react";
@@ -7,25 +7,107 @@ import { checkStatus } from "@utils/validators";
 import Modal from "@components/Modal";
 import ModalAction from "@components/ModalAction";
 import { putUserCuponizateById } from "@store/services/users";
+import { EditUserModal, UserFormData } from "./editUserModal"; 
+import AddressForm from "./addressForm";
+import { Address } from "@store/types/user";
+
 
 interface CardUserProps {
   user: User;
   getUsersList: () => void;
+  onEdit: (user: User) => void; 
 }
+
 const CardUser = ({ user, getUsersList }: CardUserProps) => {
   const [menuVisibility, setMenuVisibility] = useState(false);
   const [modalActiveCuponizate, setModalActiveCuponizate] = useState(false);
+  const [modalEdit, setModalEdit] = useState(false);
+  const [modalAddress, setModalAddress] = useState(false);
+  const [addressToEdit, setAddressToEdit] = useState<Address[]>(user.address || []);
+  const [userToEdit, setUserToEdit] = useState<UserFormData | null>(null);
+  const [addresses, setAddresses] = useState<Address[]>([]);
+
+
+
+  
   const toggleVisibility = () => {
     setMenuVisibility(!menuVisibility);
   };
+
   const handleAction = async () => {
-    const response = await putUserCuponizateById(user.id);
+    // Convierte el id a number si es un string
+    const response = await putUserCuponizateById(Number(user.id)); // Convierte el id a number
     if (response) {
       getUsersList();
       setModalActiveCuponizate(false);
     }
   };
-  console.log(user);
+
+  const openEditModal = (user: User) => {
+    // Convertir User a UserFormData
+    const userFormData: UserFormData = {
+      firstName: user.first_name,
+      lastName: user.last_name,
+      phone: user.phone,
+      birthday: user.birthday,
+      points: user.points,
+      image: user.avatar ? apiUrls.avatarUser(user.avatar) : null, // Si no tiene imagen, es null
+      address: user.address,
+      cuil: undefined,
+      gender: "",
+      subscriptionStatus: undefined
+    };
+
+    setUserToEdit(userFormData);
+    setModalEdit(true);
+  };
+
+  const openAddressModal = () => {
+    const newAddress = user.address && user.address.length > 0 
+      ? { ...user.address[0], number: Number(user.address[0].number) }
+      : { street: '', number: 0, zipCode: '', city: '', province: '' };
+    
+    // Wrap the single address in an array
+    setAddressToEdit([newAddress]);
+    console.log('Address to edit:', newAddress); 
+    setModalAddress(true);
+  };
+  const handleAddressChange = (index: number, field: keyof Address, value: string | number) => {
+    const updatedAddresses = [...addressToEdit];
+    updatedAddresses[index] = { ...updatedAddresses[index], [field]: value };
+    setAddressToEdit(updatedAddresses);
+  };
+
+
+
+  const handleSaveAddresses = () => {
+    // Aquí podrías llamar a un servicio para guardar las direcciones
+    console.log("Direcciones guardadas", addressToEdit);
+    setModalAddress(false);
+  };
+
+  const handleCancel = () => {
+    setModalAddress(false);
+  };
+
+  const handleAddAddress = () => {
+    if (addressToEdit.length < 3) {
+      setAddressToEdit([
+        ...addressToEdit,
+        { street: '', number: 0, zipCode: '', city: '', province: '' },
+      ]);
+    }
+  };
+
+  const handleDeleteAddress = (index: number) => {
+    const updatedAddresses = addressToEdit.filter((_, i) => i !== index);
+    setAddressToEdit(updatedAddresses);
+  };
+  
+
+
+
+
   return (
     <>
       <Modal
@@ -36,16 +118,14 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
             close={() => setModalActiveCuponizate(false)}
             handleAction={handleAction}
             title={`¿Está seguro que desea ${user.cuponizate ? "desactivar" : "activar"} este usuario?`}
-            description={`En caso de que quiera ${user.cuponizate ? "activarlo" : "desactivarlo"} más adelante podrá hacerlo desde este menú. Email de suuario: ${user.email}`}
+            description={`En caso de que quiera ${user.cuponizate ? "activarlo" : "desactivarlo"} más adelante podrá hacerlo desde este menú. Email de usuario: ${user.email}`}
             textCancel="Cancelar"
             textOk={user.cuponizate ? "Desactivar" : "Activar"}
           />
         }
       />
-      <div
-        className="grid grid-cols-[1fr_140px_120px_140px_100px_1fr] gap-6 relative items-center justify-start"
-        onMouseLeave={() => setMenuVisibility(false)}
-      >
+      
+      <div className="grid grid-cols-[1fr_140px_120px_140px_100px_1fr] gap-6 relative items-center justify-start">
         <div className="flex items-center justify-start gap-1">
           <img
             className="w-[25px] h-[25px]"
@@ -53,13 +133,12 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
             alt={user.first_name}
           />
           <p className="text-[1rem] text-argenpesos-textos font-book">
-            {`${
-              (user.first_name + " " + user.last_name).length > 25
-                ? (user.first_name + " " + user.last_name).slice(0, 22) + "..."
-                : user.first_name + " " + user.last_name
-            }`}{" "}
+            {`${(user.first_name + " " + user.last_name).length > 25
+              ? (user.first_name + " " + user.last_name).slice(0, 22) + "..."
+              : user.first_name + " " + user.last_name}`}
           </p>
         </div>
+
         <button
           type="button"
           title={user.cuponizate ? "Desactivar" : "Activar"}
@@ -72,6 +151,7 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
         >
           {user.cuponizate ? "Activo" : "Inactivo"}
         </button>
+
         <p className="text-[1rem] text-argenpesos-textos font-book">
           {checkStatus(user.last_login)}
         </p>
@@ -81,293 +161,90 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
         <p className="text-[1rem] text-argenpesos-textos font-book max-w-[100px] truncate">
           {user.points}
         </p>
-        <p className="text-[0.9rem] text-argenpesos-textos font-book ">
+        <p className="text-[0.9rem] text-argenpesos-textos font-book">
           {formatDateString(user.create).slice(0, 13)}
         </p>
+
+        {/* Mostrar teléfono y dirección */}
+        <p className="text-[0.9rem] text-argenpesos-textos font-book">{user.phone}</p>
+        {user.address && user.address.length > 0 && (
+          <p className="text-[0.9rem] text-argenpesos-textos font-book">
+            {user.address[0].street}, {user.address[0].city}
+          </p>
+        )}
+
+        {/* Menú de opciones */}
         <div
           onClick={() => toggleVisibility()}
-          className="absolute right-0 top-[5%] w-[0px]"
+          className="absolute right-0 top-[5%] w-[30px] h-[30px] p-2 cursor-pointer z-[1] translate-x-[45px] translate-y-[-15px]"
         >
-          <button>
+          <button className="w-full h-full">
             <ThreePoints />
           </button>
+
+          {/* Menú desplegable */}
           <div
-            className={`transition-all duration-2000 ease-in-out ${
-              menuVisibility ? "opacity-100 h-[132px]" : "opacity-0 max-h-0"
-            } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px] relative right-[7rem] z-[100]`}
+            className={`transition-all duration-200 ease-in-out ${menuVisibility ? "opacity-100 h-[100px]" : "opacity-0 max-h-0"} bg-white border-[1px] border-solid border-gray-300 rounded-[7px] w-[130px] absolute right-0 z-[10]`}
           >
-            <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
-              <p
-                //   onClick={() => setOpenModalEdit(true)}
-                className="flex items-center mr-7 cursor-pointer"
-              >
+            <div className="flex flex-col w-full gap-2 items-start justify-center h-full py-2 px-3">
+              <p onClick={() => openEditModal(user)} className="flex items-center cursor-pointer text-gray-700">
                 <IconEdit color="#575757" />
                 Editar
               </p>
-              <p className="flex items-center gap-1 cursor-pointer">
+              <p onClick={openAddressModal} className="flex items-center cursor-pointer text-gray-700">
+                <IconEdit color="#575757" />
+                Direcciones
+              </p>
+              <p className="flex items-center gap-1 cursor-pointer text-gray-700">
                 <BlockedIcon />
                 Bloquear
-              </p>
-              <p className="flex items-center mr-3 cursor-pointer">
-                <IconDelete />
-                Eliminar
               </p>
             </div>
           </div>
         </div>
+
         <div className="w-[100%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
       </div>
+
+      {/* Modal de edición */}
+      {modalEdit && userToEdit && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 20 }}>
+          <Modal
+            isShown={modalEdit}
+            closeModal={() => setModalEdit(false)}
+            element={
+              <EditUserModal
+                user={userToEdit} // Pasamos los datos del usuario a editar
+                onClose={() => setModalEdit(false)} // Cerrar el modal
+                onSave={(updatedUser) => {
+                  console.log('User updated:', updatedUser);
+                  setModalEdit(false); // Cerramos el modal después de guardar
+                }}
+              />
+            }
+          />
+        </div>
+      )}
+
+      {/* Modal de direcciones */}
+      {modalAddress && (
+      <Modal
+      isShown={modalAddress}
+      closeModal={() => setModalAddress(false)}
+      element={
+        <AddressForm
+          addresses={addressToEdit}
+          onAddressChange={handleAddressChange}
+          onAddAddress={handleAddAddress}
+          onSave={handleSaveAddresses}
+          onCancel={handleCancel}
+          onDeleteAddress={handleDeleteAddress} // Pasamos la función al hijo
+        />
+       }
+     />
+      )}
     </>
   );
 };
 
-export default CardUser;
-
-/*
-      <Modal
-        isShown={openModal}
-        element={
-          <div className="px-6 py-6 flex flex-col gap-5 w-[481px] h-[192px]">
-            <div className="flex justify-between items-center">
-              <p className="text-[1rem] text-argenpesos-textos font-bold">
-                ¿Está seguro que desea bloquear este usuario?
-              </p>
-              <p className="cursor-pointer" onClick={() => setOpenModal(false)}>
-                <IconX />
-              </p>
-            </div>
-            <p className="text-[14px] font-book text-argenpesos-gray w-[380px]">
-              En caso de que quiero activarlo más adelante podrá hacerlo desde
-              este menú.
-            </p>
-            <div className="flex gap-4">
-              <button className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book">
-                Bloquear
-              </button>
-              <button
-                onClick={() => setOpenModal(false)}
-                className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        }
-      ></Modal>
-      <Modal
-        isShown={openModalDelete}
-        element={
-          <div className="px-6 py-6 flex flex-col justify-center gap-5 w-[481px] h-[192px]">
-            <div className="flex justify-between items-center">
-              <p className="text-[1rem] text-argenpesos-textos font-bold">
-                ¿Está seguro que desea eliminar este usuario?
-              </p>
-              <p
-                className="cursor-pointer"
-                onClick={() => setOpenModalDelete(false)}
-              >
-                <IconX />
-              </p>
-            </div>
-            <p className="text-[14px] font-book text-argenpesos-gray w-[380px]">
-              Si lo elimina no podrá recuperarlo más adelante.
-            </p>
-            <div className="flex gap-4">
-              <button className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book">
-                Eliminar
-              </button>
-              <button
-                onClick={() => setOpenModalDelete(false)}
-                className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        }
-      ></Modal>
-      <Modal
-        isShown={openModalEdit}
-        element={
-          <form className="px-12 py-[50px] flex flex-col w-[969px] h-[675px]">
-            <div className="flex justify-between items-center">
-              <p className="text-[20px] text-argenpesos-textos font-bold pb-6">
-                Editar usuario
-              </p>
-              <p
-                className="cursor-pointer"
-                onClick={() => setOpenModalEdit(false)}
-              >
-                <IconX />
-              </p>
-            </div>
-            <div className="flex gap-[50px]">
-              <div>
-                <img
-                  className="w-[185px] h-[185px] object-cover"
-                  src={info2[0].img}
-                ></img>
-                <div className="flex gap-2 mt-3 mb-5">
-                  <p className="flex items-center gap-1 text-[14px] text-argenpesos-textos font-book">
-                    <IconPencil />
-                    Editar foto
-                  </p>
-                  <p className="flex items-center text-[14px] text-argenpesos-red font-book">
-                    <IconDelete className="w-[22px] h-[22px]" />
-                    Eliminar
-                  </p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 mx-auto gap-6 max-w-[620px]">
-                <div className="flex flex-col gap-1">
-                  <label
-                    className="flex items-center gap-2 text-[14px] text-argenpesos-textos font-bold"
-                    htmlFor=""
-                  >
-                    Nombre y apellido <IconVerify />
-                  </label>
-                  <input
-                    className="w-[304px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
-                    type="text"
-                    placeholder={info2[0].name}
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label
-                    className="text-[14px] text-argenpesos-textos font-bold"
-                    htmlFor=""
-                  >
-                    Teléfono
-                  </label>
-                  <input
-                    className="w-[304px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
-                    type="text"
-                    placeholder="maruubc00@gmail.com"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label
-                    className="flex items-center gap-2 text-[14px] text-argenpesos-textos font-bold"
-                    htmlFor=""
-                  >
-                    Cuil <IconVerify />
-                  </label>
-                  <input
-                    className="w-[304px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
-                    type="text"
-                    placeholder="20-14800451-4"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label
-                    className="text-[14px] text-argenpesos-textos font-bold"
-                    htmlFor=""
-                  >
-                    Fecha de nacimiento
-                  </label>
-                  <input
-                    className="w-[304px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
-                    type="text"
-                    placeholder={info2[0].date}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-10">
-              <div className="flex">
-                <div className="flex flex-col gap-1 w-[185px] mr-[50px]">
-                  <label
-                    className="text-[14px] text-argenpesos-textos font-bold"
-                    htmlFor=""
-                  >
-                    Cantidad de puntos
-                  </label>
-                  <input
-                    className="w-[185px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
-                    type="text"
-                    placeholder={info2[0].points}
-                  />
-                </div>
-                <div className="flex flex-col gap-1 mr-[27px]">
-                  <label
-                    className="text-[14px] text-argenpesos-textos font-bold"
-                    htmlFor=""
-                  >
-                    Email
-                  </label>
-                  <input
-                    className="w-[304px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
-                    type="text"
-                    placeholder="maruubc00@gmail.com"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label
-                    className="text-[14px] text-argenpesos-textos font-bold"
-                    htmlFor=""
-                  >
-                    Domicilio
-                  </label>
-                  <input
-                    className="w-[304px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
-                    type="text"
-                    placeholder="Juan Domingo Perón 678"
-                  />
-                </div>
-              </div>
-              <div className="flex">
-                <div className="flex flex-col gap-1 w-[185px] mr-[50px]">
-                  <label
-                    className="text-[14px] text-argenpesos-textos font-bold"
-                    htmlFor=""
-                  >
-                    Suscripción a cuponizate
-                  </label>
-                  <input
-                    className="w-[185px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos"
-                    type="text"
-                    placeholder={info2[0].status}
-                  />
-                </div>
-                <div className="flex flex-col gap-1 mr-[27px]">
-                  <label
-                    className="text-[14px] text-argenpesos-textos font-bold"
-                    htmlFor=""
-                  >
-                    Banco donde cobra
-                  </label>
-                  <input
-                    className="w-[304px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos placeholder:text-argenpesos-red"
-                    type="text"
-                    placeholder="Imcompleto"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label
-                    className="text-[14px] text-argenpesos-textos font-bold"
-                    htmlFor=""
-                  >
-                    Fecha de cobro
-                  </label>
-                  <input
-                    className="w-[304px] h-[54px] rounded-[5px] text-[14px] font-book text-argenpesos-textos placeholder:text-argenpesos-red"
-                    type="text"
-                    placeholder="Imcompleto"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end gap-4 mt-10">
-              <button
-                onClick={() => setOpenModalEdit(false)}
-                className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
-              >
-                Cancelar
-              </button>
-              <button className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book">
-                Guardar
-              </button>
-            </div>
-          </form>
-        }
-      ></Modal>*/
+export default CardUser

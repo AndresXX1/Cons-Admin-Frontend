@@ -1,4 +1,4 @@
-export const baseUrl = import.meta.env.VITE_PUBLIC_BACKEND_URL || 'http://localhost:8001'; // Usamos la URL del backend
+export const baseUrl = import.meta.env.VITE_PUBLIC_BACKEND_URL ;
 
 export const apiUrls = {
   // auth

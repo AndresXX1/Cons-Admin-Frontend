@@ -9,9 +9,11 @@ import {
 
 import { getusers } from "../../store/services/users";
 import CardUser from "./CardUser";
+import { Address } from "@store/types/user";
 
 export interface User {
-  id: number;
+  address: Address[];
+  id: string;
   email: string;
   first_name: string;
   last_name: string;
@@ -31,6 +33,7 @@ const Users = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
+  
 
   const getUsersList = async () => {
     const users = await getusers();
@@ -149,7 +152,9 @@ const Users = () => {
       </div>
       <div>
         {currentUsers.map(user => (
-          <CardUser key={user.id} user={user} getUsersList={getUsersList} />
+          <CardUser key={user.id} user={user} getUsersList={getUsersList} onEdit={function (user: User): void {
+            throw new Error("Function not implemented.");
+          } } />
         ))}
       </div>
     </div>
