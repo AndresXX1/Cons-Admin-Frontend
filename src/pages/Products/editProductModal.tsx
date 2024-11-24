@@ -12,6 +12,9 @@ interface EditProductModalProps {
   saveProduct: (updatedProduct: any) => void;
 }
 
+
+
+
 const EditProductModal: React.FC<EditProductModalProps> = ({
   isOpen,
   closeModal,
@@ -131,7 +134,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
       setProductDescription(product.description);
       setCategory(product.category || "ArgenCompras");
       setIncludeShipping(product.includesShipping || false);
-      setImage(product.image ? `http://localhost:8001${product.image}` : null);
+      setImage(product.image ? `https://back5.maylandlabs.com${product.image}` : null);
     }
   }, [product]);
 
@@ -196,14 +199,14 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               {/* Imagen */}
               <div>
                 <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
-                  <img
-                    src={image || `http://localhost:8001${product.image}`}
-                    alt={product.name}
-                    className="w-[170px] h-[170px]"
-                    onError={(e) => {
-                      e.currentTarget.src = "/products/image_default.png";
-                    }}
-                  />
+                <img
+  src={image || `https://back5.maylandlabs.com${product.image}`}
+  alt={product.name}
+  className="w-[170px] h-[170px]"
+  onError={(e) => {
+    e.currentTarget.src = "/products/image_default.png";  // Imagen por defecto en caso de error
+  }}
+/>
                 </div>
                 <p
                   className="flex gap-1 items-center pt-[18px] text-[14px] font-book text-argenpesos-textos cursor-pointer"

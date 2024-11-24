@@ -6,13 +6,20 @@ export const apiUrls = {
   refreshToken: () => `${baseUrl}/api/admin/refresh-token`,
   logOut: () => `${baseUrl}/api/admin/log-out`,
   getSessions: () => `/api/admin/session`,
-  deleteSession: (id: number) => `/api/admin/session/${id}`,
+  deleteSession: (userId: number) => `/api/admin/session/${userId}`,
   resendCode: () => `${baseUrl}/api/admin/resend-code`,
   //user
   getUsers: () => `/api/user/all`,
   getUser: () => `${baseUrl}/api/admin`,
   avatarUser: (img: string) => `${baseUrl}/avatar/${img}`,
   putUserCuponizate: (userId: number) => `/api/user/cuponizate/${userId}`,
+  avatarUserimage:  () => `${baseUrl}/api/admin/avatar`, 
+  putUserById: (userId: number) => `${baseUrl}/api/user/${userId}`,
+   //  direcciónes para un usuario específico desde admin
+   createAddress: (userId: number) => `${baseUrl}/api/user/${userId}/address`, 
+   getUserAddresses: (userId: number) => `${baseUrl}/api/user/${userId}/addresses`,
+   editUserAddress: (userId: number, index: number) => `${baseUrl}/api/user/${userId}/address/${index}`,
+  deleteUserAddress: (userId: number, index: number) => `${baseUrl}/api/user/${userId}/address/${index}`,
   //banner
   getBannersHome: () => `/api/banner/home`,
   getBannersCuponizate: () => `/api/banner/cuponizate`,
@@ -45,7 +52,6 @@ export const apiUrls = {
   updateProduct: (id: number | string) => `/api/product/update/${id}`,
   deleteProduct: (id: number) => `/api/product/delete/${id}`,
   productImg: (img: string) => {
-    // Nos aseguramos de que la URL base no termine con barra y que la ruta de la imagen comience correctamente
     return `${baseUrl.replace(/\/$/, '')}/images/products/${img}`},
   //branch
   getBranches: () => `/api/branch`,

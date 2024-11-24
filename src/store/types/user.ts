@@ -17,7 +17,7 @@ export interface User {
   cuponizate: boolean;
   avatar: string;
   gender: string;
-  cuil: string | number;
+  cuil: string;
   bank: string;
   paymentDate: string;
   create: string;

@@ -19,6 +19,25 @@ interface SvgProps extends HTMLAttributes<HTMLDivElement> {
   opacity?: string;
 }
 
+export const IconSave = ({ color, width = "24", height = "24", className, ...rest }: SvgProps) => {
+  return (
+    <div {...rest} className={className}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={width}
+        height={height}
+        viewBox="0 0 24 24"
+        fill="none"
+      >
+        <path
+          d="M17 3H7C5.9 3 5 3.9 5 5V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V5C19 3.9 18.1 3 17 3ZM7 19V5H17V19H7ZM12 15V9H10V15H12Z"
+          fill={color || "#575757"} // Default color
+        />
+      </svg>
+    </div>
+  );
+}
+
 export const IconHome = ({ color }: SvgProps) => {
   return (
     <svg

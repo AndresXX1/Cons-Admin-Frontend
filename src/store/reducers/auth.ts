@@ -1,18 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IAuthState } from "../types/auth";
+
 import {
   getUserAsync,
   logInAsync,
   verifySessionAsync,
   logOutAsync,
   getAllUser,
+  updateAvatarAsync,
 } from "@store/actions/auth";
 
 const initialState: IAuthState = {
   authenticated: false,
   loading: true,
   user: null,
-  
+  updatingAvatar: false,
+  avatarUpdateError: null,
+  token: undefined,
+  updatingUser: false, 
+  userUpdateError: null, 
 };
 
 export const authSlice = createSlice({
@@ -52,7 +58,22 @@ export const authSlice = createSlice({
       .addCase(logOutAsync.rejected, state => {
         state.authenticated = false;
         state.user = null;
-      });
+      })
+      .addCase(updateAvatarAsync.pending, (state) => {
+        state.updatingAvatar = true;
+        state.avatarUpdateError = null;
+      })
+      .addCase(updateAvatarAsync.fulfilled, (state, action) => {
+        state.updatingAvatar = false;
+        if (action.payload && action.payload.user) {
+          state.user = action.payload.user;
+        }
+      })
+      .addCase(updateAvatarAsync.rejected, (state, action) => {
+        state.updatingAvatar = false;
+        state.avatarUpdateError = action.payload?.toString() || 'Error desconocido';
+      })
+
   },
 });
 

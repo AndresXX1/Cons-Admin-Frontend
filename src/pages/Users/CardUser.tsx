@@ -8,8 +8,7 @@ import Modal from "@components/Modal";
 import ModalAction from "@components/ModalAction";
 import { putUserCuponizateById } from "@store/services/users";
 import { EditUserModal, UserFormData } from "./editUserModal"; 
-import AddressForm from "./addressForm";
-import { Address } from "@store/types/user";
+
 
 
 interface CardUserProps {
@@ -18,14 +17,13 @@ interface CardUserProps {
   onEdit: (user: User) => void; 
 }
 
+
 const CardUser = ({ user, getUsersList }: CardUserProps) => {
   const [menuVisibility, setMenuVisibility] = useState(false);
   const [modalActiveCuponizate, setModalActiveCuponizate] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
-  const [modalAddress, setModalAddress] = useState(false);
-  const [addressToEdit, setAddressToEdit] = useState<Address[]>(user.address || []);
   const [userToEdit, setUserToEdit] = useState<UserFormData | null>(null);
-  const [addresses, setAddresses] = useState<Address[]>([]);
+
 
 
 
@@ -53,57 +51,19 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
       points: user.points,
       image: user.avatar ? apiUrls.avatarUser(user.avatar) : null, // Si no tiene imagen, es null
       address: user.address,
-      cuil: undefined,
-      gender: "",
-      subscriptionStatus: undefined
+      cuil: user.cuil,
+      gender: user.gender,
+      subscriptionStatus: undefined,
+      id: Number(user.id),
+      avatar: ""
     };
-
+ console.log("Abriendo modal con el siguiente user:", user)
     setUserToEdit(userFormData);
     setModalEdit(true);
   };
 
-  const openAddressModal = () => {
-    const newAddress = user.address && user.address.length > 0 
-      ? { ...user.address[0], number: Number(user.address[0].number) }
-      : { street: '', number: 0, zipCode: '', city: '', province: '' };
-    
-    // Wrap the single address in an array
-    setAddressToEdit([newAddress]);
-    console.log('Address to edit:', newAddress); 
-    setModalAddress(true);
-  };
-  const handleAddressChange = (index: number, field: keyof Address, value: string | number) => {
-    const updatedAddresses = [...addressToEdit];
-    updatedAddresses[index] = { ...updatedAddresses[index], [field]: value };
-    setAddressToEdit(updatedAddresses);
-  };
 
 
-
-  const handleSaveAddresses = () => {
-    // Aquí podrías llamar a un servicio para guardar las direcciones
-    console.log("Direcciones guardadas", addressToEdit);
-    setModalAddress(false);
-  };
-
-  const handleCancel = () => {
-    setModalAddress(false);
-  };
-
-  const handleAddAddress = () => {
-    if (addressToEdit.length < 3) {
-      setAddressToEdit([
-        ...addressToEdit,
-        { street: '', number: 0, zipCode: '', city: '', province: '' },
-      ]);
-    }
-  };
-
-  const handleDeleteAddress = (index: number) => {
-    const updatedAddresses = addressToEdit.filter((_, i) => i !== index);
-    setAddressToEdit(updatedAddresses);
-  };
-  
 
 
 
@@ -191,10 +151,6 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
                 <IconEdit color="#575757" />
                 Editar
               </p>
-              <p onClick={openAddressModal} className="flex items-center cursor-pointer text-gray-700">
-                <IconEdit color="#575757" />
-                Direcciones
-              </p>
               <p className="flex items-center gap-1 cursor-pointer text-gray-700">
                 <BlockedIcon />
                 Bloquear
@@ -226,23 +182,8 @@ const CardUser = ({ user, getUsersList }: CardUserProps) => {
         </div>
       )}
 
-      {/* Modal de direcciones */}
-      {modalAddress && (
-      <Modal
-      isShown={modalAddress}
-      closeModal={() => setModalAddress(false)}
-      element={
-        <AddressForm
-          addresses={addressToEdit}
-          onAddressChange={handleAddressChange}
-          onAddAddress={handleAddAddress}
-          onSave={handleSaveAddresses}
-          onCancel={handleCancel}
-          onDeleteAddress={handleDeleteAddress} // Pasamos la función al hijo
-        />
-       }
-     />
-      )}
+    
+   
     </>
   );
 };

@@ -1,141 +1,203 @@
-import React from 'react';
-
-// Definición de la interfaz para la dirección
-interface Address {
-  street: string;
-  number: number;
-  zipCode: string;
-  city: string;
-  province: string;
-}
+import Modal from '@components/Modal';
+import { RootState } from '@store';
+import { IconX } from '@utils/svg';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '@store';
+import { createAddressAsync } from '../../store/actions/user'; 
+import { Address } from '../../store/types/user';
 
 // Propiedades que recibe el componente
 interface AddressFormProps {
-  addresses: Address[];
-  onAddressChange: (index: number, field: keyof Address, value: string | number) => void;
-  onAddAddress: () => void;
-  onDeleteAddress: (index: number) => void;  // Función para eliminar la dirección
+  address: Address;  // Una sola dirección en lugar de un array
+  onAddressChange: (field: keyof Address, value: string | number) => void;
   onSave?: () => void;
   onCancel?: () => void;
+  userFormData: any;
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({
-  addresses,
+  address,
   onAddressChange,
-  onAddAddress,
-  onDeleteAddress,
   onSave,
   onCancel,
+  userFormData,
 }) => {
+  const { loading, error } = useSelector((state: RootState) => ({
+    loading: state.Product.loading,
+    error: state.Product.error,
+  }));
+
+  const [modalCanceled, setModalCanceled] = useState<boolean>(false);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleCancel = () => {
+    setModalCanceled(true);
+  };
+
+  const closeCancelModal = () => {
+    setModalCanceled(false);
+  };
+
+  const handleConfirmCancel = () => {
+    setModalCanceled(false);
+    if (onCancel) {
+      onCancel();
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const newAddress = {
+        street: address.street,
+        number: address.number,
+        zipCode: address.zipCode,
+        city: address.city,
+        province: address.province,
+      };
+
+      // Despacha la acción con el `userId` y la nueva dirección
+      await dispatch(createAddressAsync({ userId: userFormData.id, address: newAddress }));
+
+      if (onSave) onSave();
+    } catch (error) {
+      console.error("Error al crear la dirección", error);
+    }
+  };
+
   return (
-    <div className="space-y-4 max-w-4xl mx-auto p-6"> {/* Añadido padding y centrado con mx-auto */}
-      {/* Título del modal */}
-      <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">Editar Direcciones</h2>
-
-      {addresses.map((address, index) => (
-        <div key={index} className="space-y-4 border-b border-gray-300 pb-4">
-          {/* Dirección y número */}
-          <div className="grid grid-cols-2 gap-x-4 ml-10"> {/* Desplazamos los inputs al centro con ml-10 */}
-            <div>
-              <label className="block text-sm text-gray-700 mb-0.5">Dirección</label>
-              <input
-                type="text"
-                value={address.street} // Valor inicial de la dirección
-                onChange={(e) => onAddressChange(index, 'street', e.target.value)} // Actualiza la dirección cuando el campo cambia
-                className="w-full h-[26px] px-3 border rounded-md mb-4" // Aumento de padding y margen inferior
-                placeholder="Ejemplo: Calle Falsa 123"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-700 mb-0.5">Número</label>
-              <input
-                type="number"
-                value={address.number} // Valor inicial del número
-                onChange={(e) => onAddressChange(index, 'number', Number(e.target.value))} // Actualiza el número cuando cambia
-                className="w-full h-[26px] px-3 border rounded-md mb-4" // Aumento de padding y margen inferior
-              />
-            </div>
-          </div>
-
-          {/* Código Postal y Ciudad */}
-          <div className="grid grid-cols-2 gap-x-4 ml-10"> {/* Desplazamos los inputs al centro con ml-10 */}
-            <div>
-              <label className="block text-sm text-gray-700 mb-0.5">Código Postal</label>
-              <input
-                type="text"
-                value={address.zipCode} // Valor inicial del código postal
-                onChange={(e) => onAddressChange(index, 'zipCode', e.target.value)} // Actualiza el código postal cuando cambia
-                className="w-full h-[26px] px-3 border rounded-md mb-4" // Aumento de padding y margen inferior
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-700 mb-0.5">Ciudad</label>
-              <input
-                type="text"
-                value={address.city} // Valor inicial de la ciudad
-                onChange={(e) => onAddressChange(index, 'city', e.target.value)} // Actualiza la ciudad cuando cambia
-                className="w-full h-[26px] px-3 border rounded-md mb-4" // Aumento de padding y margen inferior
-              />
-            </div>
-          </div>
-
-          {/* Provincia */}
-          <div className="grid grid-cols-3 gap-x-4 ml-10"> {/* Desplazamos los inputs al centro con ml-10 */}
-            <div className="col-span-3">
-              <label className="block text-sm text-gray-700 mb-0.5">Provincia</label>
-              <input
-                type="text"
-                value={address.province} // Valor inicial de la provincia
-                onChange={(e) => onAddressChange(index, 'province', e.target.value)} // Actualiza la provincia cuando cambia
-                className="w-full h-[26px] px-3 border rounded-md mb-4" // Aumento de padding y margen inferior
-              />
-            </div>
-          </div>
-
-          {/* Botón para eliminar la dirección, solo si no es la primera dirección */}
-          {index !== 0 && (
-            <div className="text-right">
-              <button
-                onClick={() => onDeleteAddress(index)}
-                className="text-red-500 text-sm"
+    <>
+      <Modal
+        isShown={modalCanceled}
+        element={
+          <div className="px-6 py-6 flex flex-col justify-center gap-5 w-[481px] h-[192px]">
+            <div className="flex justify-between items-center">
+              <p className="text-[1rem] text-argenpesos-textos font-bold">
+                ¿Está seguro que desea salir?
+              </p>
+              <p
+                className="cursor-pointer"
+                onClick={closeCancelModal}
               >
-                Eliminar Dirección
+                <IconX />
+              </p>
+            </div>
+            <p className="text-[14px] font-book text-argenpesos-gray w-[380px]">
+              Se descartarán los cambios que hayas realizado.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={handleConfirmCancel}
+                className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
+              >
+                Salir
+              </button>
+              <button
+                onClick={closeCancelModal}
+                className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
+              >
+                Cancelar
               </button>
             </div>
-          )}
-        </div>
-      ))}
+          </div>
+        }
+      />
 
-      {/* Botón para agregar nuevas direcciones solo si hay menos de 3 */}
-      {addresses.length < 3 && (
-        <div className="text-center">
+      {/* El formulario de dirección */}
+      <div className="space-y-4 max-w-4xl mx-auto p-6">
+        <div className="flex justify-between items-center">
+          <p className="cursor-pointer" onClick={handleCancel}>
+            <IconX />
+          </p>
+        </div>
+
+        <h2 className="text-2xl font-semibold text-center text-gray-700 mb-10">
+          {address.street ? 'Editar' : 'Crear'} dirección para {userFormData.firstName} {userFormData.lastName}
+        </h2>
+
+        {/* Dirección y número */}
+        <div className="grid grid-cols-2 gap-x-4 ml-10">
+          <div>
+            <label className="block text-sm text-gray-700 mb-0.5">Dirección</label>
+            <input
+              type="text"
+              value={address.street}
+              onChange={(e) => onAddressChange('street', e.target.value)}
+              className="w-full h-[26px] px-3 border rounded-md mb-4"
+              placeholder="Ejemplo: Calle Falsa 123"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-700 mb-0.5">Número</label>
+            <input
+              type="number"
+              value={address.number}
+              onChange={(e) => onAddressChange('number', Number(e.target.value))}
+              className="w-full h-[26px] px-3 border rounded-md mb-4"
+              placeholder='Ej: 825'
+            />
+          </div>
+        </div>
+
+        {/* Código Postal y Ciudad */}
+        <div className="grid grid-cols-2 gap-x-4 ml-10">
+          <div>
+            <label className="block text-sm text-gray-700 mb-0.5">Código Postal</label>
+            <input
+              type="text"
+              value={address.zipCode}
+              onChange={(e) => onAddressChange('zipCode', e.target.value)}
+              className="w-full h-[26px] px-3 border rounded-md mb-4"
+              placeholder='Ej: X5008'
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-700 mb-0.5">Ciudad</label>
+            <input
+              type="text"
+              value={address.city}
+              onChange={(e) => onAddressChange('city', e.target.value)}
+              className="w-full h-[26px] px-3 border rounded-md mb-4"
+              placeholder='Ej: San Francisco'
+            />
+          </div>
+        </div>
+
+        {/* Provincia */}
+        <div className="grid grid-cols-3 gap-x-4 ml-10">
+          <div className="col-span-3">
+            <label className="block text-sm text-gray-700 mb-0.5">Provincia</label>
+            <input
+              type="text"
+              value={address.province}
+              onChange={(e) => onAddressChange('province', e.target.value)}
+              className="w-full h-[26px] px-3 border rounded-md mb-4"
+              placeholder='Ej: Córdoba'
+            />
+          </div>
+        </div>
+
+        {/* Botones de acción */}
+        <div className="flex justify-end gap-4 mt-10">
           <button
-            onClick={onAddAddress}
-            className="py-2 px-4 bg-argenpesos-blue text-white rounded-full"
+            onClick={handleCancel}
+            className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
           >
-            Agregar Dirección
+            Cancelar
+          </button>
+          <button
+            onClick={handleSave}
+            className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book hover:bg-argenpesos-blue hover:transition-colors duration-100"
+            disabled={loading}
+          >
+            {loading ? "Guardando..." : "Guardar"}
           </button>
         </div>
-      )}
-
-      {/* Botones de acción (Guardar, Cancelar) */}
-      <div className="flex justify-between mt-5">
-        <button
-          onClick={onCancel}
-          className="px-5 py-1.5 text-white bg-gray-500 rounded-md hover:bg-gray-600"
-        >
-          Cancelar
-        </button>
-        <button
-          onClick={onSave}
-          className="px-5 py-1.5 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-        >
-          Guardar
-        </button>
+        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
       </div>
-    </div>
+    </>
   );
 };
 

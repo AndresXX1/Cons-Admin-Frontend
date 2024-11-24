@@ -24,6 +24,8 @@ export interface User {
   create: string;
   cuponizate: boolean;
   points: number;
+  cuil: string;
+  gender: string
 }
 
 const Users = () => {
