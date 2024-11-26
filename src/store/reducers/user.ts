@@ -10,12 +10,14 @@ interface AddressState {
   addresses: any[]; // Aquí puedes definir un tipo más específico para las direcciones
   loading: boolean;
   error: string | null;
+  
 }
 
 const initialState: AddressState = {
   addresses: [],
   loading: false,
   error: null,
+  
 };
 
 export const addressSlice = createSlice({
@@ -80,6 +82,7 @@ export const addressSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       });
+      
   },
 });
 

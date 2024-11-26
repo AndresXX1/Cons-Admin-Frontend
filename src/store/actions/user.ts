@@ -3,8 +3,10 @@ import {
   createAddressService, 
   getUserAddressesService, 
   editAddressService, 
-  deleteAddressService 
+  deleteAddressService,
+   
 } from '../services/addressService';
+import {blockUserService, unblockUserService} from "../services/users"
 
 // Definir el tipo de la nueva dirección (sin 'userId')
 interface NewAddress {
@@ -62,6 +64,33 @@ export const deleteAddressAsync = createAsyncThunk(
       return response; // Retornamos la respuesta de la API
     } catch (error: any) {
       return rejectWithValue(error.message || 'Error al eliminar la dirección');
+    }
+  }
+);
+
+
+// Acción para bloquear un usuario
+export const blockUserAsync = createAsyncThunk(
+  'user/block',
+  async (userId: number, { rejectWithValue }) => {
+    try {
+      const response = await blockUserService(userId);
+      return response; // Retornamos la respuesta de la API
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Ocurrió un error al bloquear al usuario');
+    }
+  }
+);
+
+// Acción para desbloquear un usuario
+export const unblockUserAsync = createAsyncThunk(
+  'user/unblock',
+  async (userId: number, { rejectWithValue }) => {
+    try {
+      const response = await unblockUserService(userId);
+      return response; // Retornamos la respuesta de la API
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Ocurrió un error al desbloquear al usuario');
     }
   }
 );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { IconEdit, IconX } from "@utils/svg";
 import Modal from "@components/Modal";
 import { apiUrls, tokenAccess } from '@config/config';
@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@store';
 import axios from 'axios';
 import UserAddresses from "./allAddress";
+import { alertError, alertConfirm } from "@utils/alerts";
 
 interface Address {
   street: string;
@@ -35,11 +36,14 @@ interface EditUserModalProps {
   user: UserFormData;
   onSave: (user: UserFormData) => void;
   onClose: () => void;
+  userToEdit?: UserFormData;
+  setModalEdit: Dispatch<SetStateAction<boolean>>;
+  getUsersList: () => Promise<void>; 
 }
 
 
 
-export const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onClose }) => {
+export const EditUserModal: React.FC<EditUserModalProps> = ({ user,setModalEdit, onSave, onClose,getUsersList  }) => {
   const [formData, setFormData] = useState<UserFormData>(user);
   const [addressToEdit, setAddressToEdit] = useState<Address[]>(user.address || []);
   const { updatingUser } = useSelector((state: RootState) => state.auth); // Obtenemos el estado de Redux
@@ -62,25 +66,23 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onCl
   console.log("formData CUIL:", formData.cuil);  // Verificar el valor de formData.cuil
 
   useEffect(() => {
-    const token = localStorage.getItem(tokenAccess.tokenName);
-    if (token) {
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));
-      const currentTime = Math.floor(Date.now() / 1000); // Obtén el tiempo actual en segundos
-  
-      if (decodedToken.exp && decodedToken.exp < currentTime) {
-        console.error("El token ha expirado.");
-        alert("El token ha expirado. Por favor, inicie sesión nuevamente.");
-        // Aquí podrías redirigir al login, dependiendo de tu flujo.
-        return;
-      }
+    if (user) {
+      setFormData({
+        ...user,
+        cuil: user.cuil ? String(user.cuil) : '',
+        gender: user.gender || 'Seleccionar',
+        address: user.address.length > 0
+          ? user.address
+          : [{ street: '', number: 0, zipCode: '', city: '', province: '' }],
+      });
     }
-  }, []);
+  }, [user]);
 
   const handleInputChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
     const { name, value } = event.currentTarget;
     setFormData((prevData) => ({
       ...prevData,
-      [name!]: String(value),  // Convierte siempre el valor a string
+      [name!]: name === 'points' ? Number(value) : String(value),
     }));
   };
 
@@ -96,65 +98,64 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onCl
   const handleSave = async () => {
     // Transformamos los nombres de los campos para que coincidan con el DTO
     const userData = {
-      first_name: formData.firstName,  // Cambiamos a snake_case
+      first_name: formData.firstName,
       last_name: formData.lastName,
-      cuil: String(formData.cuil),  // Aseguramos que cuil sea un string
-      birthday: formData.birthday || "",  // Aseguramos que 'birthday' tenga un valor no-null
+      cuil: String(formData.cuil),
+      birthday: formData.birthday || "",
       phone: formData.phone,
-      gender: formData.gender, // Agregado para enviar el género
-      points: formData.points, // Agregado para enviar los puntos
+      gender: formData.gender,
+      points: formData.points,
     };
-
+  
     // Verificar si el campo 'birthday' tiene un valor válido
     if (!userData.birthday) {
       console.warn("El campo 'birthday' es obligatorio y no puede estar vacío.");
-      alert("El campo de fecha de nacimiento es obligatorio.");
+      alertError("El campo de fecha de nacimiento es obligatorio.");
       return;
     }
-
+  
     // Asegurarse que la fecha de nacimiento esté en formato correcto (YYYY-MM-DD)
     const formattedBirthday = new Date(userData.birthday).toISOString().split('T')[0];
-    userData.birthday = formattedBirthday;  // Actualizamos el campo 'birthday'
-
+    userData.birthday = formattedBirthday;
+  
     console.log("userData:", userData);
-
+  
     // Obtenemos el token
     const token = localStorage.getItem(tokenAccess.tokenName);
-    console.log("Token extraído de localStorage:", token);  // Verificamos que el token esté presente
-
+    console.log("Token extraído de localStorage:", token);
+  
     if (!token) {
       console.error("No se encontró el token en localStorage.");
-      alert("No se encontró el token de autenticación.");
+      alertError("No se encontró el token de autenticación.");
       return;
     }
-
-    // Verificamos que el token esté correctamente formateado y se enviará en el header
-    console.log("Enviando token en el header: Bearer", token);
-
+  
     try {
-      // Enviar solicitud PUT con el token
       const response = await axios.put(
         `${apiUrls.putUserById(user.id)}`,
         userData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,  // Enviar token en el header
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      console.log("Respuesta del servidor:", response); // Verificamos la respuesta del servidor
-
+  
+      console.log("Respuesta de actualización:", response.data);
+    
       if (response.data.ok) {
-        // Si la respuesta es exitosa
+        console.log("Actualización exitosa, llamando a getUsersList");
+        alertConfirm("Datos del usuario actualizados correctamente.");
         onSave(response.data.user);
+        if (getUsersList) {
+          await getUsersList();  // Agrega un console.log aquí
+          console.log("getUsersList ejecutado");
+        }
         onClose();
-      } else {
-        alert(response.data.message || 'Error al actualizar el usuario');
       }
     } catch (error) {
-      console.error('Error al actualizar el usuario:', error);
-      alert('Ocurrió un error al intentar actualizar los datos.');
+      console.error("Error al actualizar el usuario:", error);
+      alertError("Ocurrió un error al intentar actualizar los datos.");
     }
   };
 
@@ -287,7 +288,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onCl
             className="flex items-center cursor-pointer text-gray-700 translate-y-[25px] translate-x-[-200px]"
           >
             <IconEdit />
-            Direcciones de {formData.firstName}
+            Direcciones de {user.firstName}
           </button>
 
             <button

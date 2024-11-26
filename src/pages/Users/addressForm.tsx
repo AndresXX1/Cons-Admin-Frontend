@@ -4,17 +4,18 @@ import { IconX } from '@utils/svg';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@store';
-import { createAddressAsync } from '../../store/actions/user'; 
+import { createAddressAsync } from '../../store/actions/user';
 import { Address } from '../../store/types/user';
 
 // Propiedades que recibe el componente
 interface AddressFormProps {
-  address: Address;  // Una sola dirección en lugar de un array
+  address: Address;
   onAddressChange: (field: keyof Address, value: string | number) => void;
   onSave?: () => void;
   onCancel?: () => void;
   userFormData: any;
 }
+
 
 const AddressForm: React.FC<AddressFormProps> = ({
   address,
@@ -29,11 +30,43 @@ const AddressForm: React.FC<AddressFormProps> = ({
   }));
 
   const [modalCanceled, setModalCanceled] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Partial<Address>>({}); // Estado para errores de validación
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleCancel = () => {
-    setModalCanceled(true);
+  // Función de validación unificada para los campos
+  const validateAddressFields = (addressToValidate: Address) => {
+    const newErrors: Partial<Address> = {};
+
+    if (!addressToValidate.street) {
+      newErrors.street = 'La dirección es obligatoria.';
+    } else if (!/^[a-zA-Z\s]*$/.test(addressToValidate.street)) {
+      newErrors.street = 'La dirección solo puede contener letras y espacios.';
+    } else if (addressToValidate.street.length > 25) {
+      newErrors.street = 'La dirección no puede tener más de 25 caracteres.';
+    }
+
+    if (!addressToValidate.zipCode || !/^[A-Za-z]{1}\d{4,5}$/.test(addressToValidate.zipCode)) {
+      newErrors.zipCode = 'El código postal debe tener un carácter seguido de 4-5 números.';
+    }
+
+    if (!addressToValidate.city) {
+      newErrors.city = 'La ciudad es obligatoria.';
+    } else if (!/^[a-zA-Z\s]*$/.test(addressToValidate.city)) {
+      newErrors.city = 'La ciudad solo puede contener letras y espacios.';
+    } else if (addressToValidate.city.length > 12) {
+      newErrors.city = 'La ciudad no puede tener más de 12 caracteres.';
+    }
+
+    if (!addressToValidate.province) {
+      newErrors.province = 'La provincia es obligatoria.';
+    }
+
+    return newErrors;
   };
+
+  const handleCancel = () => {
+    setModalCanceled(true); // Esto debería activar el modal
+};
 
   const closeCancelModal = () => {
     setModalCanceled(false);
@@ -46,7 +79,29 @@ const AddressForm: React.FC<AddressFormProps> = ({
     }
   };
 
+  const provinces = [
+    "Buenos Aires", "Ciudad Autónoma de Buenos Aires", "Catamarca", "Chaco", "Chubut", "Córdoba", "Corrientes", "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja", "Mendoza", "Misiones", "Neuquén", "Río Negro", "Salta", "San Juan", "San Luis", "Santa Cruz", "Santa Fe", "Santiago del Estero", "Tierra del Fuego", "Tucumán"
+  ];
+
+  // Función para manejar el cambio de los campos y validarlos en tiempo real
+  const handleFieldChange = (field: keyof Address, value: string | number) => {
+    // Actualizamos el valor del campo en el estado padre
+    onAddressChange(field, value);
+
+    // Validamos el campo modificado y actualizamos los errores
+    const newErrors = validateAddressFields({ ...address, [field]: value });
+    setErrors(newErrors);
+  };
+
+  // Función de guardado que valida antes de guardar
   const handleSave = async () => {
+    const validationErrors = validateAddressFields(address);
+    setErrors(validationErrors); // Establecer errores
+
+    if (Object.keys(validationErrors).length > 0) {
+      return; // Detener si hay errores
+    }
+
     try {
       const newAddress = {
         street: address.street,
@@ -56,14 +111,15 @@ const AddressForm: React.FC<AddressFormProps> = ({
         province: address.province,
       };
 
-      // Despacha la acción con el `userId` y la nueva dirección
       await dispatch(createAddressAsync({ userId: userFormData.id, address: newAddress }));
 
-      if (onSave) onSave();
+      if (onSave) onSave(); // Llama la función onSave si existe
     } catch (error) {
-      console.error("Error al crear la dirección", error);
+      console.error('Error al crear la dirección', error);
     }
   };
+
+  
 
   return (
     <>
@@ -75,15 +131,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
               <p className="text-[1rem] text-argenpesos-textos font-bold">
                 ¿Está seguro que desea salir?
               </p>
-              <p
-                className="cursor-pointer"
-                onClick={closeCancelModal}
-              >
+              <p className="cursor-pointer" onClick={closeCancelModal}>
                 <IconX />
               </p>
             </div>
             <p className="text-[14px] font-book text-argenpesos-gray w-[380px]">
-              Se descartarán los cambios que hayas realizado.
+              Se descartarán los cambios realizados.
             </p>
             <div className="flex gap-4">
               <button
@@ -103,8 +156,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
         }
       />
 
-      {/* El formulario de dirección */}
-      <div className="space-y-4 max-w-4xl mx-auto p-6">
+      {/* Formulario de Dirección */}
+      <div className="space-y-4 max-w-4xl mx-auto w-[700px] h-[480px]">
         <div className="flex justify-between items-center">
           <p className="cursor-pointer" onClick={handleCancel}>
             <IconX />
@@ -112,20 +165,22 @@ const AddressForm: React.FC<AddressFormProps> = ({
         </div>
 
         <h2 className="text-2xl font-semibold text-center text-gray-700 mb-10">
-          {address.street ? 'Editar' : 'Crear'} dirección para {userFormData.firstName} {userFormData.lastName}
+          {address ? `Crear Dirección para ${userFormData.firstName} ${userFormData.lastName}` : 'Agregar Dirección'}
         </h2>
 
-        {/* Dirección y número */}
         <div className="grid grid-cols-2 gap-x-4 ml-10">
           <div>
             <label className="block text-sm text-gray-700 mb-0.5">Dirección</label>
             <input
               type="text"
+              maxLength={20}
               value={address.street}
-              onChange={(e) => onAddressChange('street', e.target.value)}
-              className="w-full h-[26px] px-3 border rounded-md mb-4"
+              onChange={(e) => handleFieldChange('street', e.target.value)}
+              className={`w-[300px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.street ? 'border-red-500' : 'border-argenpesos-gray'}`}
               placeholder="Ejemplo: Calle Falsa 123"
+              aria-label="Dirección"
             />
+            {errors.street && <p className="text-red-500 text-xs w-[300px]">{errors.street}</p>}
           </div>
 
           <div>
@@ -133,69 +188,90 @@ const AddressForm: React.FC<AddressFormProps> = ({
             <input
               type="number"
               value={address.number}
-              onChange={(e) => onAddressChange('number', Number(e.target.value))}
-              className="w-full h-[26px] px-3 border rounded-md mb-4"
-              placeholder='Ej: 825'
+              onChange={(e) => handleFieldChange('number', Number(e.target.value))}
+              className={`w-[300px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.number ? 'border-red-500' : 'border-argenpesos-gray'}`}
+              maxLength={4}
+              placeholder="Ej: 825"
+              aria-label="Número"
+              onKeyDown={(e) => {
+                // Prevenir que se peguen números de más de 4 dígitos
+                if ((e.key === 'v' || e.key === 'V') && (e.ctrlKey === true || e.metaKey === true)) {
+                  e.preventDefault();
+                }
+              }}
             />
+            {errors.number && <p className="text-red-500 text-xs w-[300px]">{errors.number}</p>}
           </div>
         </div>
 
-        {/* Código Postal y Ciudad */}
         <div className="grid grid-cols-2 gap-x-4 ml-10">
           <div>
             <label className="block text-sm text-gray-700 mb-0.5">Código Postal</label>
             <input
               type="text"
+              maxLength={5}
               value={address.zipCode}
-              onChange={(e) => onAddressChange('zipCode', e.target.value)}
-              className="w-full h-[26px] px-3 border rounded-md mb-4"
-              placeholder='Ej: X5008'
+              onChange={(e) => handleFieldChange('zipCode', e.target.value)}
+              className={`w-[300px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.zipCode ? 'border-red-500' : 'border-argenpesos-gray'}`}
+              placeholder="Ej: B1702"
+              aria-label="Código Postal"
             />
+            {errors.zipCode && <p className="text-red-500 text-xs w-[300px]">{errors.zipCode}</p>}
           </div>
 
           <div>
             <label className="block text-sm text-gray-700 mb-0.5">Ciudad</label>
             <input
               type="text"
+              maxLength={12}
               value={address.city}
-              onChange={(e) => onAddressChange('city', e.target.value)}
-              className="w-full h-[26px] px-3 border rounded-md mb-4"
-              placeholder='Ej: San Francisco'
+              onChange={(e) => handleFieldChange('city', e.target.value)}
+              className={`w-[300px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.city ? 'border-red-500' : 'border-argenpesos-gray'}`}
+              placeholder="Ej: Buenos Aires"
+              aria-label="Ciudad"
             />
+            {errors.city && <p className="text-red-500 text-xs w-[300px]">{errors.city}</p>}
           </div>
         </div>
 
-        {/* Provincia */}
-        <div className="grid grid-cols-3 gap-x-4 ml-10">
-          <div className="col-span-3">
+        <div className="grid grid-cols-2 gap-x-4 ml-10">
+          <div>
             <label className="block text-sm text-gray-700 mb-0.5">Provincia</label>
-            <input
-              type="text"
+            <select
               value={address.province}
-              onChange={(e) => onAddressChange('province', e.target.value)}
-              className="w-full h-[26px] px-3 border rounded-md mb-4"
-              placeholder='Ej: Córdoba'
-            />
+              onChange={(e) => handleFieldChange('province', e.target.value)}
+              className={`w-[640px]  h-[54px] rounded-[5px] border-[1px] border-solid ${errors.province ? 'border-red-500' : 'border-argenpesos-gray'}`}
+              aria-label="Provincia"
+            >
+              <option value="">Seleccione una provincia</option> {/* Valor vacío para el placeholder */}
+              {provinces.map((provincia, index) => (
+                <option key={index} value={provincia}>
+                  {provincia}
+                </option>
+              ))}
+            </select>
+            {errors.province && <p className="text-red-500 text-xs w-[300px]">{errors.province}</p>}
           </div>
         </div>
 
-        {/* Botones de acción */}
-        <div className="flex justify-end gap-4 mt-10">
-          <button
-            onClick={handleCancel}
-            className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={handleSave}
-            className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book hover:bg-argenpesos-blue hover:transition-colors duration-100"
-            disabled={loading}
-          >
-            {loading ? "Guardando..." : "Guardar"}
-          </button>
+        <div className="flex justify-center mt-6">
+          <div className="flex justify-end gap-4 mt-10">
+            <button
+              onClick={handleCancel}
+              className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSave}
+              className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book hover:bg-argenpesos-blue hover:transition-colors duration-100"
+              disabled={loading}
+            >
+              {loading ? "Guardando..." : "Guardar"}
+            </button>
+          </div>
+          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
         </div>
-        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
       </div>
     </>
   );
