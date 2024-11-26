@@ -9,6 +9,8 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { getProductsAll } from "@store/services/product";
 import { ReactNode } from 'react';
 
+
+
 export interface ICategory {
   id: string;
   created_at: string;
@@ -52,17 +54,30 @@ const Products = () => {
   
 
   const getProducts = async () => {
-    const products = await getAllProductsService();  // Productos canjeables por puntos
-    setProductsPoint(products); // Guardamos los productos canjeables en el estado `productsPoint`
-    const categoriesResponse = getUniqueCategoryNames(products);
-    setCategories(categoriesResponse); // Actualizamos las categorías
+    const products = await getAllProductsService(); // Productos canjeables por puntos
+    console.log("Productos canjeables por puntos:", products); // Verifica los productos y sus id
+    
+    // Verifica que los id no sean nulos o incorrectos antes de almacenarlos
+    products.forEach((product: { id: string; }) => {
+      if (!product.id || product.id === "0") {
+        console.warn(`Producto con id inválido encontrado: ${JSON.stringify(product)}`);
+      }
+    });
+    
+    setProductsPoint(products);
+    if (products) {
+      const categoriesResponse = getUniqueCategoryNames(products);
+      setCategories(categoriesResponse); // Actualizamos las categorías
+    }
   };
   
   const getAllProducts = async () => {
     const productsAll = await getProductsAll();  // Todos los productos
-    setProducts(productsAll); // Guardamos todos los productos en el estado `products`
-    const categoriesResponse = getUniqueCategoryNames(productsAll);
-    setCategories(categoriesResponse); // Actualizamos las categorías
+    if (productsAll) {
+      setProducts(productsAll); // Guardamos todos los productos en el estado `products`
+      const categoriesResponse = getUniqueCategoryNames(productsAll);
+      setCategories(categoriesResponse); // Actualizamos las categorías
+    }
   };
 
   useEffect(() => {
@@ -74,27 +89,32 @@ const Products = () => {
     loadProducts();
   }, []);
 
+  
+
   const handleCreateProduct = () => {
     setModalCreate(true);
   };
 
-  const handleSaveProduct = (updatedProduct: IProduct): void => {
-    console.log("Producto actualizado:", updatedProduct); // Verifica si el producto llega correctamente
-    
-    setProductsPoint((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === updatedProduct.id ? updatedProduct : product
-      )
-    );
-  
+  const handleSaveProduct = async (updatedProduct: IProduct): Promise<void> => {
+    // Actualizar la lista de productos
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
         product.id === updatedProduct.id ? updatedProduct : product
       )
     );
-    console.log("ProductsPoint actualizado:", productsPoint);
-
+  
+    // Actualizar los productos que se canjean por puntos (productsPoint)
+    setProductsPoint((prevProductsPoint) =>
+      prevProductsPoint.map((product) =>
+        product.id === updatedProduct.id ? updatedProduct : product
+      )
+    );
+  
+    // O bien, puedes hacer una actualización más eficiente solo cuando sea necesario
+    setModalEdit(false); // Cerrar el modal de edición
   };
+
+  
 
   const handleEditProduct = (product: IProduct) => {
     setProductToEdit(product); // Establece el producto que se editará
@@ -103,14 +123,10 @@ const Products = () => {
 
   const handleDeleteProduct = async () => {
     if (productToEdit) {
-      // Lógica para eliminar el producto de la base de datos
-      // Suponiendo que tengas una función deleteProductService que elimina el producto en el backend:
-      // await deleteProductService(productToEdit.id);
-  
       // Eliminar el producto de los estados
       setProducts(prevProducts => prevProducts.filter(product => product.id !== productToEdit.id));
       setProductsPoint(prevProducts => prevProducts.filter(product => product.id !== productToEdit.id));
-  
+
       // Cerrar el modal y restablecer el producto a editar
       setModal(false);
       setProductToEdit(null);
@@ -118,16 +134,19 @@ const Products = () => {
     getAllProducts();
   };
 
+
   const getUniqueCategoryNames = (products: IProduct[]): ICategory[] => {
     const categoriesMap = new Map<string, ICategory>();
   
-    products.forEach((product) =>
-      product.categories.forEach((category) => {
-        if (!categoriesMap.has(category.id)) {
-          categoriesMap.set(category.id, category);
-        }
-      })
-    );
+    products.forEach((product) => {
+      if (product.categories && Array.isArray(product.categories)) {
+        product.categories.forEach((category) => {
+          if (!categoriesMap.has(category.id)) {
+            categoriesMap.set(category.id, category);
+          }
+        });
+      }
+    });
   
     return Array.from(categoriesMap.values());
   };
@@ -167,14 +186,46 @@ const Products = () => {
 
 
 
+  const MAX_TOTAL_LENGTH = 20;  // Limite total de caracteres
+  const MAX_LINE_LENGTH = 10;   // Número de caracteres por línea
+  
+  const formatDescription = (description: string): string => {
+    // Asegurarse de que la descripción no exceda de 20 caracteres
+    const truncatedDescription = description.slice(0, MAX_TOTAL_LENGTH);
+    
+    // Crear un array de líneas de longitud 10
+    const lines: string[] = [];
+    for (let i = 0; i < truncatedDescription.length; i += MAX_LINE_LENGTH) {
+      lines.push(truncatedDescription.slice(i, i + MAX_LINE_LENGTH));
+    }
+  
+    // Si la descripción original es mayor que 20, agregar '...'
+    if (description.length > MAX_TOTAL_LENGTH) {
+      return lines.join('\n') + '...'; // Unir las líneas y agregar '...'
+    }
+  
+    return lines.join('\n'); // Si no, simplemente devolver las líneas
+  };
+
+  const MAX_NAME_LENGTH = 9; // Limite de caracteres para el nombre
+
+const truncateName = (name: string): string => {
+  // Si el nombre tiene más de 9 caracteres, truncarlo y agregar '...'
+  if (name.length > MAX_NAME_LENGTH) {
+    return name.slice(0, MAX_NAME_LENGTH) + '...';
+  }
+  return name; // Si el nombre tiene 9 caracteres o menos, devolverlo tal cual
+};
+
   return (
     <>
            {/* Modal de eliminación de producto */}
            <ConfirmDeleteModal
-        isShown={modal}
-        onClose={() => setModal(false)}
-        onConfirm={handleDeleteProduct}
-      />
+  isShown={modal}
+  onClose={() => setModal(false)}
+  productId={typeof productToEdit?.id === 'number' ? productToEdit.id : 0} // Usa productToEdit.id si es un número, o 0 si no
+  onProductDeleted={handleDeleteProduct}
+/>
 
      
      
@@ -207,8 +258,8 @@ const Products = () => {
       <div className="flex flex-col justify-between pt-5 pb-3 pl-4">
         {/* Nombre del producto */}
         <h4 className="w-[141px] text-[22px] font-book leading-[28px] text-argenpesos-textos mb-1">
-          {product.name}
-        </h4>
+    {truncateName(product.name)}
+  </h4>
 
         {/* Categoría del producto */}
         <h6 className="w-[141px] text-[18px] font-book leading-[22px] text-argenpesos-textos mb-1">
@@ -216,9 +267,12 @@ const Products = () => {
         </h6>
 
         {/* Descripción del producto */}
-        <h6 className="w-[141px] text-[16px] font-book leading-[20px] text-argenpesos-textos mb-3">
-          {product.description}
-        </h6>
+        <h6
+  className="w-[141px] text-[16px] font-book leading-[20px] text-argenpesos-textos mb-3"
+  style={{ whiteSpace: 'pre-line' }}  // Respetar los saltos de línea
+>
+  {formatDescription(product.description)}
+</h6>
 
         <div className="flex justify-between items-center">
           {/* Valor del producto */}
@@ -235,20 +289,22 @@ const Products = () => {
             />
             {/* Icono de eliminar */}
             <IconDelete
-              onClick={() => setModal(true)} // Abre el modal de confirmación
-              className="cursor-pointer"
-            />
+  onClick={() => {
+    setModal(true);
+    setProductToEdit(product); // Asegúrate de establecer el producto a editar
+  }}
+  className="cursor-pointer"
+/>
           </div>
         </div>
       </div>
 
       {/* Contenedor de la imagen con bordes redondeados y ajustada */}
       <div className="h-full w-[140px] rounded-[13px] bg-[#F9F9F9] flex items-center relative">
-        <img
-          className="w-[150px] h-[150px] rounded-[10px] absolute left-[-7px] top-[10px]"
-          src={product.image}
-          alt={product.name}
-        />
+      <img
+  src={`https://back5.maylandlabs.com${product.image}`}
+  alt={product.name}
+/>
       </div>
     </div>
   ))}
@@ -265,18 +321,18 @@ const Products = () => {
         
   {/* Modal para editar el producto */}
   <Modal
-    isShown={modalEdit}
-    element={
-      <div className="px-[54px] py-12 flex flex-col w-[969px] h-[668px]">
+  isShown={modalEdit}
+  element={
+    <div className="px-[54px] py-12 flex flex-col w-[969px] h-[668px]">
 <EditProductModal
   isOpen={modalEdit}
   closeModal={() => setModalEdit(false)}
-  product={productToEdit}  // Asegúrate de que `productToEdit` tiene los datos correctos
-  saveProduct={handleSaveProduct} // Asegúrate de que el callback es correcto
+  product={productToEdit}
+  saveProduct={handleSaveProduct}
 />
-      </div>
-    }
-  />
+    </div>
+  }
+/>
             
  <div
   onClick={handleCreateProduct}

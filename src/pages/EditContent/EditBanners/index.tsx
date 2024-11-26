@@ -4,7 +4,7 @@ import {
   getBannersCuponizate,
   getBannersHome,
 } from "@store/services/banners";
-import CardBanner from "../CardBanner";
+import CardBanner from "./CardBanner";
 import { useNavigate } from "react-router-dom";
 import UploadBanner from "./UploadBanner";
 
