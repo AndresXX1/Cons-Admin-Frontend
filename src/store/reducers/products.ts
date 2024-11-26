@@ -1,12 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { updateProductAsync, createProductAsync, getAllProductsAsync } from "../actions/product"; // Importamos las acciones
-import { Product } from "../types/product"; // Importamos la interfaz de tipo Product
+import { updateProductAsync, createProductAsync, getAllProductsAsync, deleteProductAsync } from "../actions/product"; // Importamos la nueva acción
+import { Product } from "../types/product";
 
-// Estado inicial con el tipo correcto para 'products' y 'product'
 const initialState = {
   loading: false,
-  products: [] as Product[], // Definimos que 'products' es un array de 'Product'
-  product: null as Product | null, // 'product' puede ser un objeto Product o null
+  products: [] as Product[],
+  product: null as Product | null,
   error: null as string | null,
 };
 
@@ -53,8 +52,23 @@ const productSlice = createSlice({
         state.products = state.products.map((product) =>
           product.id === updatedProduct.id ? updatedProduct : product
         );
-    })
+      })
       .addCase(updateProductAsync.rejected, (state) => {
+        state.loading = false;
+      })
+
+      // Acción para eliminar un producto
+      .addCase(deleteProductAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteProductAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.products = state.products.filter(
+          (product) => product.id !== action.payload
+        );
+      })
+      .addCase(deleteProductAsync.rejected, (state) => {
         state.loading = false;
       });
   },

@@ -22,6 +22,7 @@ export interface NotificationProps {
   scheduledAt: Date | string;
   saveInHistory: boolean;
   isPush: boolean;
+  redirect: string;
 }
 
 const Notifications = () => {
@@ -36,6 +37,7 @@ const Notifications = () => {
     scheduledAt: new Date(currentDate),
     saveInHistory: false,
     isPush: false,
+    redirect: "",
   });
   const [nextNotifications, setNextNotifications] = useState<
     NotificationProps[]
@@ -81,9 +83,7 @@ const Notifications = () => {
     setData({ ...data, scheduledAt: new Date(selectedDate) });
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setData({
       ...data,
       [e.target.name]:
@@ -104,6 +104,7 @@ const Notifications = () => {
         scheduledAt: new Date(currentDate),
         saveInHistory: false,
         isPush: false,
+        redirect: "",
       });
       setModalCreate(false);
       fetchNotifications();
@@ -117,6 +118,8 @@ const Notifications = () => {
       setVisibleIndex(index);
     }
   };
+
+
 
   return (
     <>
@@ -176,6 +179,7 @@ const Notifications = () => {
                     scheduledAt: new Date(currentDate),
                     saveInHistory: false,
                     isPush: false,
+                    redirect: "",
                   });
                   setModalCreate(false);
                 }}
@@ -243,13 +247,36 @@ const Notifications = () => {
                   </div>
 
                   <label htmlFor="">Descripción</label>
-                  <textarea
-                    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
-                    placeholder="Cuerpo de texto"
-                    name="message"
-                    value={data.message}
-                    onChange={handleChange}
-                  />
+  <textarea
+    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
+    placeholder="Cuerpo de texto"
+    name="message"
+    value={data.message}
+    onChange={handleChange}
+  />
+
+  {/* Nuevo campo de Select */}
+  <div className="w-full">
+    <label className="block text-[14px] font-bold text-argenpesos-textos">
+      Redirigir a:
+    </label>
+    <select
+      name="redirect"
+      value={data.redirect}
+      onChange={handleChange}
+      className="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
+    >
+      <option value="">Seleccionar</option>
+      <option value="noticias">Noticias</option>
+      <option value="prestamos">Mis préstamos</option>
+      <option value="perfil">Perfil</option>
+      <option value="argencompras">ArgenCompras</option>
+      <option value="cuponizate">Cuponizate</option>
+      <option value="canjear">Canjear puntos</option>
+      <option value="medios">Medios de pago para tus cuotas</option>
+    </select>
+  </div>
+
                   <p className="pt-5 text-[14px] font-bold text-argenpesos-textos">
                     Incluye notificación Push
                   </p>
@@ -342,6 +369,7 @@ const Notifications = () => {
                     scheduledAt: new Date(currentDate),
                     saveInHistory: false,
                     isPush: false,
+                    redirect: "",
                   });
                   setModalCreate(false);
                 }}
@@ -516,145 +544,86 @@ const Notifications = () => {
         }
       ></Modal>
 
-      <div className="flex flex-col pl-16 pt-12 px-10 h-[100%]">
-        <p className="text-[3rem] text-argenpesos-textos font-bold pb-14">
-          Notificaciones
-        </p>
+<div className="flex flex-col pl-[24px] pt-[24px] px-[24px] h-full">
+  <h1 className="text-[27px] text-argenpesos-textos font-bold pb-[32px] text-center">
+    Notificaciones
+  </h1>
 
-        <div className="flex gap-6">
-          <input
-            className="w-[735px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10 text-argenpesos-gray2 placeholder:text-argenpesos-gray2 placeholder:font-book"
-            type="search"
-            placeholder="Buscar estadísticas o datos"
-          />
-          <button
-            onClick={() => {
-              setModalCreate(true),
-                setData({ ...data, scheduledAt: new Date(currentDate) });
-            }}
-            className="w-[219px] h-[54px] bg-argenpesos-skyBlue rounded-[13px] flex items-center justify-center text-argenpesos-white gap-1 hover:bg-argenpesos-blue hover:transition-colors duration-100"
-          >
-            <IconNotification />
-            Nueva notificación
-          </button>
+  <div className="flex flex-col sm:flex-row gap-[12px] sm:gap-[20px] items-center justify-between">
+    <input
+      className="w-full sm:w-[510px] h-[40px] rounded-[8px] border-[1px] border-argenpesos-textos border-solid px-[24px] text-argenpesos-gray2 placeholder:text-argenpesos-gray2 placeholder:font-book"
+      type="search"
+      placeholder="Buscar estadísticas o datos"
+    />
+    <button
+      onClick={() => {
+        setModalCreate(true);
+        setData({ ...data, scheduledAt: new Date(currentDate) });
+      }}
+      className="w-full sm:w-[170px] h-[40px] bg-argenpesos-skyBlue rounded-[8px] flex items-center justify-center text-argenpesos-white gap-[4px] hover:bg-argenpesos-blue hover:transition-colors duration-[100ms]"
+    >
+      <IconNotification />
+      <span>Nueva notificación</span>
+    </button>
+  </div>
+
+  <div className="grid grid-cols-7 gap-[7px] items-center text-center mt-[40px]">
+    <p className="text-[14px] text-argenpesos-textos font-bold">Nombre</p>
+    <p className="text-[14px] text-argenpesos-textos font-bold">Fecha</p>
+    <p className="text-[14px] text-argenpesos-textos font-bold">Hora</p>
+    <p className="text-[14px] text-argenpesos-textos font-bold">Mensaje</p>
+    <p className="text-[14px] text-argenpesos-textos font-bold">In-App</p>
+    <p className="text-[14px] text-argenpesos-textos font-bold">Push</p>
+    <p className="text-[14px] text-argenpesos-textos font-bold">Redirect</p>
+  </div>
+
+  <div className="divide-y divide-argenpesos-gray mt-[20px] mb-[20px]">
+  {[...(nextNotifications || []), ...(oldNotifications || [])].map(
+    (inf, index) => (
+      <div
+        className="grid grid-cols-7 gap-[16px] items-center text-center py-[38px]"
+        key={index}
+      >
+          <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
+            {inf.title || "N/A"}
+          </p>
+          <p className="text-[14px] text-argenpesos-textos font-book w-[110px]">
+            {inf.scheduledAt?.toString().split("T")[0]?.replace(/-/g, "/") ||
+              "N/A"}
+          </p>
+          <p className="text-[14px] text-argenpesos-textos font-book w-[110px]">
+            {inf.scheduledAt
+              ? `${inf.scheduledAt.toString().split("T")[1].split(":")[0]}:${
+                  inf.scheduledAt.toString().split("T")[1].split(":")[1]
+                }`
+              : "N/A"}
+          </p>
+          <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
+            {inf.message || "N/A"}
+          </p>
+          <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
+            {inf.saveInHistory ? "Si" : "No"}
+          </p>
+          <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
+            {inf.isPush ? "Si" : "No"}
+          </p>
+          <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
+            {inf.redirect || "N/A"}
+          </p>
         </div>
-        <h4 className="text-[23px] font-bold text-argenpesos-textos pt-10 mb-5">
-          Próximas notificaciones
-        </h4>
+      )
+    )}
+  </div>
+</div>
 
-        <div className="grid grid-cols-5 gap-5 my-8">
-          <p className="text-[1rem] text-argenpesos-textos font-bold">Nombre</p>
-          <div className="flex gap-2 items-center">
-            <p className="text-[1rem] text-argenpesos-textos font-bold">
-              Fecha
-            </p>
-            <ArrowBlue />
-          </div>
-          <p className="text-[1rem] text-argenpesos-textos font-bold">Hora</p>
-          <p className="text-[1rem] text-argenpesos-textos font-bold">In-App</p>
-          <p className="text-[1rem] text-argenpesos-textos font-bold">Push</p>
-          <p className="text-[1rem] text-argenpesos-textos font-bold"></p>
-        </div>
-        <div>
-          {nextNotifications &&
-            nextNotifications.map((inf, index) => (
-              <div
-                className="grid grid-cols-5 gap-5 relative items-center ml-1"
-                key={index}
-              >
-                <div className="flex items-center gap-1">
-                  <p className="text-[1rem] text-argenpesos-textos font-book">
-                    {inf.title}
-                  </p>
-                </div>
-                <p className="text-[1rem] text-argenpesos-textos font-book">
-                  {inf.scheduledAt.toString().split("T")[0].replace(/-/g, "/")}
-                </p>
-                <p className="text-[1rem] text-argenpesos-textos font-book ml-1">
-                  {`${inf.scheduledAt.toString().split("T")[1].split(":")[0]}:${inf.scheduledAt.toString().split("T")[1].split(":")[1]}`}
-                </p>
-                <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
-                  {inf.saveInHistory ? "Si" : "No"}
-                </p>
-                <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
-                  {inf.isPush ? "Si" : "No"}
-                </p>
 
-                <div
-                  onClick={() => toggleVisibility(index)}
-                  className="absolute right-0 top-0 w-[0px]"
-                >
-                  <button onClick={() => toggleVisibility(index)}>
-                    {visibleIndex === index ? <ThreePoints /> : <ThreePoints />}
-                  </button>
-                  <div
-                    className={`transition-all duration-2000 ease-in-out ${
-                      visibleIndex === index
-                        ? "opacity-100 h-[90px]"
-                        : "opacity-0 max-h-0"
-                    } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px] relative right-[7rem] z-[100]`}
-                  >
-                    <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
-                      <p
-                        onClick={() => setModalEdit(true)}
-                        className="flex items-center mr-7 cursor-pointer"
-                      >
-                        <IconEdit color="#575757" />
-                        Editar
-                      </p>
-                      <p
-                        onClick={() => setModalDelete(true)}
-                        className="flex items-center mr-3 cursor-pointer"
-                      >
-                        <IconDelete />
-                        Eliminar
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-[100%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
-              </div>
-            ))}
 
-          <h4 className="text-[23px] font-bold text-argenpesos-textos mt-5 mb-10">
-            Historial de notificaciones
-          </h4>
-          <div>
-            {oldNotifications &&
-              oldNotifications.map((inf, key) => (
-                <div
-                  className="grid grid-cols-5 gap-5 relative items-center ml-1"
-                  key={key}
-                >
-                  <div className="flex items-center gap-1">
-                    <p className="text-[1rem] text-argenpesos-textos font-book">
-                      {inf.title}
-                    </p>
-                  </div>
-                  <p className="text-[1rem] text-argenpesos-textos font-book">
-                    {inf.scheduledAt
-                      .toString()
-                      .split("T")[0]
-                      .replace(/-/g, "/")}
-                  </p>
-                  <p className="text-[1rem] text-argenpesos-textos font-book ml-1">
-                    {`${inf.scheduledAt.toString().split("T")[1].split(":")[0]}:${inf.scheduledAt.toString().split("T")[1].split(":")[1]}`}
-                  </p>
-                  <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
-                    {inf.saveInHistory ? "Si" : "No"}
-                  </p>
-                  <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
-                    {inf.isPush ? "Si" : "No"}
-                  </p>
-                  <div className="absolute right-5 top-3">
-                    <ThreePoints />
-                  </div>
-                  <div className="w-[100%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
+
+
+
+
+
+      
     </>
   );
 };

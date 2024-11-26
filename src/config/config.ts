@@ -1,4 +1,4 @@
-export const baseUrl = import.meta.env.VITE_PUBLIC_BACKEND_URL;
+export const baseUrl = import.meta.env.VITE_PUBLIC_BACKEND_URL ;
 
 export const apiUrls = {
   // auth
@@ -6,13 +6,22 @@ export const apiUrls = {
   refreshToken: () => `${baseUrl}/api/admin/refresh-token`,
   logOut: () => `${baseUrl}/api/admin/log-out`,
   getSessions: () => `/api/admin/session`,
-  deleteSession: (id: number) => `/api/admin/session/${id}`,
+  deleteSession: (userId: number) => `/api/admin/session/${userId}`,
   resendCode: () => `${baseUrl}/api/admin/resend-code`,
   //user
   getUsers: () => `/api/user/all`,
   getUser: () => `${baseUrl}/api/admin`,
   avatarUser: (img: string) => `${baseUrl}/avatar/${img}`,
   putUserCuponizate: (userId: number) => `/api/user/cuponizate/${userId}`,
+  avatarUserimage:  () => `${baseUrl}/api/admin/avatar`, 
+  putUserById: (userId: number) => `${baseUrl}/api/user/${userId}`,
+  putUserBlock: (userId: number) => `/api/user/${userId}/block`, 
+  putUserUnblock: (userId: number) => `/api/user/${userId}/unblock`, 
+   //  direcciónes para un usuario específico desde admin
+   createAddress: (userId: number) => `${baseUrl}/api/user/${userId}/address`, 
+   getUserAddresses: (userId: number) => `${baseUrl}/api/user/${userId}/addresses`,
+   editUserAddress: (userId: number, index: number) => `${baseUrl}/api/user/${userId}/address/${index}`,
+  deleteUserAddress: (userId: number, index: number) => `${baseUrl}/api/user/${userId}/address/${index}`,
   //banner
   getBannersHome: () => `/api/banner/home`,
   getBannersCuponizate: () => `/api/banner/cuponizate`,
@@ -43,6 +52,9 @@ export const apiUrls = {
   createProduct: () => '/api/product/create',
   allProducts: () => "/api/product/allProducts",
   updateProduct: (id: number | string) => `/api/product/update/${id}`,
+  deleteProduct: (id: number) => `/api/product/delete/${id}`,
+  productImg: (img: string) => {
+    return `${baseUrl.replace(/\/$/, '')}/images/products/${img}`},
   //branch
   getBranches: () => `/api/branch`,
   BranchImg: (img: string) => `${baseUrl}/branch/${img}`,
