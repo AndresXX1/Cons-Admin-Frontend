@@ -64,3 +64,44 @@ export const getOldNotifications = async () => {
     return false;
   }
 };
+
+export const deleteNotification = async (id: number) => {
+  try {
+    const response = await axiosInstance.delete(apiUrls.deleteNotification(id));
+    if (response.data.ok) {
+      alertConfirm(response.data.message); // Muestra el mensaje de éxito
+      return true;
+    } else {
+      alertError("Error al eliminar la notificación");
+      return false;
+    }
+  } catch (error) {
+    alertError(`${error}`);
+    return false;
+  }
+};
+
+
+export const updateNotification = async (
+  id: number,
+  data: NotificationProps,
+  setError: (prop: string) => void
+) => {
+  try {
+    const response = await axiosInstance.put(
+      apiUrls.updateNotification(id), 
+      data
+    );
+    if (response.data.ok) {
+      alertConfirm("Notificación actualizada exitosamente");
+      return true;
+    } else {
+      setError(response.data.message);
+      alertError("Error al actualizar la notificación");
+      return false;
+    }
+  } catch (error) {
+    alertError(`${error}`);
+    return false;
+  }
+};
