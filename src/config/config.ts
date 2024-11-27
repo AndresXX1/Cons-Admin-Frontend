@@ -67,6 +67,8 @@ export const apiUrls = {
   getAllNotifications: () => `/api/notifications`,
   getNextNotifications: () => `/api/notifications/nextNotifications`,
   getOldNotifications: () => `/api/notifications/oldNotifications`,
+  deleteNotification: (id: number) => `/api/notifications/${id}`,
+  updateNotification: (id: number) => `api/notifications/${id}`,
 };
 
 export const tokenAccess = {
