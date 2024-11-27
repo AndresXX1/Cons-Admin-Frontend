@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   IconNotification,
-  
+  ArrowBlue,
   ThreePoints,
   IconEdit,
   IconDelete,
@@ -16,21 +16,16 @@ import {
   getNextNotifications,
   getOldNotifications,
   updateNotification,
-  
 } from "@store/services/notification";
 
-
-
-
 export interface NotificationProps {
-  id: number;
+  id:number
   title: string;
   message: string;
   scheduledAt: Date | string;
   saveInHistory: boolean;
   isPush: boolean;
   redirect: string;
-  includeShipping?: boolean; 
 }
 
 const Notifications = () => {
@@ -39,24 +34,29 @@ const Notifications = () => {
     .toLocaleString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" })
     .replace(" ", "T")
     .slice(0, 16);
-    const [data, setData] = useState<NotificationProps>({
-      id: 0,
-      title: "",
-      message: "",
-      scheduledAt: new Date(currentDate),
-      saveInHistory: false,
-      isPush: false,
-      redirect: "",
-      includeShipping: false, 
-    });
-  const [selectedNotification, setSelectedNotification] = useState<NotificationProps | null>(null);
-  const [nextNotifications, setNextNotifications] = useState<NotificationProps[]>([]);
-  const [oldNotifications, setOldNotifications] = useState<NotificationProps[]>([]);
+  const [data, setData] = useState<NotificationProps>({
+    id: 0,
+    title: "",
+    message: "",
+    scheduledAt: new Date(currentDate),
+    saveInHistory: false,
+    isPush: false,
+    redirect: "",
+  });
+  const [nextNotifications, setNextNotifications] = useState<
+    NotificationProps[]
+  >([]);
+  const [oldNotifications, setOldNotifications] = useState<NotificationProps[]>(
+    []
+  );
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [modalEdit, setModalEdit] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
-  const [notificationToDelete, setNotificationToDelete] = useState<number | null>(null);
-  
+  const [errors, setErrors] = useState({
+    title: '',
+    message: '',
+  });
+
   const fetchNotifications = async () => {
     const response = await getNextNotifications();
     const response2 = await getOldNotifications();
@@ -92,39 +92,62 @@ const Notifications = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setData({
-      ...data,
-      [e.target.name]:
-        e.target.value === "false"
-          ? false
-          : e.target.value === "true"
-            ? true
-            : e.target.value,
-    });
+    const { name, value } = e.target;
+    
+    if (name === "isPush" || name === "saveInHistory") {
+      setData({
+        ...data,
+        [name]: value === "true" ? true : false,
+      });
+    } else {
+      setData({
+        ...data,
+        [name]: value,
+      });
+    }
   };
+  
 
   const handleSubmit = async () => {
+    if (!data.title.trim()) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        title: 'El título no puede estar vacío.',
+      }));
+      return; 
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        title: '',
+      }));
+    }
+  
+    if (!data.message.trim()) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        message: 'El mensaje no puede estar vacío.',
+      }));
+      return; 
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        message: '',
+      }));
+    }
+  
     const response = await createNotification(data, setError);
     if (response) {
       setData({
         id: 0,
-        title: "",
-        message: "",
+        title: '',
+        message: '',
         scheduledAt: new Date(currentDate),
         saveInHistory: false,
         isPush: false,
-        redirect: "",
+        redirect: '', 
       });
       setModalCreate(false);
       fetchNotifications();
-    }
-  };
-
-  const handleSaveEditNotification = async () => {
-    const response = await updateNotification(data.id, data, setError);
-    if (response) {
-      setModalEdit(false); 
-      fetchNotifications();  
     }
   };
 
@@ -136,15 +159,63 @@ const Notifications = () => {
     }
   };
 
+  const handleEditNotification = (notification: NotificationProps) => {
+    setData({
+      id: notification.id,
+      title: notification.title,
+      message: notification.message,
+      scheduledAt: notification.scheduledAt,
+      saveInHistory: notification.saveInHistory,
+      isPush: notification.isPush,
+      redirect: notification.redirect
+    });
+    setModalEdit(true);
+  };
+
+  const handleSaveEditNotification = async () => {
+    
+    if (!data.title.trim()) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        title: 'El título no puede estar vacío.',
+      }));
+      return; 
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        title: '',
+      }));
+    }
+  
+    if (!data.message.trim()) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        message: 'El mensaje no puede estar vacío.',
+      }));
+      return; 
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        message: '',
+      }));
+    }
+  
+ 
+    const response = await updateNotification(data.id, data, setError);
+    if (response) {
+      setModalEdit(false);
+      fetchNotifications();
+    }
+  };
+
   const handleConfirmDelete = async (id: number) => {
-    if (notificationToDelete !== null) {
-      const isDeleted = await handleDeleteNotification(notificationToDelete);
-      if (isDeleted === true) {
-        "Notificación eliminada correctamente";
-        setModalDelete(false);
-      } else {
-        "Hubo un problema al eliminar la notificación";
-      }
+    const isDeleted = await handleDeleteNotification(id);
+    if (isDeleted === true) {
+      "Notificación eliminada correctamente";
+      setModalDelete(false);
+      fetchNotifications(); 
+    } else {
+      "Hubo un problema al eliminar la notificación";
     }
   };
 
@@ -157,55 +228,13 @@ const Notifications = () => {
       console.error(`No se pudo eliminar la notificación con ID ${id}:`, error);
       return false;
     }
-  };
+  }
 
-  const handleEditClick = (notification: NotificationProps) => {
-    setSelectedNotification(notification);
-    setData(notification);
-    setModalEdit(true);
-  };
+  console.log('Notificación a crear:', data);
 
   return (
     <>
-      <Modal
-        isShown={modalDelete}
-        element={
-          <div className="px-6 py-6 flex flex-col justify-center w-[481px] h-[192px]">
-            <div className="flex justify-between items-start">
-              <p className="text-[1rem] text-argenpesos-textos font-bold">
-                ¿Está seguro que desea eliminar esta noticia?
-              </p>
-              <p
-                className="cursor-pointer mt-[6px]"
-                onClick={() => setModalDelete(false)}
-              >
-                <IconX />
-              </p>
-            </div>
-            <p className="text-[14px] font-book text-argenpesos-gray w-[380px] mb-10 mt-1">
-              Si la elimina ya no se podrá recuperarla.
-            </p>
-            <div className="flex gap-4">
-              <button
-                onClick={() => {
-                  setModalDelete(false);
-                }}
-                className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
-              >
-                Eliminar
-              </button>
-              <button
-                onClick={() => {
-                  setModalDelete(false);
-                }}
-                className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        }
-      ></Modal>
+    
       <Modal
         isShown={modalCreate}
         element={
@@ -218,7 +247,7 @@ const Notifications = () => {
                 className="cursor-pointer"
                 onClick={() => {
                   setData({
-                    id: 0,
+                    id:0,
                     title: "",
                     message: "",
                     scheduledAt: new Date(currentDate),
@@ -253,10 +282,13 @@ const Notifications = () => {
                     type="text"
                     name="title"
                     placeholder="Título"
-                    maxLength={50}
+                    maxLength={20}
                     value={data.title}
                     onChange={handleChange}
                   />
+                  {errors.title && (
+                      <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                    )}
 
                   <div className="flex">
                     <div>
@@ -292,36 +324,38 @@ const Notifications = () => {
                   </div>
 
                   <label htmlFor="">Descripción</label>
-  <textarea
-    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
-    placeholder="Cuerpo de texto"
-    name="message"
-    value={data.message}
-    onChange={handleChange}
-  />
+                  <textarea
+                    className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
+                    placeholder="Cuerpo de texto"
+                    name="message"
+                    value={data.message}
+                    onChange={handleChange}
+                    maxLength={50}
+                  />
 
-  {/* Nuevo campo de Select */}
-  <div className="w-full">
-    <label className="block text-[14px] font-bold text-argenpesos-textos">
-      Redirigir a:
-    </label>
-    <select
-      name="redirect"
-      value={data.redirect}
-      onChange={handleChange}
-      className="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
-    >
-      <option value="">Seleccionar</option>
-      <option value="noticias">Noticias</option>
-      <option value="prestamos">Mis préstamos</option>
-      <option value="perfil">Perfil</option>
-      <option value="argencompras">ArgenCompras</option>
-      <option value="cuponizate">Cuponizate</option>
-      <option value="canjear">Canjear puntos</option>
-      <option value="medios">Medios de pago para tus cuotas</option>
-    </select>
-  </div>
-
+                    {errors.message && (
+                      <p className="text-red-500 text-sm mt-1">{errors.message}</p>
+                    )}
+            <div className="w-full">
+              <label className="block text-[14px] font-bold text-argenpesos-textos">
+                Redirigir a:
+              </label>
+              <select
+                name="redirect"
+                value={data.redirect}
+                onChange={handleChange}
+                className="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
+              >
+                 <option value="">Selecciona</option> 
+                <option value="noticias">Noticias</option>
+                <option value="prestamos">Mis préstamos</option>
+                <option value="perfil">Perfil</option>
+                <option value="argencompras">ArgenCompras</option>
+                <option value="cuponizate">Cuponizate</option>
+                <option value="canjear">Canjear puntos</option>
+                <option value="medios">Medios de pago para tus cuotas</option>
+              </select>
+            </div>
                   <p className="pt-5 text-[14px] font-bold text-argenpesos-textos">
                     Incluye notificación Push
                   </p>
@@ -409,7 +443,7 @@ const Notifications = () => {
               <button
                 onClick={() => {
                   setData({
-                    id: 0,
+                    id:0,
                     title: "",
                     message: "",
                     scheduledAt: new Date(currentDate),
@@ -434,7 +468,7 @@ const Notifications = () => {
           </div>
         }
       />
-<Modal
+   <Modal
   isShown={modalEdit}
   element={
     <div className="px-[54px] py-12 flex flex-col w-[969px] h-[700px] mb-5">
@@ -475,57 +509,65 @@ const Notifications = () => {
               className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
               type="text"
               placeholder="Título"
+              maxLength={20}
             />
 
-         
+              {errors.title && (
+                  <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                )}
            
 
             <label htmlFor="">Descripción</label>
             <textarea
-  name="message"
-  value={data.message}
-  onChange={handleChange}
-  className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
-  placeholder="Cuerpo de texto"
-/>
-<div className="flex">
-<div className="flex items-center">
+              name="message"
+              value={data.message}
+              onChange={handleChange}
+              className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
+              placeholder="Cuerpo de texto"
+              maxLength={50}
+            />
+                {errors.message && (
+                  <p className="text-red-500 text-sm mt-1">{errors.message}</p>
+                )}
 
-    <label className="text-[14px] font-bold text-argenpesos-textos">
-      Fecha
-    </label>
-    <div className="relative">
-      <input
-        type="datetime-local"
-        name="scheduledAt"
-        value={
-          data.scheduledAt instanceof Date
-            ? new Date(
-                data.scheduledAt.getTime() -
-                  new Date().getTimezoneOffset() * 60000
-              )
-                .toISOString()
-                .slice(0, 16)
-            : typeof data.scheduledAt === 'string'
-            ? data.scheduledAt.slice(0, 16)
-            : ''
-        }
-        min={currentDate}
-        max={maxDate}
-        required
-        onChange={handleDateChange}
-        className="w-[298px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book pl-3 pr-10"
-      />
-      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-       
-      </div>
-    </div>
-    {error && (
-      <p className="text-red-500 text-sm mt-2">
-        {error}
-      </p>
-    )}
- 
+                  Fecha
+            <div className="flex">
+            <div className="flex items-center">
+
+                <label className="text-[14px] font-bold text-argenpesos-textos">
+                </label>
+                <div className="relative">
+                  <input
+                    type="datetime-local"
+                    name="scheduledAt"
+                    value={
+                      data.scheduledAt instanceof Date
+                        ? new Date(
+                            data.scheduledAt.getTime() -
+                              new Date().getTimezoneOffset() * 60000
+                          )
+                            .toISOString()
+                            .slice(0, 16)
+                        : typeof data.scheduledAt === 'string'
+                        ? data.scheduledAt.slice(0, 16)
+                        : ''
+                    }
+                    min={currentDate}
+                    max={maxDate}
+                    required
+                    onChange={handleDateChange}
+                    className="w-[298px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book pl-3 pr-10"
+                  />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  
+                  </div>
+                </div>
+                {error && (
+                  <p className="text-red-500 text-sm mt-2">
+                    {error}
+                  </p>
+                )}
+            
 
               </div>
               </div>
@@ -534,57 +576,57 @@ const Notifications = () => {
                 Redirigir a:
               </label>
               <select
-  name="redirect"
-  value={data.redirect}
-  onChange={handleChange}
-  className="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
->
-  <option value="">Seleccionar</option>
-  <option value="noticias">Noticias</option>
-  <option value="prestamos">Mis préstamos</option>
-  <option value="perfil">Perfil</option>
-  <option value="argencompras">ArgenCompras</option>
-  <option value="cuponizate">Cuponizate</option>
-  <option value="canjear">Canjear puntos</option>
-  <option value="medios">Medios de pago para tus cuotas</option>
-</select>
+                name="redirect"
+                value={data.redirect}
+                onChange={handleChange}
+                className="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
+              >
+                <option value="">Selecciona</option> 
+                <option value="noticias">Noticias</option>
+                <option value="prestamos">Mis préstamos</option>
+                <option value="perfil">Perfil</option>
+                <option value="argencompras">ArgenCompras</option>
+                <option value="cuponizate">Cuponizate</option>
+                <option value="canjear">Canjear puntos</option>
+                <option value="medios">Medios de pago para tus cuotas</option>
+              </select>
             </div>
 
             <div>
-  <p className="pt-5 text-[14px] font-bold text-argenpesos-textos">
-    Incluye notificación push
-  </p>
-  <select
-    name="isPush"
-    value={data.isPush.toString()}
-    onChange={(e) => setData({
-      ...data, 
-      isPush: e.target.value === 'true'
-    })}
-    className="w-full h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos text-[14px] font-book px-3"
-  >
-    <option value="true">Si</option>
-    <option value="false">No</option>
-  </select>
-</div>
+              <p className="pt-5 text-[14px] font-bold text-argenpesos-textos">
+                Incluye notificación push
+              </p>
+              <select
+                name="isPush"
+                value={data.isPush.toString()}
+                onChange={(e) => setData({
+                  ...data, 
+                  isPush: e.target.value === 'true'
+                })}
+                className="w-full h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos text-[14px] font-book px-3"
+              >
+                <option value="true">Si</option>
+                <option value="false">No</option>
+              </select>
+            </div>
 
-<div>
-  <p className="pt-5 text-[14px] font-bold text-argenpesos-textos">
-    Incluye notificación In-App
-  </p>
-  <select
-    name="saveInHistory"
-    value={data.saveInHistory.toString()}
-    onChange={(e) => setData({
-      ...data, 
-      saveInHistory: e.target.value === 'true'
-    })}
-    className="w-full h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos text-[14px] font-book px-3"
-  >
-    <option value="true">Si</option>
-    <option value="false">No</option>
-  </select>
-</div>
+            <div>
+              <p className="pt-5 text-[14px] font-bold text-argenpesos-textos">
+                Incluye notificación In-App
+              </p>
+              <select
+                name="saveInHistory"
+                value={data.saveInHistory.toString()}
+                onChange={(e) => setData({
+                  ...data, 
+                  saveInHistory: e.target.value === 'true'
+                })}
+                className="w-full h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos text-[14px] font-book px-3"
+              >
+                <option value="true">Si</option>
+                <option value="false">No</option>
+              </select>
+            </div>
             
           </div>
         </div>
@@ -608,119 +650,265 @@ const Notifications = () => {
   }
 />
 
-<div className="flex flex-col pl-[24px] pt-[24px] px-[24px] h-full w-[850px] mt-[50px]">
-  <h1 className="text-[27px] text-argenpesos-textos font-bold pb-[32px] text-center">
-    Notificaciones
-  </h1>
+      <div className="flex flex-col pl-12 pt-12 px-10 h-[100%]">
+        <p className="text-[3rem] text-argenpesos-textos font-bold pb-14 translate-x-[60px]">
+          Notificaciones
+        </p>
 
-  <div className="flex flex-col sm:flex-row gap-[12px] sm:gap-[20px] items-center justify-between">
-    <input
-      className="w-full sm:w-[510px] h-[40px] rounded-[8px] border-[1px] border-argenpesos-textos border-solid px-[24px] text-argenpesos-gray2 placeholder:text-argenpesos-gray2 placeholder:font-book"
-      type="search"
-      placeholder="Buscar estadísticas o datos"
-    />
-    <button
-      onClick={() => {
-        setModalCreate(true);
-        setData({ ...data, scheduledAt: new Date(currentDate) });
-      }}
-      className="w-full sm:w-[170px] h-[40px] bg-argenpesos-skyBlue rounded-[8px] flex items-center justify-center text-argenpesos-white gap-[4px] hover:bg-argenpesos-blue hover:transition-colors duration-[100ms]"
-    >
-      <IconNotification />
-      <span>Nueva notificación</span>
-    </button>
-  </div>
-
-  <div className="grid grid-cols-7 gap-[3px] items-center text-center mt-[120px] ml-[-20px]">
-    <p className="text-[14px] text-argenpesos-textos font-bold">Nombre</p>
-    <p className="text-[14px] text-argenpesos-textos font-bold">Fecha</p>
-    <p className="text-[14px] text-argenpesos-textos font-bold">Hora</p>
-    <p className="text-[14px] text-argenpesos-textos font-bold">Mensaje</p>
-    <p className="text-[14px] text-argenpesos-textos font-bold">In-App</p>
-    <p className="text-[14px] text-argenpesos-textos font-bold">Push</p>
-    <p className="text-[14px] text-argenpesos-textos font-bold">Redirect</p>
-    
-  </div>
-
-  <div className="divide-y divide-argenpesos-gray mt-[20px] mb-[20px]">
-  {[...(nextNotifications || []), ...(oldNotifications || [])].map(
-    (inf, index) => (
-      <><div
-        className="grid grid-cols-7 gap-[11px] items-center text-center py-[38px]"
-        key={index}
-      >
-        <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
-          {inf.title || "N/A"}
-        </p>
-        <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
-          {inf.scheduledAt?.toString().split("T")[0]?.replace(/-/g, "/") ||
-            "N/A"}
-        </p>
-        <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
-          {inf.scheduledAt
-            ? `${inf.scheduledAt.toString().split("T")[1].split(":")[0]}:${inf.scheduledAt.toString().split("T")[1].split(":")[1]}`
-            : "N/A"}
-        </p>
-        <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
-          {inf.message || "N/A"}
-        </p>
-        <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
-          {inf.saveInHistory ? "Si" : "No"}
-        </p>
-        <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
-          {inf.isPush ? "Si" : "No"}
-        </p>
-        <p className="text-[14px] text-argenpesos-textos font-book w-[100px]">
-  {inf.redirect || "N/A"}
-</p>
-<div
-  onClick={() => toggleVisibility(index)}
-  className="relative flex items-center justify-center translate-x-[753px] translate-y-[-45px]"
->
-  <button onClick={() => toggleVisibility(index)} className="ml-2">
-    <ThreePoints />
-  </button>
-  <div
-    className={`absolute right-0 mt-8 transition-all duration-200 ease-in-out ${
-      visibleIndex === index ? "opacity-100 h-[90px]" : "opacity-0 max-h-0"
-    } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px] z-[100]`}
-  >
-    <div className="flex flex-col w-full gap-3 items-center justify-center h-full p-2">
-    <p
-  onClick={() => handleEditClick(inf)}
-  className="flex items-center cursor-pointer text-[14px] text-gray-700"
->
-  <IconEdit color="#575757" />
-  <span className="ml-2">Editar</span>
-</p>
-      <p
-        onClick={() => handleConfirmDelete(inf.id)} 
-        className="flex items-center cursor-pointer text-[14px] text-gray-700"
-      >
-        <IconDelete />
-        <span className="ml-2">Eliminar</span>
-      </p>
-    </div>
-  </div>
-</div>
+        <div className="flex gap-6 translate-x-[60px]">
+          <input
+            className="w-[735px] h-[54px] rounded-[13px] border-[1px] border-argenpesos-textos border-solid px-10 text-argenpesos-gray2 placeholder:text-argenpesos-gray2 placeholder:font-book"
+            type="search"
+            placeholder="Buscar estadísticas o datos"
+          />
+          <button
+            onClick={() => {
+              setModalCreate(true),
+                setData({ ...data, scheduledAt: new Date(currentDate) });
+            }}
+            className="w-[219px] h-[54px] bg-argenpesos-skyBlue rounded-[13px] flex items-center justify-center text-argenpesos-white gap-1 hover:bg-argenpesos-blue hover:transition-colors duration-100"
+          >
+            <IconNotification />
+            Nueva notificación
+          </button>
         </div>
-        </>
-            
-            
-      )
-    )}
+        <h4 className="text-[23px] font-bold text-argenpesos-textos pt-5 mb-5 translate-x-[60px]">
+          Próximas notificaciones
+        </h4>
 
-  </div>
-</div>
+        <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_0.5fr] gap-8 my-8 translate-x-[60px]">
+          <p className="text-[1rem] text-argenpesos-textos font-bold">Nombre</p>
+          <div className="flex gap-3 items-center">
+            <p className="text-[1rem] text-argenpesos-textos font-bold">
+              Fecha
+            </p>
+            <ArrowBlue />
+          </div>
+        
+          <p className="text-[1rem] text-argenpesos-textos font-bold">Hora</p>
+          <p className="text-[1rem] text-argenpesos-textos font-bold">In-App</p>
+          <p className="text-[1rem] text-argenpesos-textos font-bold">Push</p>
+          <p className="text-[1rem] text-argenpesos-textos font-bold">Mensaje</p>
+          <p className="text-[1rem] text-argenpesos-textos font-bold">Redireccionado</p>
+          <p className="text-[1rem] text-argenpesos-textos font-bold"></p>
+        </div>
+        <div>
+          {nextNotifications &&
+            nextNotifications.map((inf, index) => (
+              <div
+               className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_0.8fr_0.8fr] gap-6 my-8 translate-x-[60px]"
+                key={index}
+              >
+                <div className="flex items-center gap-1">
+                  <p className="text-[1rem] text-argenpesos-textos font-book">
+                    {inf.title}
+                  </p>
+                </div>
+                <p className="text-[1rem] text-argenpesos-textos font-book">
+                  {inf.scheduledAt.toString().split("T")[0].replace(/-/g, "/")}
+                </p>
+                <p className="text-[1rem] text-argenpesos-textos font-book ml-1">
+                  {`${inf.scheduledAt.toString().split("T")[1].split(":")[0]}:${inf.scheduledAt.toString().split("T")[1].split(":")[1]}`}
+                </p>
+                <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
+                  {inf.saveInHistory ? "Si" : "No"}
+                </p>
+                <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
+                  {inf.isPush ? "Si" : "No"}
+                </p>
+                <p className="text-[1rem] text-argenpesos-textos font-book truncate max-w-xs">
+                  {inf.message}
+                </p>
+                <p className="text-[1rem] text-argenpesos-textos font-book ml-6 truncate max-w-xs">
+                  {inf.redirect}
+                </p>
+                <div
+                  onClick={() => toggleVisibility(index)}
+                   className="relative flex items-center justify-center translate-y-[0px] translate-x-[-85px]"
+                >
+                  <button onClick={() => toggleVisibility(index)}
+                    className="relative z-40">
+                    {visibleIndex === index ? <ThreePoints /> : <ThreePoints />}
+                  </button>
+                  <div
+                      className={`fixed top-16 left-0 right-0 z-50 transition-all duration-2000 ease-in-out ${
+                      visibleIndex === index
+                        ? "opacity-100 h-[90px]"
+                        : "opacity-0 max-h-0"
+                      } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px]`}
+                      style={{ transform: visibleIndex === index ? 'translateY(-10px)' : 'translateY(-100%)' }}
+                    >
+                    
+                    <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
+                    <p
+                      onClick={() => handleEditNotification(inf)}
+                      className="flex items-center mr-7 cursor-pointer"
+                    >
+                      <IconEdit color="#575757" />
+                      Editar
+                    </p>
+                      <p
+                        onClick={() => setModalDelete(true)}
+                        className="flex items-center mr-3 cursor-pointer"
+                      >
+                        <IconDelete />
+                        Eliminar
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-[120%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
+                <Modal
+          isShown={modalDelete}
+          element={
+            <div className="px-6 py-6 flex flex-col justify-center w-[481px] h-[192px]">
+              <div className="flex justify-between items-start">
+                <p className="text-[1rem] text-argenpesos-textos font-bold">
+                  ¿Está seguro que desea eliminar esta Notificacion?
+                </p>
+                <p
+                  className="cursor-pointer mt-[6px]"
+                  onClick={() => setModalDelete(false)}
+                >
+                  <IconX />
+                </p>
+              </div>
+              <p className="text-[14px] font-book text-argenpesos-gray w-[380px] mb-10 mt-1">
+                Si la elimina ya no se podrá recuperarla.
+              </p>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => {
+                    handleConfirmDelete(inf.id);
+                  }}
+                  className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
+                  >
+                  Eliminar
+                </button>
+                <button
+                  onClick={() => {
+                    setModalDelete(false);
+                  }}
+                  className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          }
+        ></Modal>
+              </div>
+            ))}
 
-
-
-
-
-
-
-
-      
+          <h4 className="text-[23px] font-bold text-argenpesos-textos mt-5 mb-10 translate-x-[60px]">
+            Historial de notificaciones
+          </h4>
+          <div>
+            {oldNotifications &&
+              oldNotifications.map((inf, index) => (
+                <div
+                 className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_0.6fr] gap-6 my-8 translate-x-[60px]"
+                  key={index}
+                >
+                  <div className="flex items-center gap-1">
+                    <p className="text-[1rem] text-argenpesos-textos font-book">
+                      {inf.title}
+                    </p>
+                  </div>
+                  <p className="text-[1rem] text-argenpesos-textos font-book">
+                    {inf.scheduledAt
+                      .toString()
+                      .split("T")[0]
+                      .replace(/-/g, "/")}
+                  </p>
+                  <p className="text-[1rem] text-argenpesos-textos font-book ml-1">
+                    {`${inf.scheduledAt.toString().split("T")[1].split(":")[0]}:${inf.scheduledAt.toString().split("T")[1].split(":")[1]}`}
+                  </p>
+                  <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
+                    {inf.saveInHistory ? "Si" : "No"}
+                  </p>
+                  <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
+                    {inf.isPush ? "Si" : "No"}
+                  </p>
+                  <p className="text-[1rem] text-argenpesos-textos font-book truncate max-w-xs">
+                  {inf.message}
+                </p>
+                <p className="text-[1rem] text-argenpesos-textos font-book ml-6 truncate max-w-xs">
+                  {inf.redirect}
+                </p>
+                <div
+                  onClick={() => toggleVisibility(index)}
+                   className="relative flex items-center justify-center translate-y-[-10px]"
+                >
+                  <button onClick={() => toggleVisibility(index)}>
+                    {visibleIndex === index ? <ThreePoints /> : <ThreePoints />}
+                  </button>
+                  <div
+               className={`fixed top-16 left-0 right-0 z-50 transition-all duration-2000 ease-in-out ${
+                      visibleIndex === index
+                        ? "opacity-100 h-[90px]"
+                        : "opacity-0 max-h-0"
+                      } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px]`}
+                      style={{ transform: visibleIndex === index ? 'translateY(-10px)' : 'translateY(-100%)' }}
+                    >
+                    <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
+        
+                      <p
+                        onClick={() => setModalDelete(true)}
+                        className="flex items-center mr-3 cursor-pointer"
+                      >
+                        <IconDelete />
+                        Eliminar
+                      </p>
+                    </div>
+                    </div>
+                    </div>
+                  <div className="w-[120%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
+                  <Modal
+          isShown={modalDelete}
+          element={
+            <div className="px-6 py-6 flex flex-col justify-center w-[481px] h-[192px]">
+              <div className="flex justify-between items-start">
+                <p className="text-[1rem] text-argenpesos-textos font-bold">
+                  ¿Está seguro que desea eliminar esta Notificacion?
+                </p>
+                <p
+                  className="cursor-pointer mt-[6px]"
+                  onClick={() => setModalDelete(false)}
+                >
+                  <IconX />
+                </p>
+              </div>
+              <p className="text-[14px] font-book text-argenpesos-gray w-[380px] mb-10 mt-1">
+                Si la elimina ya no se podrá recuperarla.
+              </p>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => {
+                    handleConfirmDelete(inf.id);
+                  }}
+                  className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
+                  >
+                  Eliminar
+                </button>
+                <button
+                  onClick={() => {
+                    setModalDelete(false);
+                  }}
+                  className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          }
+        ></Modal>
+                </div>
+                
+              ))}
+          </div>
+        </div>
+      </div>
     </>
   );
 };
