@@ -1,8 +1,8 @@
 // src/pages/Users/Users.tsx
-import { useState, useEffect, SetStateAction } from "react";
+import { useState, useEffect,  } from "react";
 import { ArrowBlue, ArrowLeft, ArrowRight, IconFilter, IconMagnifyingGlass } from "@utils/svg";
 import { getusers } from "../../store/services/users";
-import { EditUserModal, UserFormData } from "./editUserModal";
+import {  UserFormData } from "./editUserModal";
 import UserRow from "./UserRow"; // Importamos el componente UserRow
 import { blockUserAsync } from "@store/actions/user";
 import { apiUrls } from "@config/config";
@@ -85,17 +85,7 @@ const Users = () => {
     setModalEdit(true);
   };
 
-  // Función para guardar y actualizar la lista de usuarios
-  const handleSaveUser = async (updatedUser: UserFormData) => {
-    try {
-      // Aquí puedes hacer una llamada API para actualizar el usuario en el backend.
-      // Suponiendo que ya actualizas el usuario, se actualiza la lista de usuarios.
-      await getUsersList();  // Actualizamos la lista de usuarios
-      setModalEdit(false); // Cierra el modal
-    } catch (error) {
-      console.error("Error updating user:", error);
-    }
-  };
+
 
   
 
