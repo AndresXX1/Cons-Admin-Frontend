@@ -19,7 +19,7 @@ interface UserRowProps {
   handleBlockUser?: (userId: string) => Promise<void>;
 }
 
-const UserRow = ({ user, getUsersList, handleEditUser }: UserRowProps) => {
+const UserRow = ({ user, getUsersList }: UserRowProps) => {
   const [menuVisibility, setMenuVisibility] = useState(false);
   const [modalActiveCuponizate, setModalActiveCuponizate] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
@@ -70,6 +70,7 @@ const UserRow = ({ user, getUsersList, handleEditUser }: UserRowProps) => {
 
   const handleSave = async (user: UserFormData): Promise<void> => {
     try {
+      console.log(user)
       // Llama a getUsersList para actualizar la lista
       await getUsersList();
       setModalEdit(false);
@@ -183,6 +184,7 @@ const UserRow = ({ user, getUsersList, handleEditUser }: UserRowProps) => {
                   onSave={handleSave}
                   getUsersList={getUsersList} // Pasamos getUsersList a EditUserModal
                   setModalEdit={function (value: React.SetStateAction<boolean>): void {
+                    console.log(value)
                       throw new Error("Function not implemented.");
                   } }            />
           }
