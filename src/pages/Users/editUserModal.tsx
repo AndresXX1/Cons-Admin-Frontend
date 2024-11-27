@@ -43,7 +43,7 @@ interface EditUserModalProps {
 
 
 
-export const EditUserModal: React.FC<EditUserModalProps> = ({ user,setModalEdit, onSave, onClose,getUsersList  }) => {
+export const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onClose,getUsersList  }) => {
   const [formData, setFormData] = useState<UserFormData>(user);
   const [addressToEdit, setAddressToEdit] = useState<Address[]>(user.address || []);
   const { updatingUser } = useSelector((state: RootState) => state.auth); // Obtenemos el estado de Redux
