@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { IProduct } from "./index"; // Importa el tipo IProduct
+import { IProduct } from "./index";
 
 interface PaginadoProductsPointProps {
     products: IProduct[];
@@ -11,15 +11,14 @@ interface PaginadoProductsPointProps {
   const PaginadoProductsPoint: React.FC<PaginadoProductsPointProps> = ({ products, itemsPerPage }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Lógica para calcular el rango de productos que se mostrarán
+
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
 
-  // Función para cambiar de página
+ 
 
 
-  // Número total de páginas
   const pageNumbers = [];
   for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
     pageNumbers.push(i);
@@ -45,9 +44,7 @@ interface PaginadoProductsPointProps {
                 <p className="text-argenpesos-red text-[20px] font-bold leading-[19px]">
                   {product.value} Puntos
                 </p>
-                {/* Contenedor para los íconos de editar y eliminar */}
                 <div className="flex gap-2">
-                  {/* Aquí irían los íconos de editar y eliminar si los necesitas */}
                 </div>
               </div>
             </div>

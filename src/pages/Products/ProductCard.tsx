@@ -31,7 +31,7 @@ const ProductCard = ({ product, getProducts }: ProductCardProps) => {
         {product.image && (
           <img
             className="w-[150px] h-[150px]"
-            src={`http://back7.maylandlabs.com/${product.image}`}
+            src={`http://back7.maylandlabs.com/product/${product.image}`}
             alt="image"
           />
         )}

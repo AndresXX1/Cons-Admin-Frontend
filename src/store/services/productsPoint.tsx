@@ -25,18 +25,18 @@ export const createProductService = async (formData: FormData) => {
 };
 
 
-  // Función para obtener todos los productos
+
 const getAllProductsService = async () => {
     try {
-      const response = await axiosInstance.get(apiUrls.allProducts()); // Llamamos a la API para obtener todos los productos
+      const response = await axiosInstance.get(apiUrls.allProducts()); 
       if (response.data.ok) {
-        return response.data.products; // Retornamos la lista de productos si la respuesta es correcta
+        return response.data.products; 
       } else {
         return null;
       }
     } catch (error) {
       console.error("Error al obtener los productos:", error);
-      return null; // En caso de error, retornamos null
+      return null; 
     }
   };
 
@@ -65,11 +65,12 @@ export const updateProductService = async (id: number, productData: {
 };  
 
 
-// Servicio para eliminar un producto
 export const deleteProductService = async (id: number) => {
   try {
-    const response = await axiosInstance.delete(apiUrls.deleteProduct(id));  // Llamada DELETE a la API
-    if (response.data.ok) {
+    const response = await axiosInstance.delete(apiUrls.deleteProduct(id));
+    
+  
+    if (response.data && response.data.ok) {
       alertConfirm("Producto eliminado correctamente");
       return true;
     } else {
