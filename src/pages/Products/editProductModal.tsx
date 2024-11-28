@@ -196,7 +196,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
           </div>
           <div className="mt-5">
             <div className="flex gap-12">
-              {/* Imagen */}
+           
               <div>
                 <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
                 <img
@@ -204,7 +204,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
   alt={product.name}
   className="w-[170px] h-[170px]"
   onError={(e) => {
-    e.currentTarget.src = "/products/image_default.png";  // Imagen por defecto en caso de error
+    e.currentTarget.src = "/products/image_default.png";  
   }}
 />
                 </div>
