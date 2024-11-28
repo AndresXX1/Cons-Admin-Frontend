@@ -69,7 +69,7 @@ export const deleteNotification = async (id: number) => {
   try {
     const response = await axiosInstance.delete(apiUrls.deleteNotification(id));
     if (response.data.ok) {
-      alertConfirm(response.data.message); // Muestra el mensaje de éxito
+      alertConfirm("Notificacion borrada exitosamente"); 
       return true;
     } else {
       alertError("Error al eliminar la notificación");
