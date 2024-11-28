@@ -132,10 +132,10 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
   
-    if (value.length > 10) {
+    if (value.length > 25) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        name: "El nombre no puede tener más de 10 caracteres.",
+        name: "El nombre no puede tener más de 15 caracteres.",
       }));
     } else {
       setErrors((prevErrors) => ({
@@ -209,9 +209,9 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
               <div>
               <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
               <img
-  className="w-[170px] h-[170px]"
-  src={image || "/products/image_default.png"} 
-/>
+                  className="w-[170px] h-[170px]"
+                  src={image || "/products/image_default.png"} 
+                />
           </div>
           <p
             className="flex gap-1 items-center pt-[18px] text-[14px] font-book text-argenpesos-textos cursor-pointer"
@@ -264,70 +264,69 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
 
               <div className="flex flex-col gap-4">
               <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-name">
-  Nombre del producto
-</label>
-<input
-  id="product-name"
-  className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.name ? 'border-red-500' : 'border-argenpesos-gray'}`}
-  type="text"
-  value={name}
-  onChange={handleNameChange}
-  maxLength={10}
-/>
-{errors.name && <p className="text-red-500 text-sm">{errors.name}</p>} 
+                Nombre del producto
+              </label>
+              <input
+                id="product-name"
+                className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.name ? 'border-red-500' : 'border-argenpesos-gray'}`}
+                type="text"
+                value={name}
+                onChange={handleNameChange}
+                maxLength={25}
+              />
+              {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>} 
 
-<label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-price">
-  Valor del producto (puntos)
-</label>
-<input
-  id="product-price"
-  className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.price ? 'border-red-500' : 'border-argenpesos-gray'}`}
-  type="number"
-  value={price}
-  max={999999} 
-  onChange={(e) => {
-    let value = Number(e.target.value);
+              <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-price">
+                Valor del producto (puntos)
+              </label>
+              <input
+                id="product-price"
+                className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.price ? 'border-red-500' : 'border-argenpesos-gray'}`}
+                type="number"
+                value={price}
+                max={999999} 
+                onChange={(e) => {
+                  let value = Number(e.target.value);
+
+                  if (value > 999999) {
+                    value = 999999;
+                    setErrors(prevErrors => ({ ...prevErrors, price: "El valor no puede ser mayor a 999999 puntos." }));
+                  } else {
+                    setErrors(prevErrors => ({ ...prevErrors, price: "" }));
+                  }
+
+                  setPrice(value.toString());
+                }}
+              />
+              {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
 
 
-    if (value > 999999) {
-      value = 999999;
-      setErrors(prevErrors => ({ ...prevErrors, price: "El valor no puede ser mayor a 999999 puntos." }));
-    } else {
-      setErrors(prevErrors => ({ ...prevErrors, price: "" }));
-    }
+                <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-category">
+                  Categoría
+                </label>
+                <select
+                  id="product-category"
+                  className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.category ? 'border-red-500' : 'border-argenpesos-gray'}`}
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option value="ArgenCompras">ArgenCompras</option>
+                  <option value="Merch ArgenPesos">Merch ArgenPesos</option>
+                  <option value="Experiencia">Experiencia</option>
+                </select>
+                {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
 
-    setPrice(value.toString());
-  }}
-/>
-{errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
-
-
-<label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-category">
-  Categoría
-</label>
-<select
-  id="product-category"
-  className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.category ? 'border-red-500' : 'border-argenpesos-gray'}`}
-  value={category}
-  onChange={(e) => setCategory(e.target.value)}
->
-  <option value="ArgenCompras">ArgenCompras</option>
-  <option value="Merch ArgenPesos">Merch ArgenPesos</option>
-  <option value="Experiencia">Experiencia</option>
-</select>
-{errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
-
-<label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-description">
-  Descripción
-</label>
-<textarea
-  id="product-description"
-  className={`w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border ${errors.description ? 'border-red-500' : 'border-argenpesos-gray'} rounded-[5px] resize-none placeholder:text-argenpesos-textos`}
-  placeholder="Cuerpo de texto"
-  value={description}
-  onChange={(e) => setDescription(e.target.value)}
-/>
-{errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+                <label className="text-argenpesos-textos font-bold text-[14px]" htmlFor="product-description">
+                  Descripción
+                </label>
+                <textarea
+                  id="product-description"
+                  className={`w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border ${errors.description ? 'border-red-500' : 'border-argenpesos-gray'} rounded-[5px] resize-none placeholder:text-argenpesos-textos`}
+                  placeholder="Cuerpo de texto"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+                {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
               </div>
             </div>
           </div>

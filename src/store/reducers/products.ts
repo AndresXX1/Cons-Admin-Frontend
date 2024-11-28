@@ -15,7 +15,7 @@ const productSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Acción de crear producto
+    
       .addCase(createProductAsync.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -28,7 +28,7 @@ const productSlice = createSlice({
         state.loading = false;
       })
 
-      // Acción para obtener todos los productos
+    
       .addCase(getAllProductsAsync.pending, (state) => {
         state.loading = true;
         state.error = null;

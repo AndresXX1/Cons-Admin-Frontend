@@ -52,7 +52,7 @@ export const apiUrls = {
   createProduct: () => '/api/product/create',
   allProducts: () => "/api/product/allProducts",
   updateProduct: (id: number | string) => `/api/product/update/${id}`,
-  deleteProduct: (id: number) => `/api/product/delete/${id}`,
+  deleteProduct: (id: number) => `/api/product/deleteAdmin/${id}`,
   productImg: (img: string) => {
     return `${baseUrl.replace(/\/$/, '')}/images/products/${img}`},
   //branch
