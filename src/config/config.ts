@@ -14,7 +14,7 @@ export const apiUrls = {
   avatarUser: (img: string) => `${baseUrl}/avatar/${img}`,
   putUserCuponizate: (userId: number) => `/api/user/cuponizate/${userId}`,
   avatarUserimage:  () => `${baseUrl}/api/admin/avatar`, 
-  putUserById: (userId: number) => `${baseUrl}/api/user/${userId}`,
+  putUserById: (userId: number) => `${baseUrl}/api/user/update/${userId}`,
   putUserBlock: (userId: number) => `/api/user/${userId}/block`, 
   putUserUnblock: (userId: number) => `/api/user/${userId}/unblock`, 
    //  direcciónes para un usuario específico desde admin
