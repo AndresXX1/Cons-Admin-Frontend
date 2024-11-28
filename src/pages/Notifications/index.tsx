@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import {
   IconNotification,
   ArrowBlue,
@@ -28,10 +28,12 @@ export interface NotificationProps {
   redirect: string;
 }
 
+
+
 const Notifications = () => {
   const [visibleIndex, setVisibleIndex] = useState<number | null>(null);
   const currentDate = new Date()
-    .toLocaleString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" })
+    .toLocaleString("sv-SE", )
     .replace(" ", "T")
     .slice(0, 16);
   const [data, setData] = useState<NotificationProps>({
@@ -43,8 +45,11 @@ const Notifications = () => {
     isPush: false,
     redirect: "",
   });
-  const [nextNotifications, setNextNotifications] = useState<
-    NotificationProps[]
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRefHistory = useRef<HTMLDivElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpenHistory, setIsMenuOpenHistory] = useState(false);
+  const [nextNotifications, setNextNotifications] = useState< NotificationProps[]
   >([]);
   const [oldNotifications, setOldNotifications] = useState<NotificationProps[]>(
     []
@@ -52,6 +57,9 @@ const Notifications = () => {
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [modalEdit, setModalEdit] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
+  const [visibleIndexOldNotifications, setVisibleIndexOldNotifications] = useState<number | null>(null);
+const [modalDeleteOldNotification, setModalDeleteOldNotification] = useState<boolean>(false);
+const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<number | null>(null);
   const [errors, setErrors] = useState({
     title: '',
     message: '',
@@ -69,6 +77,48 @@ const Notifications = () => {
     fetchNotifications();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+        setVisibleIndex(null);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRefHistory.current && !dropdownRefHistory.current.contains(event.target as Node)) {
+        setIsMenuOpenHistory(false);
+        setVisibleIndex(null);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setVisibleIndex(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [visibleIndex]);
+
   const maxDate = new Date(
     new Date().setFullYear(new Date().getFullYear() + 10)
   )
@@ -80,16 +130,22 @@ const Notifications = () => {
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDate = event.target.value;
-
-    if (selectedDate < currentDate) {
+  
+    // Verificamos si el valor de selectedDate es válido
+    const parsedDate = Date.parse(selectedDate);
+  
+    if (isNaN(parsedDate)) {
+      setError("La fecha seleccionada no es válida.");
+    } else if (selectedDate < currentDate) {
       setError("La fecha no puede ser menor a la actual.");
     } else if (selectedDate > maxDate) {
       setError("La fecha no puede ser mayor a 10 años en el futuro.");
     } else {
-      setError("");
+      setError(""); // Si la fecha es válida, limpiamos el error
+      setData({ ...data, scheduledAt: new Date(parsedDate) }); // Actualizamos el estado
     }
-    setData({ ...data, scheduledAt: new Date(selectedDate) });
   };
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -153,8 +209,10 @@ const Notifications = () => {
 
   const toggleVisibility = (index: number) => {
     if (visibleIndex === index) {
+      setIsMenuOpen(false);
       setVisibleIndex(null);
     } else {
+      setIsMenuOpen(true);
       setVisibleIndex(index);
     }
   };
@@ -230,6 +288,49 @@ const Notifications = () => {
     }
   }
 
+  const formatDate = (dateString: string | Date) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      timeZone: 'America/Buenos_Aires'
+    };
+    return date.toLocaleString('es-AR', options).split(',')[0].trim();
+  };
+  
+  const formatTime = (dateString: string | Date) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Buenos_Aires'
+    };
+    return date.toLocaleString('es-AR', options);
+  };
+
+  const toggleVisibilityOldNotifications = (index: number) => {
+    if (visibleIndexOldNotifications === index) {
+      setVisibleIndexOldNotifications(null);
+    } else {
+      setVisibleIndexOldNotifications(index);
+    }
+  };
+
+  const handleConfirmDeleteOldNotification = async () => {
+    if (selectedOldNotificationId !== null) {
+      const isDeleted = await handleDeleteNotification(selectedOldNotificationId);
+      if (isDeleted === true) {
+        "Notificación eliminada correctamente";
+        setModalDeleteOldNotification(false);
+        fetchNotifications(); 
+      } else {
+        "Hubo un problema al eliminar la notificación";
+      }
+    }
+  };
+  
+
   console.log('Notificación a crear:', data);
 
   return (
@@ -292,34 +393,37 @@ const Notifications = () => {
 
                   <div className="flex">
                     <div>
-                      <label className="text-[14px] font-bold text-argenpesos-textos">
-                        Fecha y Hora
-                      </label>
-                      <input
-                        className="border-0 border-[#C2C2C2] w-full h-[36px] pl-2 border-b-[1px] leading-[27px] text-sofiaCall-dark font-poppinsMedium text-[13px]"
-                        type="datetime-local"
-                        id="start_time"
-                        name="scheduledAt"
-                        value={
-                          data.scheduledAt instanceof Date
-                            ? new Date(
-                                data.scheduledAt.getTime() -
-                                  new Date().getTimezoneOffset() * 60000
-                              )
-                                .toISOString()
-                                .slice(0, 16)
-                            : ""
-                        }
-                        min={currentDate}
-                        max={maxDate}
-                        required
-                        onChange={handleDateChange}
-                      />
-                      {error && (
-                        <p className="font-poppins Medium text-red-500 text-sm mt-2">
-                          {error}
-                        </p>
-                      )}{" "}
+                    <label className="text-[14px] font-bold text-argenpesos-textos">
+                      Fecha y Hora
+                    </label>
+                    <input
+                      className="border-0 border-[#C2C2C2] w-full h-[36px] pl-2 pr-10 border-b-[1px] leading-[27px] text-sofiaCall-dark font-poppinsMedium text-[13px] cursor-pointer"
+                      type="datetime-local"
+                      id="start_time"
+                      name="scheduledAt"
+                      value={
+                        data.scheduledAt instanceof Date
+                          ? new Date(
+                              data.scheduledAt.getTime() - new Date().getTimezoneOffset() * 60000
+                            )
+                              .toISOString()
+                              .slice(0, 16)
+                          : ""
+                      }
+
+                      min={currentDate.toString().slice(0, 16)} 
+                      max={maxDate}
+                      required
+                      onChange={handleDateChange}
+                    />
+
+                    {error && (
+                      <p className="font-poppins Medium text-red-500 text-sm mt-2">
+                        {error}
+                      </p>
+                    )}
+
+
                     </div>
                   </div>
 
@@ -705,11 +809,11 @@ const Notifications = () => {
                   </p>
                 </div>
                 <p className="text-[1rem] text-argenpesos-textos font-book">
-                  {inf.scheduledAt.toString().split("T")[0].replace(/-/g, "/")}
-                </p>
-                <p className="text-[1rem] text-argenpesos-textos font-book ml-1">
-                  {`${inf.scheduledAt.toString().split("T")[1].split(":")[0]}:${inf.scheduledAt.toString().split("T")[1].split(":")[1]}`}
-                </p>
+                    {formatDate(inf.scheduledAt)}
+                  </p>
+                  <p className="text-[1rem] text-argenpesos-textos font-book ml-1">
+                    {formatTime(inf.scheduledAt)}
+                  </p>
                 <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
                   {inf.saveInHistory ? "Si" : "No"}
                 </p>
@@ -723,41 +827,53 @@ const Notifications = () => {
                   {inf.redirect}
                 </p>
                 <div
-                  onClick={() => toggleVisibility(index)}
-                   className="relative flex items-center justify-center translate-y-[0px] translate-x-[-85px]"
+                  ref={dropdownRef}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(true);
+                  }}
+                  className="relative flex items-center justify-center translate-y-[0px] translate-x-[-5px]"
                 >
-                  <button onClick={() => toggleVisibility(index)}
-                    className="relative z-40">
+                  <button onClick={() => toggleVisibility(index)} className="relative z-80">
                     {visibleIndex === index ? <ThreePoints /> : <ThreePoints />}
                   </button>
+                  {isMenuOpen && visibleIndex === index && (
+              <div
+                ref={dropdownRef}
+                onClick={(e) => e.stopPropagation()} 
+                className={`absolute top-full right-0 z-10 transition-all duration-2000 ease-in-out ${
+                  visibleIndex === index
+                    ? "opacity-100 h-[90px]"
+                    : "opacity-0 max-h-0"
+                } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px]`}
+                style={{ transform: visibleIndex === index ? 'translateY(-10px)' : 'translateY(-100%)' }}
+              >
+                <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
+                  <p
+                    onClick={(e) => {
+                      e.stopPropagation(); 
+                      handleEditNotification(inf);
+                    }}
+                    className="flex items-center mr-7 cursor-pointer"
+                  >
+                    <IconEdit color="#575757" />
+                    Editar
+                  </p>
                   <div
-                      className={`fixed top-16 left-0 right-0 z-50 transition-all duration-2000 ease-in-out ${
-                      visibleIndex === index
-                        ? "opacity-100 h-[90px]"
-                        : "opacity-0 max-h-0"
-                      } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px]`}
-                      style={{ transform: visibleIndex === index ? 'translateY(-10px)' : 'translateY(-100%)' }}
-                    >
-                    
-                    <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
-                    <p
-                      onClick={() => handleEditNotification(inf)}
-                      className="flex items-center mr-7 cursor-pointer"
-                    >
-                      <IconEdit color="#575757" />
-                      Editar
-                    </p>
-                      <p
-                        onClick={() => setModalDelete(true)}
-                        className="flex items-center mr-3 cursor-pointer"
-                      >
-                        <IconDelete />
-                        Eliminar
-                      </p>
-                    </div>
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent closing the dropdown
+                      setModalDelete(true);
+                    }}
+                    className="flex items-center mr-3 cursor-pointer"
+                  >
+                    <IconDelete />
+                    Eliminar
                   </div>
                 </div>
-                <div className="w-[120%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
+              </div>
+            )}
+                </div>
+                <div className="w-[125%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
                 <Modal
           isShown={modalDelete}
           element={
@@ -807,22 +923,19 @@ const Notifications = () => {
             {oldNotifications &&
               oldNotifications.map((inf, index) => (
                 <div
-                 className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_0.6fr] gap-6 my-8 translate-x-[60px]"
-                  key={index}
-                >
+                 className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_0.6fr] gap-6 my-8 translate-x-[60px]"
+                 key={index}
+                 >
                   <div className="flex items-center gap-1">
                     <p className="text-[1rem] text-argenpesos-textos font-book">
                       {inf.title}
                     </p>
                   </div>
                   <p className="text-[1rem] text-argenpesos-textos font-book">
-                    {inf.scheduledAt
-                      .toString()
-                      .split("T")[0]
-                      .replace(/-/g, "/")}
+                    {formatDate(inf.scheduledAt)}
                   </p>
                   <p className="text-[1rem] text-argenpesos-textos font-book ml-1">
-                    {`${inf.scheduledAt.toString().split("T")[1].split(":")[0]}:${inf.scheduledAt.toString().split("T")[1].split(":")[1]}`}
+                    {formatTime(inf.scheduledAt)}
                   </p>
                   <p className="text-[1rem] text-argenpesos-textos font-book ml-6">
                     {inf.saveInHistory ? "Si" : "No"}
@@ -836,73 +949,79 @@ const Notifications = () => {
                 <p className="text-[1rem] text-argenpesos-textos font-book ml-6 truncate max-w-xs">
                   {inf.redirect}
                 </p>
-                <div
-                  onClick={() => toggleVisibility(index)}
-                   className="relative flex items-center justify-center translate-y-[-10px]"
-                >
-                  <button onClick={() => toggleVisibility(index)}>
-                    {visibleIndex === index ? <ThreePoints /> : <ThreePoints />}
-                  </button>
-                  <div
-               className={`fixed top-16 left-0 right-0 z-50 transition-all duration-2000 ease-in-out ${
-                      visibleIndex === index
-                        ? "opacity-100 h-[90px]"
-                        : "opacity-0 max-h-0"
-                      } bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px]`}
-                      style={{ transform: visibleIndex === index ? 'translateY(-10px)' : 'translateY(-100%)' }}
-                    >
-                    <div className="flex flex-col w-full gap-3 items-center justify-center h-full">
-        
-                      <p
-                        onClick={() => setModalDelete(true)}
-                        className="flex items-center mr-3 cursor-pointer"
-                      >
-                        <IconDelete />
-                        Eliminar
-                      </p>
-                    </div>
-                    </div>
-                    </div>
-                  <div className="w-[120%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
-                  <Modal
-          isShown={modalDelete}
-          element={
-            <div className="px-6 py-6 flex flex-col justify-center w-[481px] h-[192px]">
-              <div className="flex justify-between items-start">
-                <p className="text-[1rem] text-argenpesos-textos font-bold">
-                  ¿Está seguro que desea eliminar esta Notificacion?
-                </p>
-                <p
-                  className="cursor-pointer mt-[6px]"
-                  onClick={() => setModalDelete(false)}
-                >
-                  <IconX />
-                </p>
-              </div>
-              <p className="text-[14px] font-book text-argenpesos-gray w-[380px] mb-10 mt-1">
-                Si la elimina ya no se podrá recuperarla.
-              </p>
-              <div className="flex gap-4">
+                <div className="relative flex items-center justify-center translate-x-[-20px]">
                 <button
-                  onClick={() => {
-                    handleConfirmDelete(inf.id);
-                  }}
-                  className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleVisibilityOldNotifications(index);
+                      setIsMenuOpenHistory(true);
+                    }}
                   >
-                  Eliminar
-                </button>
-                <button
-                  onClick={() => {
-                    setModalDelete(false);
-                  }}
-                  className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          }
-        ></Modal>
+                    <ThreePoints />
+                  </button>
+
+                  {isMenuOpenHistory && visibleIndexOldNotifications === index && (
+                    <div
+                      ref={dropdownRefHistory}
+                      className="absolute top-full right-0 z-50 mt-2 bg-argenpesos-white border-[1px] border-solid border-argenpesos-gray rounded-[7px] w-[158px] shadow-lg"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex flex-col w-full gap-3 items-center justify-center py-3">
+                        <p
+                          onClick={() => {
+                            setSelectedOldNotificationId(inf.id);
+                            setModalDeleteOldNotification(true);
+                            setIsMenuOpenHistory(false);
+                            setVisibleIndexOldNotifications(null);
+                          }}
+                          className="flex items-center mr-3 cursor-pointer hover:bg-gray-100 w-full text-center justify-center"
+                        >
+                          <IconDelete className="mr-2" />
+                          Eliminar
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                    
+                  </div>
+                  <Modal
+                    isShown={modalDeleteOldNotification}
+                    element={
+                      <div className="px-6 py-6 flex flex-col justify-center w-[481px] h-[192px]">
+                        <div className="flex justify-between items-start">
+                          <p className="text-[1rem] text-argenpesos-textos font-bold">
+                            ¿Está seguro que desea eliminar esta Notificacion?
+                          </p>
+                          <p
+                            className="cursor-pointer mt-[6px]"
+                            onClick={() => setModalDeleteOldNotification(false)}
+                          >
+                            <IconX />
+                          </p>
+                        </div>
+                        <p className="text-[14px] font-book text-argenpesos-gray w-[380px] mb-10 mt-1">
+                          Si la elimina ya no se podrá recuperarla.
+                        </p>
+                        <div className="flex gap-4">
+                          <button
+                            onClick={handleConfirmDeleteOldNotification}
+                            className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
+                          >
+                            Eliminar
+                          </button>
+                          <button
+                            onClick={() => {
+                              setModalDeleteOldNotification(false);
+                            }}
+                            className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  ></Modal>
+                  <div className="w-[125%] h-[1px] bg-argenpesos-gray mt-5 col-span-6 mb-10"></div>
                 </div>
                 
               ))}
