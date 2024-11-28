@@ -90,34 +90,33 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   
     if (!formIsValid) return;
   
-    // Asegúrate de que la propiedad sea 'includesShipping', no 'includeShipping'
+ 
     const productData = {
       name,
       description,
       value: price,
       category,
-      includesShipping: includeShipping,  // Cambié 'includeShipping' por 'includesShipping'
+      includesShipping: includeShipping, 
     };
   
-    // Log para ver los datos del producto
+   
     console.log("Datos del producto a enviar:", productData);
     console.log("Archivo de imagen:", imageFile);
   
     try {
-      // Despachar la acción de creación de producto
+   
       const actionResult = await dispatch(createProductAsync({
         productData,
-        imageFile,  // Le pasamos el archivo de imagen
+        imageFile, 
       }));
-  
-      // Si la acción retorna el producto creado
+
       const newProduct = actionResult.payload;
       if (newProduct) {
-        refreshProducts(newProduct);  // Actualiza la lista de productos con el nuevo producto
-        closeModal();  // Cierra el modal
+        refreshProducts(newProduct); 
+        closeModal(); 
       }
   
-      // Resetear los campos del formulario
+    
       setName("");
       setPrice("");
       setDescription("");
@@ -141,7 +140,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
     } else {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        name: "", // Limpiar el error si la longitud es válida
+        name: "", 
       }));
     }
   
@@ -154,7 +153,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
 
   return (
     <>
-      {/* Modal de cancelación */}
+     
       <Modal
         isShown={modalCanceled}
         element={
@@ -176,15 +175,15 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
             <div className="flex gap-4">
               <button
                 onClick={() => {
-                  closeModal(); // Cierra el modal principal
-                  setModalCanceled(false); // Cierra el modal de cancelación
+                  closeModal(); 
+                  setModalCanceled(false); 
                 }}
                 className="bg-argenpesos-red w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book"
               >
                 Salir
               </button>
               <button
-                onClick={() => setModalCanceled(false)} // Solo cierra el modal de cancelación
+                onClick={() => setModalCanceled(false)}
                 className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
               >
                 Cancelar
@@ -194,7 +193,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
         }
       ></Modal>
 
-      {/* Modal de creación o edición de producto */}
+
       <div className="modal">
         <div className="modal-content">
           <div className="flex justify-between items-center">
@@ -211,13 +210,12 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
               <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
               <img
   className="w-[170px] h-[170px]"
-  src={image || "/products/image_default.png"} // Mostrar la imagen seleccionada o por defecto
-   // Agregamos un alt para accesibilidad
+  src={image || "/products/image_default.png"} 
 />
           </div>
           <p
             className="flex gap-1 items-center pt-[18px] text-[14px] font-book text-argenpesos-textos cursor-pointer"
-            onClick={() => document.getElementById("image-upload")?.click()} // Hacemos clic en el input cuando el texto es presionado
+            onClick={() => document.getElementById("image-upload")?.click()}
           >
             <IconPencil />
             {product ? "Editar fotos" : "Añadir fotos"}
@@ -226,13 +224,13 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
             id="image-upload"
             type="file"
             accept="image/*"
-            style={{ display: "none" }} // Ocultamos el input de tipo archivo
+            style={{ display: "none" }} 
             onChange={handleImageChange}
           />
 
-          {/* Mostrar el error de la imagen si no se ha seleccionado */}
+          
           {errors.image && (
-            <p className="text-red-500 text-sm mt-2">{errors.image}</p> // Estilos para el mensaje de error
+            <p className="text-red-500 text-sm mt-2">{errors.image}</p> 
           )}
                 <p className="pt-9 pb-4 text-[14px] font-bold text-argenpesos-textos">
                   Incluye envío
@@ -260,7 +258,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                 <p className="pt-9 pb-4 text-[14px] font-bold text-argenpesos-textos">
                   Colores disponibles
                 </p>
-                {/* Aquí podemos poner una lista de colores, pero no se enviarán al backend */}
+               
                 <div className="w-[17px] h-[17px] rounded-full bg-argenpesos-skyBlue"></div>
               </div>
 
@@ -274,7 +272,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   type="text"
   value={name}
   onChange={handleNameChange}
-  maxLength={10} // Limita el campo a 10 caracteres
+  maxLength={10}
 />
 {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>} 
 
@@ -286,11 +284,11 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   className={`w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid ${errors.price ? 'border-red-500' : 'border-argenpesos-gray'}`}
   type="number"
   value={price}
-  max={999999}  // Limitar el valor máximo a 999999
+  max={999999} 
   onChange={(e) => {
     let value = Number(e.target.value);
 
-    // Si el valor es mayor que 999999, se establece en 999999
+
     if (value > 999999) {
       value = 999999;
       setErrors(prevErrors => ({ ...prevErrors, price: "El valor no puede ser mayor a 999999 puntos." }));
@@ -298,7 +296,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
       setErrors(prevErrors => ({ ...prevErrors, price: "" }));
     }
 
-    setPrice(value.toString()); // Actualiza el valor del precio
+    setPrice(value.toString());
   }}
 />
 {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
@@ -335,20 +333,20 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
           </div>
           <div className="flex justify-end gap-4 mt-10">
             <button
-              onClick={handleCancel} // Muestra el modal de cancelación
+              onClick={handleCancel} 
               className="border-[1px] border-solid border-argenpesos-gray w-[109px] h-[38px] rounded-[5px] text-argenpesos-gray text-[1rem] font-book"
             >
               Cancelar
             </button>
             <button
-              onClick={handleSave} // Llamamos a la función para guardar el producto
+              onClick={handleSave} 
               className="bg-argenpesos-skyBlue w-[109px] h-[38px] rounded-[5px] text-argenpesos-white text-[1rem] font-book hover:bg-argenpesos-blue hover:transition-colors duration-100"
-              disabled={loading} // Deshabilitamos el botón mientras está en carga
+              disabled={loading} 
             >
               {loading ? "Guardando..." : "Guardar"}
             </button>
           </div>
-          {error && <p className="text-red-500 text-center mt-4">{error}</p>} {/* Mostramos el error si hay */}
+          {error && <p className="text-red-500 text-center mt-4">{error}</p>} 
         </div>
       </div>
     </>

@@ -134,7 +134,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
       setProductDescription(product.description);
       setCategory(product.category || "ArgenCompras");
       setIncludeShipping(product.includesShipping || false);
-      setImage(product.image ? `https://back5.maylandlabs.com${product.image}` : null);
+      setImage(product.image ? `https://http://localhost:3000/${product.image}` : null);
     }
   }, [product]);
 
@@ -200,7 +200,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               <div>
                 <div className="flex items-center justify-center rounded-[13px] w-[185px] h-[185px] bg-argenpesos-gray3 border-[1px] border-solid border-argenpesos-gray2">
                 <img
-  src={image || `https://back5.maylandlabs.com${product.image}`}
+  src={image || `https://http://localhost:3000/${product.image}`}
   alt={product.name}
   className="w-[170px] h-[170px]"
   onError={(e) => {

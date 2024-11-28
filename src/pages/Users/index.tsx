@@ -59,7 +59,7 @@ const Users = () => {
     try {
       const result = await blockUserAsync(Number(userId));
       if (result !== undefined) {
-        getUsersList(); // Actualiza la lista después de bloquear el usuario
+        getUsersList(); 
       }
     } catch (error) {
       console.error("Error blocking user:", error);
@@ -91,7 +91,7 @@ const Users = () => {
 
   return (
     <div className="flex flex-col pl-16 pt-12 px-10 max-w-[clamp(1000px,77.2vw,1200px)]">
-      {/* Cabecera */}
+     
       <div className="flex gap-2 mb-2">
         <p className="text-[3rem] text-argenpesos-textos font-bold">Usuarios</p>
         <p className="text-[40px] text-argenpesos-textos font-book mt-[6px]">
@@ -99,7 +99,7 @@ const Users = () => {
         </p>
       </div>
 
-      {/* Paginación y búsqueda */}
+     
       <div className="flex justify-between mb-8">
         <div className="relative flex">
           <input
@@ -135,32 +135,31 @@ const Users = () => {
         </div>
       </div>
 
-      {/* Cabecera de la tabla */}
-      <div className="grid grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1.5fr_2fr_1.5fr_2fr_2fr_auto] gap-8 mb-10 bg-gray-100 p-16 rounded-t-lg items-center w-[1240px] translate-x-[-40px]">
-        <div className="font-bold text-argenpesos-textos text-left ">Usuarios</div>
-        <div className="font-bold text-argenpesos-textos text-left translate-x-10">Teléfono</div>
-        <div className="font-bold text-argenpesos-textos text-left translate-x-14">Dirección</div>
-        <div className="font-bold text-argenpesos-textos text-left translate-x-12">Cuponizate</div>
-        <div className="font-bold text-argenpesos-textos text-left translate-x-16">Status</div>
-        <div className="font-bold text-argenpesos-textos text-left translate-x-16">Edad</div>
-        <div className="font-bold text-argenpesos-textos text-left translate-x-5">Puntos</div>
-        <div className="font-bold text-argenpesos-textos text-left translate-x-5">Registrado</div>
-        <div className="font-bold text-argenpesos-textos text-left translate-x-5">Estado</div>
+    
+      <div className="grid grid-cols-6 gap-8 mb-10 bg-gray-100 p-16 rounded-t-lg items-center w-[1240px] translate-x-[-40px]">
+        <div className="font-bold text-argenpesos-textos text-center ">Usuarios</div>
+        <div className="font-bold text-argenpesos-textos text-center translate-x-14">Cuponizate</div>
+        <div className="font-bold text-argenpesos-textos text-center translate-x-9">Edad</div>
+        <div className="font-bold text-argenpesos-textos text-center ">Puntos</div>
+        <div className="font-bold text-argenpesos-textos text-left translate-x-1 ">Registrado</div>
         <div className="cursor-pointer flex items-center justify-left" onClick={toggleSortOrder}>
-          <ArrowBlue />
+        <div className="font-bold text-argenpesos-textos text-center translate-x-5">Estado</div>
+        <div className="absolute right-0 top-[50%] transform translate-x-[-55px]">
+      <ArrowBlue />
+    </div>
         </div>
       </div>
 
-      {/* Filas de usuarios */}
+      
       <div>
         {currentUsers.map((user) => (
           <UserRow
             key={user.id}
             user={user}
-            getUsersList={getUsersList} // Pasando el callback
+            getUsersList={getUsersList} 
             handleBlockUser={handleBlockUser}
             handleEditUser={handleEditUser}
-          
+           
           />
         ))}
       </div>
