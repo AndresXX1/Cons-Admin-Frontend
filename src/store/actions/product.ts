@@ -10,30 +10,30 @@ export const createProductAsync = createAsyncThunk(
         name: string;
         description: string;
         value: number;
-        image?: string | null;  // Ahora solo lo usaremos para mostrar la imagen, no lo enviamos
+        image?: string | null;  
         includesShipping: boolean;
         category?: string;
       };
-      imageFile?: File;  // El archivo de imagen es opcional
+      imageFile?: File; 
     },
     { rejectWithValue }
   ) => {
     const formData = new FormData();
 
-    // Añadimos los campos normales del producto
+
     formData.append("name", data.productData.name);
     formData.append("value", data.productData.value.toString());
     formData.append("description", data.productData.description);
     formData.append("category", data.productData.category || "ArgenCompras");
     formData.append("includesShipping", data.productData.includesShipping ? "true" : "false");
 
-    // Si hay un archivo de imagen, lo agregamos a FormData como "image"
+ 
     if (data.imageFile) {
       formData.append("image", data.imageFile);
     }
 
     try {
-      // Llamada al servicio para crear el producto
+ 
       const product = await createProductService(formData);
 
       if (product) {

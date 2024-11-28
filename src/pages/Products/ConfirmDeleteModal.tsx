@@ -1,39 +1,38 @@
 import React, { useState } from "react";
-import { IconX } from "@utils/svg"; // Asegúrate de tener este ícono
+import { IconX } from "@utils/svg";
 import Modal from "@components/Modal";
-import { deleteProductService } from "../../store/services/productsPoint"; // Importa el servicio de eliminación
+import { deleteProductService } from "../../store/services/productsPoint";
 
 interface ConfirmDeleteModalProps {
   isShown: boolean;
   onClose: () => void;
-  productId: number; // Cambia de string a number
+  productId: number;
   onProductDeleted: () => void;
 }
 
 const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({ isShown, onClose, productId, onProductDeleted }) => {
   const [isDeleting, setIsDeleting] = useState(false);
-  
 
   const handleConfirmDelete = async () => {
-    console.log("Starting deletion process");
     if (!productId || productId === 0) {
-      console.log("Invalid product ID");
       alert('No se pudo identificar el producto a eliminar');
       return;
     }
-  
+
     setIsDeleting(true);
     try {
-      console.log("Calling deleteProductService");
-      await deleteProductService(productId);
-      console.log("Deletion service call completed");
-      onProductDeleted();
-      onClose();
-      setIsDeleting(false);
+      const success = await deleteProductService(productId);
+      
+      if (success) {
+        onProductDeleted(); 
+        onClose();
+      } else {
+        alert('Hubo un problema al eliminar el producto');
+      }
     } catch (error) {
-      console.error("Error during deletion:", error);
       alert('Hubo un problema al eliminar el producto');
-      setIsDeleting(false);
+    } finally {
+      setIsDeleting(false); 
     }
   };
 
