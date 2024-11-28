@@ -30,10 +30,10 @@ const AddressForm: React.FC<AddressFormProps> = ({
   }));
 
   const [modalCanceled, setModalCanceled] = useState<boolean>(false);
-  const [errors, setErrors] = useState<Partial<Address>>({}); // Estado para errores de validación
+  const [errors, setErrors] = useState<Partial<Address>>({}); 
   const dispatch = useDispatch<AppDispatch>();
 
-  // Función de validación unificada para los campos
+
   const validateAddressFields = (addressToValidate: Address) => {
     const newErrors: Partial<Address> = {};
 
@@ -83,23 +83,20 @@ const AddressForm: React.FC<AddressFormProps> = ({
     "Buenos Aires", "Ciudad Autónoma de Buenos Aires", "Catamarca", "Chaco", "Chubut", "Córdoba", "Corrientes", "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja", "Mendoza", "Misiones", "Neuquén", "Río Negro", "Salta", "San Juan", "San Luis", "Santa Cruz", "Santa Fe", "Santiago del Estero", "Tierra del Fuego", "Tucumán"
   ];
 
-  // Función para manejar el cambio de los campos y validarlos en tiempo real
-  const handleFieldChange = (field: keyof Address, value: string | number) => {
-    // Actualizamos el valor del campo en el estado padre
-    onAddressChange(field, value);
 
-    // Validamos el campo modificado y actualizamos los errores
+  const handleFieldChange = (field: keyof Address, value: string | number) => {
+    onAddressChange(field, value);
     const newErrors = validateAddressFields({ ...address, [field]: value });
     setErrors(newErrors);
   };
 
-  // Función de guardado que valida antes de guardar
+
   const handleSave = async () => {
     const validationErrors = validateAddressFields(address);
-    setErrors(validationErrors); // Establecer errores
+    setErrors(validationErrors); 
 
     if (Object.keys(validationErrors).length > 0) {
-      return; // Detener si hay errores
+      return; 
     }
 
     try {

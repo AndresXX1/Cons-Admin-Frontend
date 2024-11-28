@@ -302,7 +302,7 @@ const truncateName = (name: string): string => {
       {/* Contenedor de la imagen con bordes redondeados y ajustada */}
       <div className="h-full w-[140px] rounded-[13px] bg-[#F9F9F9] flex items-center relative">
       <img
-  src={`https://back5.maylandlabs.com${product.image}`}
+  src={`https://http://localhost:3000/${product.image}`}
   alt={product.name}
 />
       </div>
