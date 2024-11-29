@@ -121,12 +121,6 @@ const Products = () => {
   };
 
 
-  
-
-
-
-
-  
 
   const handleEditProduct = (product: IProduct) => {
     setProductToEdit(product); 
@@ -180,7 +174,6 @@ const Products = () => {
   };
   
 
-  
   
   const handleCreateProductModalSave = (newProduct: IProduct) => {
     setProducts((prevProducts) => [...prevProducts, newProduct]);
@@ -315,13 +308,13 @@ const truncateName = (name: string): string => {
               isShown={modalEdit}
               element={
                 <div className="px-[54px] py-12 flex flex-col w-[969px] h-[668px]">
-<EditProductModal
-  isOpen={modalEdit}
-  closeModal={() => setModalEdit(false)}
-  product={productToEdit}
-  saveProduct={handleSaveProduct}
-  updateProductInList={updateProductInList}
-/>
+                  <EditProductModal
+                    isOpen={modalEdit}
+                    closeModal={() => setModalEdit(false)}
+                    product={productToEdit}
+                    saveProduct={handleSaveProduct}
+                    updateProductInList={updateProductInList}
+                  />
                 </div>
               }
             />

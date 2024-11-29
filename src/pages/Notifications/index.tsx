@@ -28,7 +28,17 @@ export interface NotificationProps {
   redirect: string;
 }
 
+const getFormattedDate = (date: Date | string) => {
+  const validDate = typeof date === "string" ? new Date(date) : date;
 
+  const year = validDate.getFullYear();
+  const month = String(validDate.getMonth() + 1).padStart(2, "0");
+  const day = String(validDate.getDate()).padStart(2, "0");
+  const hours = String(validDate.getHours()).padStart(2, "0");
+  const minutes = String(validDate.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
 
 const Notifications = () => {
   const [visibleIndex, setVisibleIndex] = useState<number | null>(null);
@@ -60,6 +70,7 @@ const Notifications = () => {
   const [visibleIndexOldNotifications, setVisibleIndexOldNotifications] = useState<number | null>(null);
 const [modalDeleteOldNotification, setModalDeleteOldNotification] = useState<boolean>(false);
 const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<number | null>(null);
+
   const [errors, setErrors] = useState({
     title: '',
     message: '',
@@ -130,21 +141,20 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDate = event.target.value;
-  
-    // Verificamos si el valor de selectedDate es válido
-    const parsedDate = Date.parse(selectedDate);
-  
-    if (isNaN(parsedDate)) {
-      setError("La fecha seleccionada no es válida.");
-    } else if (selectedDate < currentDate) {
-      setError("La fecha no puede ser menor a la actual.");
-    } else if (selectedDate > maxDate) {
-      setError("La fecha no puede ser mayor a 10 años en el futuro.");
+    
+    const year = parseInt(selectedDate.split("-")[0]);
+
+    if (year !== 2024) {
+      setError("El año de la notificación solo puede ser el actual 2024.");
+      return;
     } else {
-      setError(""); // Si la fecha es válida, limpiamos el error
-      setData({ ...data, scheduledAt: new Date(parsedDate) }); // Actualizamos el estado
+      setError("");
     }
+
+    const parsedDate = new Date(selectedDate);
+    setData({ ...data, scheduledAt: parsedDate });
   };
+
   
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -165,55 +175,59 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
   
 
   const handleSubmit = async () => {
+    const currentDate = new Date();
+    const scheduledDate = new Date(data.scheduledAt)
+  
+    if (scheduledDate < currentDate) {
+      setError("La fecha no puede ser anterior a la fecha y hora actual.");
+      return;
+    }
+
+    if (scheduledDate.getTime() - currentDate.getTime() < 60000) { 
+      setError("La fecha no puede ser anterior que la actual.");
+      return;
+    }
+
+   
     if (!data.title.trim()) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        title: 'El título no puede estar vacío.',
+        title: "El título no puede estar vacío.",
       }));
-      return; 
+      return;
     } else {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        title: '',
+        title: "",
       }));
     }
-  
+
     if (!data.message.trim()) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        message: 'El mensaje no puede estar vacío.',
+        message: "El mensaje no puede estar vacío.",
       }));
-      return; 
+      return;
     } else {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        message: '',
+        message: "",
       }));
     }
-  
+
     const response = await createNotification(data, setError);
     if (response) {
       setData({
         id: 0,
-        title: '',
-        message: '',
-        scheduledAt: new Date(currentDate),
+        title: "",
+        message: "",
+        scheduledAt: new Date(),
         saveInHistory: false,
         isPush: false,
-        redirect: '', 
+        redirect: "",
       });
       setModalCreate(false);
       fetchNotifications();
-    }
-  };
-
-  const toggleVisibility = (index: number) => {
-    if (visibleIndex === index) {
-      setIsMenuOpen(false);
-      setVisibleIndex(null);
-    } else {
-      setIsMenuOpen(true);
-      setVisibleIndex(index);
     }
   };
 
@@ -333,6 +347,11 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
 
   console.log('Notificación a crear:', data);
 
+  function toggleVisibility(index: number): void {
+    console.log(index)
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <>
     
@@ -397,31 +416,22 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
                       Fecha y Hora
                     </label>
                     <input
-                      className="border-0 border-[#C2C2C2] w-full h-[36px] pl-2 pr-10 border-b-[1px] leading-[27px] text-sofiaCall-dark font-poppinsMedium text-[13px] cursor-pointer"
+                      className={`border-0 w-full h-[36px] pl-2 pr-10 border-b-[1px] leading-[27px] text-sofiaCall-dark font-poppinsMedium text-[13px] cursor-pointer ${error ? 'border-red-500' : 'border-[#C2C2C2]'}`}
                       type="datetime-local"
                       id="start_time"
                       name="scheduledAt"
-                      value={
-                        data.scheduledAt instanceof Date
-                          ? new Date(
-                              data.scheduledAt.getTime() - new Date().getTimezoneOffset() * 60000
-                            )
-                              .toISOString()
-                              .slice(0, 16)
-                          : ""
-                      }
-
-                      min={currentDate.toString().slice(0, 16)} 
-                      max={maxDate}
+                      value={getFormattedDate(data.scheduledAt)}
                       required
                       onChange={handleDateChange}
                     />
+    
+    
 
                     {error && (
                       <p className="font-poppins Medium text-red-500 text-sm mt-2">
                         {error}
                       </p>
-                    )}
+                    )} 
 
 
                     </div>
