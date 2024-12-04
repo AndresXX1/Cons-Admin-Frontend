@@ -1,4 +1,4 @@
-import { useEffect, useState,useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   IconNotification,
   ArrowBlue,
@@ -19,7 +19,7 @@ import {
 } from "@store/services/notification";
 
 export interface NotificationProps {
-  id:number
+  id: number;
   title: string;
   message: string;
   scheduledAt: Date | string;
@@ -43,7 +43,7 @@ const getFormattedDate = (date: Date | string) => {
 const Notifications = () => {
   const [visibleIndex, setVisibleIndex] = useState<number | null>(null);
   const currentDate = new Date()
-    .toLocaleString("sv-SE", )
+    .toLocaleString("sv-SE")
     .replace(" ", "T")
     .slice(0, 16);
   const [data, setData] = useState<NotificationProps>({
@@ -59,7 +59,8 @@ const Notifications = () => {
   const dropdownRefHistory = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuOpenHistory, setIsMenuOpenHistory] = useState(false);
-  const [nextNotifications, setNextNotifications] = useState< NotificationProps[]
+  const [nextNotifications, setNextNotifications] = useState<
+    NotificationProps[]
   >([]);
   const [oldNotifications, setOldNotifications] = useState<NotificationProps[]>(
     []
@@ -68,12 +69,15 @@ const Notifications = () => {
   const [modalEdit, setModalEdit] = useState<boolean>(false);
   const [modalCreate, setModalCreate] = useState<boolean>(false);
   const [visibleIndexOldNotifications, setVisibleIndexOldNotifications] = useState<number | null>(null);
-const [modalDeleteOldNotification, setModalDeleteOldNotification] = useState<boolean>(false);
-const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<number | null>(null);
+
+  const [modalDeleteOldNotification, setModalDeleteOldNotification] = useState<boolean>(false);
+
+  const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<number | null>(null);
+
 
   const [errors, setErrors] = useState({
-    title: '',
-    message: '',
+    title: "",
+    message: "",
   });
 
   const fetchNotifications = async () => {
@@ -141,7 +145,6 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDate = event.target.value;
-    
     const year = parseInt(selectedDate.split("-")[0]);
 
     if (year !== 2024) {
@@ -155,11 +158,8 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
     setData({ ...data, scheduledAt: parsedDate });
   };
 
-  
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
     if (name === "isPush" || name === "saveInHistory") {
       setData({
         ...data,
@@ -172,44 +172,40 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
       });
     }
   };
-  
 
   const handleSubmit = async () => {
     const currentDate = new Date();
-    const scheduledDate = new Date(data.scheduledAt)
-  
+    const scheduledDate = new Date(data.scheduledAt);
     if (scheduledDate < currentDate) {
       setError("La fecha no puede ser anterior a la fecha y hora actual.");
       return;
     }
 
-    if (scheduledDate.getTime() - currentDate.getTime() < 60000) { 
+    if (scheduledDate.getTime() - currentDate.getTime() < 60000) {
       setError("La fecha no puede ser anterior que la actual.");
       return;
     }
-
-   
     if (!data.title.trim()) {
-      setErrors((prevErrors) => ({
+      setErrors(prevErrors => ({
         ...prevErrors,
         title: "El título no puede estar vacío.",
       }));
       return;
     } else {
-      setErrors((prevErrors) => ({
+      setErrors(prevErrors => ({
         ...prevErrors,
         title: "",
       }));
     }
 
     if (!data.message.trim()) {
-      setErrors((prevErrors) => ({
+      setErrors(prevErrors => ({
         ...prevErrors,
         message: "El mensaje no puede estar vacío.",
       }));
       return;
     } else {
-      setErrors((prevErrors) => ({
+      setErrors(prevErrors => ({
         ...prevErrors,
         message: "",
       }));
@@ -239,40 +235,36 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
       scheduledAt: notification.scheduledAt,
       saveInHistory: notification.saveInHistory,
       isPush: notification.isPush,
-      redirect: notification.redirect
+      redirect: notification.redirect,
     });
     setModalEdit(true);
   };
 
   const handleSaveEditNotification = async () => {
-    
     if (!data.title.trim()) {
-      setErrors((prevErrors) => ({
+      setErrors(prevErrors => ({
         ...prevErrors,
-        title: 'El título no puede estar vacío.',
+        title: "El título no puede estar vacío.",
       }));
-      return; 
+      return;
     } else {
-      setErrors((prevErrors) => ({
+      setErrors(prevErrors => ({
         ...prevErrors,
-        title: '',
+        title: "",
       }));
     }
-  
     if (!data.message.trim()) {
-      setErrors((prevErrors) => ({
+      setErrors(prevErrors => ({
         ...prevErrors,
-        message: 'El mensaje no puede estar vacío.',
+        message: "El mensaje no puede estar vacío.",
       }));
-      return; 
+      return;
     } else {
-      setErrors((prevErrors) => ({
+      setErrors(prevErrors => ({
         ...prevErrors,
-        message: '',
+        message: "",
       }));
     }
-  
- 
     const response = await updateNotification(data.id, data, setError);
     if (response) {
       setModalEdit(false);
@@ -283,11 +275,11 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
   const handleConfirmDelete = async (id: number) => {
     const isDeleted = await handleDeleteNotification(id);
     if (isDeleted === true) {
-      "Notificación eliminada correctamente";
+      ("Notificación eliminada correctamente");
       setModalDelete(false);
-      fetchNotifications(); 
+      fetchNotifications();
     } else {
-      "Hubo un problema al eliminar la notificación";
+      ("Hubo un problema al eliminar la notificación");
     }
   };
 
@@ -300,19 +292,18 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
       console.error(`No se pudo eliminar la notificación con ID ${id}:`, error);
       return false;
     }
-  }
+  };
 
   const formatDate = (dateString: string | Date) => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      timeZone: 'America/Buenos_Aires'
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      timeZone: "America/Buenos_Aires",
     };
-    return date.toLocaleString('es-AR', options).split(',')[0].trim();
+    return date.toLocaleString("es-AR", options).split(",")[0].trim();
   };
-  
   const formatTime = (dateString: string | Date) => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = {
@@ -347,10 +338,15 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
 
   console.log('Notificación a crear:', data);
 
-  function toggleVisibility(index: number): void {
-    console.log(index)
-    throw new Error("Function not implemented.");
-  }
+  const toggleVisibility = (index: number) => {
+    if (visibleIndex === index) {
+      setVisibleIndex(null);
+      setIsMenuOpen(false);
+    } else {
+      setVisibleIndex(index);
+      setIsMenuOpen(true);
+    }
+  };
 
   return (
     <>
@@ -620,7 +616,7 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
               name="title"
               value={data.title}
               onChange={handleChange}
-              className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
+              className="w-[617px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-bold" 
               type="text"
               placeholder="Título"
               maxLength={20}
@@ -636,7 +632,7 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
               name="message"
               value={data.message}
               onChange={handleChange}
-              className="w-[617px] h-[181px] text-[16px] font-book p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
+              className="w-[617px] h-[181px] text-[16px] font-bold p-3 text-argenpesos-textos align-top border border-argenpesos-gray rounded-[5px] resize-none placeholder:text-argenpesos-textos"
               placeholder="Cuerpo de texto"
               maxLength={50}
             />
@@ -670,7 +666,7 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
                     max={maxDate}
                     required
                     onChange={handleDateChange}
-                    className="w-[298px] h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book pl-3 pr-10"
+                    className="w-[298px] h-[54px] rounded-[5px] font-bold border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book pl-3 pr-10"
                   />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                   
@@ -693,7 +689,7 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
                 name="redirect"
                 value={data.redirect}
                 onChange={handleChange}
-                className="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
+                className="block w-full pl-3 pr-10 py-3 text-base border font-bold border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md text-argenpesos-textos placeholder:text-argenpesos-gray text-[14px] font-book"
               >
                 <option value="">Selecciona</option> 
                 <option value="noticias">Noticias</option>
@@ -717,7 +713,7 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
                   ...data, 
                   isPush: e.target.value === 'true'
                 })}
-                className="w-full h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos text-[14px] font-book px-3"
+                className="w-full h-[54px] font-bold rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos text-[14px] font-book px-3"
               >
                 <option value="true">Si</option>
                 <option value="false">No</option>
@@ -735,7 +731,7 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
                   ...data, 
                   saveInHistory: e.target.value === 'true'
                 })}
-                className="w-full h-[54px] rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos text-[14px] font-book px-3"
+                className="w-full h-[54px] font-bold rounded-[5px] border-[1px] border-solid border-argenpesos-gray text-argenpesos-textos text-[14px] font-book px-3"
               >
                 <option value="true">Si</option>
                 <option value="false">No</option>
@@ -775,10 +771,18 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
             type="search"
             placeholder="Buscar estadísticas o datos"
           />
-          <button
+         <button
             onClick={() => {
-              setModalCreate(true),
-                setData({ ...data, scheduledAt: new Date(currentDate) });
+              setData({
+                id: 0,
+                title: "",
+                message: "",
+                scheduledAt: new Date(currentDate),
+                saveInHistory: false,
+                isPush: false,
+                redirect: "",
+              });
+              setModalCreate(true);
             }}
             className="w-[219px] h-[54px] bg-argenpesos-skyBlue rounded-[13px] flex items-center justify-center text-argenpesos-white gap-1 hover:bg-argenpesos-blue hover:transition-colors duration-100"
           >
@@ -871,7 +875,7 @@ const [selectedOldNotificationId, setSelectedOldNotificationId] = useState<numbe
                   </p>
                   <div
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevent closing the dropdown
+                      e.stopPropagation(); 
                       setModalDelete(true);
                     }}
                     className="flex items-center mr-3 cursor-pointer"

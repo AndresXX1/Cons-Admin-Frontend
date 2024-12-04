@@ -17,6 +17,7 @@ interface UserRowProps {
   getUsersList: () => Promise<void>;
   handleEditUser: (user: User) => void;
   handleBlockUser?: (userId: string) => Promise<void>;
+  avatar?: string
 }
 
 const UserRow = ({ user, getUsersList }: UserRowProps) => {
@@ -73,7 +74,7 @@ const UserRow = ({ user, getUsersList }: UserRowProps) => {
       phone: user.phone || "-",
       birthday: user.birthday || "-",
       points: user.points || 0,
-      image: user.avatar ? apiUrls.avatarUser(user.avatar) : null,
+      image: user.avatar,
       address: user.address || [{ street: "-", city: "-" }],
       cuil: user.cuil || "-",
       gender: user.gender || "-",
@@ -162,7 +163,7 @@ const UserRow = ({ user, getUsersList }: UserRowProps) => {
           </button>
 
           <div
-            ref={menuRef} // Asignamos la referencia al div del menú
+            ref={menuRef} 
             className={`transition-all duration-200 ease-in-out ${menuVisibility ? "opacity-100 h-[100px]" : "opacity-0 max-h-0"} bg-white border-[1px] border-solid border-gray-300 rounded-[7px] w-[130px] absolute right-0 z-[10]`}
           >
             <div className="flex flex-col w-full gap-2 items-start justify-center h-full py-2 px-3">

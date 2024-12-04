@@ -5,7 +5,6 @@ import { getusers } from "../../store/services/users";
 import {  UserFormData } from "./editUserModal";
 import UserRow from "./UserRow"; // Importamos el componente UserRow
 import { blockUserAsync } from "@store/actions/user";
-import { apiUrls } from "@config/config";
 import { User } from "@store/types/user";
 
 
@@ -73,7 +72,7 @@ const Users = () => {
       phone: user.phone,
       birthday: user.birthday,
       points: user.points,
-      image: user.avatar ? apiUrls.avatarUser(user.avatar) : null,
+      image: user.avatar,
       address: user.address,
       cuil: user.cuil,
       gender: user.gender,
@@ -155,6 +154,7 @@ const Users = () => {
         {currentUsers.map((user) => (
           <UserRow
             key={user.id}
+            avatar={user.avatar}
             user={user}
             getUsersList={getUsersList} 
             handleBlockUser={handleBlockUser}

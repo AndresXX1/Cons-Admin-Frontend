@@ -15,6 +15,7 @@ const ProductCard = ({ product, getProducts }: ProductCardProps) => {
     }
   };
 
+  console.log("product.image:", product.image);
   return (
     <div
       className={`${product?.status === "activo" ? "max-w-[305px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10 font-book" : "max-w-[305px] h-[207px] flex border-[1px] rounded-[13px] border-argenpesos-gray mb-10 font-book opacity-30"}`}
@@ -31,8 +32,8 @@ const ProductCard = ({ product, getProducts }: ProductCardProps) => {
         {product.image && (
           <img
             className="w-[150px] h-[150px]"
-            src={`http://back7.maylandlabs.com/product/${product.image}`}
-            alt="image"
+            src={`https://back7.maylandlabs.com/product/${product.image}`}
+            alt={product.name}
           />
         )}
         <div

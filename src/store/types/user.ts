@@ -12,7 +12,7 @@ export interface User {
   first_name: string;
   last_name: string;
   phone: string;
-  address: Address[]; // Debería ser un array de direcciones
+  address: Address[]; 
   birthday: string;
   points: number;
   cuponizate: boolean;

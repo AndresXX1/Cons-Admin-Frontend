@@ -28,7 +28,7 @@ export interface UserFormData {
   phone: string;
   birthday: string;
   points: number;
-  image: string | null;
+  image: string;
   address: Address[];
 }
 
@@ -40,6 +40,7 @@ interface EditUserModalProps {
   setModalEdit: Dispatch<SetStateAction<boolean>>;
   getUsersList: () => Promise<void>;
   onAddressChange: (field: keyof Address, value: string | number) => void;
+  
 }
 
 export const EditUserModal: React.FC<EditUserModalProps> = ({ 
@@ -70,32 +71,31 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
   
-    // Si el campo es "firstName", se valida que solo tenga letras
+  
     if (name === "firstName") {
-      // Verifica si el valor contiene caracteres que no sean letras o espacios
+
       if (/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/.test(value)) {
-        // Establece el error si no es válido
+      
         setFormErrors((prevErrors) => ({
           ...prevErrors,
           [name]: "Solo se permiten letras",
         }));
       } else {
-        // Elimina el error si es válido
+     
         setFormErrors((prevErrors) => {
-          const { [name]: _, ...rest } = prevErrors; // Elimina el error para este campo
+          const { [name]: _, ...rest } = prevErrors; 
           return rest;
         });
       }
     }
   
-    // Si el campo no es "firstName", sigue el comportamiento original
-    // Actualiza el estado de los datos del formulario (maneja la conversión de valores)
+  
     setFormData((prevData) => ({
       ...prevData,
       [name]: name === "points" ? Number(value) : value,
     }));
   
-    // Si hay errores previos, los elimina
+
     if (formErrors[name as keyof UserFormData]) {
       const newErrors = { ...formErrors };
       delete newErrors[name as keyof UserFormData];
@@ -163,16 +163,22 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
 
   const handleSave = async () => {
     const userData = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
+      first_name: formData.firstName, 
+      last_name: formData.lastName,   
       cuil: String(formData.cuil),
       birthday: formData.birthday || "",
       phone: formData.phone,
       gender: formData.gender,
     };
-
-    const validationErrors = validateUserFields(userData);
-
+  
+    const validationErrors = validateUserFields({
+      firstName: userData.first_name,
+      lastName: userData.last_name,
+      cuil: userData.cuil,
+      birthday: userData.birthday,
+      phone: userData.phone,
+    });
+  
     if (Object.keys(validationErrors).length > 0) {
       setFormErrors(validationErrors);
       
@@ -180,8 +186,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
       alertError(firstError);
       return;
     }
-
-   
+  
     if (!userData.birthday) {
       alertError("El campo de fecha de nacimiento es obligatorio.");
       return;
@@ -215,7 +220,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
   
       if (response.data.ok) {
         alertConfirm("Datos del usuario actualizados correctamente.");
-        onSave(response.data.user);
+        onSave(response.data.updatedUser); 
         
         if (getUsersList) {
           await getUsersList();
@@ -283,8 +288,10 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
     setFormData(prev => ({ ...prev, cuil: prev.cuil + cleanedText }));
   };
 
-
-
+console.log ("aca", (user.image))
+console.log("Imagen del usuario:", user.image);
+console.log("Imagen de avatar:", apiUrls.avatarUser(user.avatar || 'default-avatar.png'));
+console.log("Imagen a renderizar:", apiUrls.avatarUser(user.image || 'default-avatar.png'));
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2.5 z-50">
       <div className="bg-white rounded-lg  w-[950px] h-[auto] relative z-50">
@@ -300,11 +307,11 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
           <div className="grid grid-cols-[0.7fr_1fr_1fr] gap-4">
             <div className="w-[144px] translate-y-[35px] translate-x-[40px]">
               <div className="rounded-[11px] w-[140px] h-[152px] bg-argenpesos-gray3 border border-argenpesos-gray2 mb-12">
-                <img
-                  className="w-full h-full object-cover rounded-[11px]"
-                  src={apiUrls.avatarUser(user.avatar) || "/avatar/image_default.png"}
-                  alt="Avatar"
-                />
+              <img
+  className="w-full h-full object-cover rounded-[11px]"
+  src={user.image || `https://back5.maylandlabs.com/avatar/${user.image}`}
+  alt={user.firstName}
+/>
               <button 
             onClick={handleOpenModal} 
             className="flex items-center cursor-pointer text-gray-700 w-[500px] truncate  translate-y-[30px]"
@@ -408,7 +415,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
     }));
   }}
   onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace') return; // Permite Backspace
+    if (e.key === 'Backspace') return;
     if (!/[0-9]/.test(e.key)) {
       e.preventDefault();
     }
